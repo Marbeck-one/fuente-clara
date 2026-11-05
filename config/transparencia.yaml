@@ -1,0 +1,50 @@
+# Datos jurídicos del módulo "Pregúntale al Estado".
+# La IA NO genera estos datos: la app los muestra tal como están aquí.
+#
+# Cada dato tiene "estado: VERIFICAR" hasta que el equipo lo confirme en la fuente oficial
+# (BCN / Ley Chile, Consejo para la Transparencia, Portal de Transparencia).
+# Cuando lo confirmen, cambien a "estado: VERIFICADO". Mientras diga VERIFICAR,
+# la app muestra el aviso "pendiente de verificar" junto al dato.
+# Los valores precargados son un punto de partida, NO están confirmados.
+
+ley:
+  texto: "Ley N° 20.285, sobre Acceso a la Información Pública"
+  url: "https://www.bcn.cl/leychile/navegar?idNorma=276363"
+  estado: VERIFICAR
+
+portal:
+  texto: "Portal de Transparencia del Estado"
+  url: "https://www.portaltransparencia.cl"
+  estado: VERIFICAR
+
+pasos:
+  - texto: "Revisa el borrador y ajústalo si hace falta. Fuente Clara no envía nada."
+  - texto: "Entra al Portal de Transparencia y elige el organismo al que vas a preguntar."
+    estado: VERIFICAR
+  - texto: "Completa tus datos de identificación directamente en el portal, no en esta app."
+    estado: VERIFICAR
+  - texto: "Pega el texto de tu solicitud, envíala y guarda el número de ingreso que te entreguen."
+    estado: VERIFICAR
+
+plazos:
+  - texto: "El organismo tiene un plazo máximo de 20 días hábiles para responder."
+    estado: VERIFICAR
+  - texto: "Ese plazo puede extenderse de forma excepcional por 10 días hábiles más, y deben avisarte."
+    estado: VERIFICAR
+  - texto: "Si no responden o niegan la información, puedes reclamar ante el Consejo para la Transparencia dentro de 15 días."
+    estado: VERIFICAR
+
+# Plantilla del borrador. {organismo} y {solicitud} los completa la IA; {ley} sale de este archivo.
+# [TU NOMBRE] y [TU DIRECCIÓN] quedan como marcadores: la app nunca pide ni guarda esos datos.
+plantilla:
+  estado: VERIFICAR
+  texto: |
+    A: {organismo}
+
+    Yo, [TU NOMBRE], con domicilio en [TU DIRECCIÓN], en ejercicio del derecho de acceso a la información pública que establece la {ley}, solicito la siguiente información:
+
+    {solicitud}
+
+    Solicito recibir la información en formato electrónico.
+
+    [TU NOMBRE]

@@ -1,0 +1,61 @@
+# Capa de tokens de Fuente Clara. Los colores se definen AQUÍ y en static/estilo.css,
+# nunca componente por componente. Detalle y razones en DESIGN.md.
+
+[server]
+enableStaticServing = true   # sirve static/ (fuentes y logo) desde el mismo servidor
+
+[browser]
+gatherUsageStats = false     # sin telemetría: coherente con "no guardamos datos"
+
+[client]
+toolbarMode = "minimal"      # oculta el menú de desarrollo y el botón Deploy
+
+[theme]
+base = "light"
+primaryColor = "#083344"            # tinta: identidad, botón primario
+backgroundColor = "#F8FAFC"         # slate-50: fondo de página
+secondaryBackgroundColor = "#F1F5F9" # slate-100: campos de texto
+textColor = "#0F172A"               # slate-900
+linkColor = "#0E7490"               # acción: enlaces, foco
+borderColor = "#E2E8F0"             # slate-200
+showWidgetBorder = true
+baseRadius = "0.75rem"
+buttonRadius = "0.5rem"
+baseFontSize = 17                   # un punto más grande: lectores mayores y baja alfabetización digital
+font = "'Atkinson Hyperlegible Next', ui-sans-serif, system-ui, 'Segoe UI', Roboto, Arial, sans-serif"
+headingFont = "'Atkinson Hyperlegible Next', ui-sans-serif, system-ui, 'Segoe UI', Roboto, Arial, sans-serif"
+headingFontWeights = [800, 800, 700]
+headingFontSizes = ["1.75rem", "1.5rem", "1.125rem"]
+codeFont = "'Atkinson Hyperlegible Next', ui-sans-serif, system-ui, sans-serif"  # el borrador es una carta, no código
+codeBackgroundColor = "#FFFFFF"
+codeTextColor = "#0F172A"
+
+# Colores de estado. El amarillo NO se usa para avisos: está reservado al resaltador de citas.
+# Por eso los avisos (st.warning) usan la escala naranja.
+blueColor = "#0E7490"
+blueBackgroundColor = "#ECFEFF"
+blueTextColor = "#164E63"
+yellowColor = "#EA580C"
+yellowBackgroundColor = "#FFF7ED"
+yellowTextColor = "#9A3412"
+redColor = "#DC2626"
+redBackgroundColor = "#FEF2F2"
+redTextColor = "#B91C1C"
+greenColor = "#16A34A"
+greenBackgroundColor = "#F0FDF4"
+greenTextColor = "#15803D"
+grayColor = "#64748B"
+grayBackgroundColor = "#F1F5F9"
+grayTextColor = "#475569"
+
+[[theme.fontFaces]]
+family = "Atkinson Hyperlegible Next"
+url = "app/static/fuentes/atkinson-next.woff2"
+weight = "200 800"
+style = "normal"
+
+[[theme.fontFaces]]
+family = "Source Serif 4"
+url = "app/static/fuentes/source-serif-4.woff2"
+weight = "400"
+style = "normal"

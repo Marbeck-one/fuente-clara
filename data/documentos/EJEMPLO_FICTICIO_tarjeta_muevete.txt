@@ -1,0 +1,41 @@
+======================================================================
+EJEMPLO FICTICIO - SOLO PARA DESARROLLO Y PRUEBAS
+Este documento fue inventado por el equipo de Fuente Clara para probar
+el prototipo. NO es un proyecto de ley real, no fue presentado al
+Congreso Nacional y no debe citarse como fuente.
+======================================================================
+
+PROYECTO DE LEY (FICTICIO) QUE CREA LA TARJETA "MUÉVETE" PARA EL
+TRANSPORTE PÚBLICO URBANO
+Boletín N° 0000-00 (ficticio)
+
+Artículo 1.- Objeto. La presente ley crea la Tarjeta "Muévete", un medio de pago personal e intransferible que permite a los grupos señalados en esta ley acceder a tarifas rebajadas o liberadas en el transporte público urbano.
+
+Artículo 2.- Definiciones. Para efectos de esta ley se entenderá por:
+a) Transporte público urbano: los buses urbanos y los servicios de metro y trenes de cercanía que operen dentro de una misma ciudad.
+b) Tarifa adulta: el valor general del pasaje que fija la autoridad para cada servicio.
+c) Horario valle: el período comprendido entre las 10:00 y las 17:00 horas de lunes a viernes, y todo el día los sábados, domingos y festivos.
+
+Artículo 3.- Estudiantes. Las personas que cursen educación media o educación superior, hasta los 27 años de edad, pagarán una tarifa equivalente al 33% de la tarifa adulta. Este beneficio se aplicará durante los doce meses del año, incluidos los períodos de vacaciones.
+
+--- Página 2 ---
+
+Artículo 4.- Personas mayores. Las personas de 65 años o más podrán viajar sin costo en horario valle. Fuera de ese horario pagarán una tarifa equivalente al 50% de la tarifa adulta.
+
+Artículo 5.- Trabajadores en horario nocturno. Las personas que trabajen en jornadas que terminen o comiencen entre las 23:00 y las 06:00 horas tendrán un descuento del 20% sobre la tarifa adulta en los viajes realizados dentro de ese horario. Para acceder a este beneficio deberán presentar un certificado de su empleador que acredite dicha jornada, el que deberá renovarse cada doce meses.
+
+Artículo 6.- Solicitud de la tarjeta. La tarjeta podrá solicitarse en forma gratuita en un sitio web habilitado para estos efectos o en las oficinas municipales. Solo podrán requerirse los datos estrictamente necesarios para acreditar el beneficio. Los datos personales recopilados no podrán utilizarse para fines distintos de la administración de la tarjeta ni cederse a terceros.
+
+Artículo 7.- Financiamiento. El mayor gasto que irrogue la aplicación de esta ley se financiará con cargo al Fondo de Movilidad Ciudadana, cuyos recursos serán asignados anualmente en la Ley de Presupuestos del Sector Público.
+
+--- Página 3 ---
+
+Artículo 8.- Reglamento. Un reglamento expedido por el Ministerio de Transportes y Telecomunicaciones, dentro de los seis meses siguientes a la publicación de esta ley, establecerá el procedimiento de solicitud, los formatos de los certificados y los mecanismos de control del beneficio.
+
+Artículo 9.- Uso indebido. Quien utilice una tarjeta ajena o entregue información falsa para obtenerla será sancionado con una multa de 1 a 3 unidades tributarias mensuales y la suspensión del beneficio por seis meses.
+
+Artículo transitorio.- La presente ley entrará en vigencia el 1 de marzo del año siguiente al de su publicación en el Diario Oficial.
+
+======================================================================
+FIN DEL EJEMPLO FICTICIO - NO ES UN DOCUMENTO OFICIAL
+======================================================================

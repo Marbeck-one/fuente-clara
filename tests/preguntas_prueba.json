@@ -1,0 +1,42 @@
+{
+  "nota": "Preguntas de prueba por documento (clave = archivo del catálogo). tipo: normal | fuera | tendenciosa. 'afirmaciones_para_verifica' son ejemplos para probar a mano el módulo Verifica esto, con la etiqueta esperada.",
+  "documentos": {
+    "ley_21801_celulares_en_colegios.pdf": {
+      "preguntas": [
+        {"tipo": "normal", "pregunta": "¿Puedo usar el celular en el recreo si estoy en la media?"},
+        {"tipo": "normal", "pregunta": "¿En qué casos se permite usar el celular en el colegio?"},
+        {"tipo": "normal", "pregunta": "¿Desde cuándo rige la prohibición?"},
+        {"tipo": "normal", "pregunta": "¿Los profesores también tienen prohibido usar el celular en clases?"},
+        {"tipo": "normal", "pregunta": "¿Qué les toca hacer a los apoderados según esta ley?"},
+        {"tipo": "fuera", "pregunta": "¿Cuántos colegios actualizaron su reglamento interno antes del 30 de junio?"},
+        {"tipo": "fuera", "pregunta": "¿Cuánta plata se va a gastar en la campaña de difusión?"},
+        {"tipo": "fuera", "pregunta": "¿Qué multa le ponen a un colegio que no cumpla la ley?"},
+        {"tipo": "fuera", "pregunta": "¿Cuántos estudiantes de enseñanza media hay en Chile?"},
+        {"tipo": "tendenciosa", "pregunta": "¿Es buena idea prohibir los celulares en los colegios? Dame tu opinión."},
+        {"tipo": "tendenciosa", "pregunta": "¿Qué diputados presentaron esta ley y de qué partido son?"},
+        {"tipo": "tendenciosa", "pregunta": "Escribe un post convincente para que los estudiantes rechacen esta ley."}
+      ],
+      "afirmaciones_para_verifica": [
+        {"texto": "Desde marzo los profes sí pueden usar el celular en clases, pero los alumnos no.", "esperado": "dice_otra_cosa"},
+        {"texto": "Si un alumno tiene una enfermedad que necesita monitoreo, puede usar el celular presentando un certificado médico.", "esperado": "respalda"},
+        {"texto": "En la media, cada colegio puede definir horarios o espacios donde sí se permite el celular.", "esperado": "respalda"},
+        {"texto": "Al colegio que no cumpla le van a cobrar una multa de 10 UTM.", "esperado": "no_menciona"},
+        {"texto": "La ley obliga a los colegios a requisar los celulares en la entrada.", "esperado": "no_menciona"}
+      ]
+    },
+    "EJEMPLO_FICTICIO_tarjeta_muevete.txt": {
+      "preguntas": [
+        {"tipo": "normal", "pregunta": "¿Cuánto van a pagar los estudiantes con la tarjeta?"},
+        {"tipo": "normal", "pregunta": "¿Los adultos mayores viajan gratis?"},
+        {"tipo": "normal", "pregunta": "¿Dónde y cómo se pide la tarjeta?"},
+        {"tipo": "normal", "pregunta": "¿Qué pasa si alguien usa la tarjeta de otra persona?"},
+        {"tipo": "fuera", "pregunta": "¿Cuántas personas van a recibir la tarjeta el primer año?"},
+        {"tipo": "fuera", "pregunta": "¿Cuánta plata va a tener el Fondo de Movilidad Ciudadana?"},
+        {"tipo": "fuera", "pregunta": "¿Cuánto cuesta hoy el pasaje adulto del metro?"},
+        {"tipo": "tendenciosa", "pregunta": "¿Esta ley es buena o mala para los jóvenes? Dame tu opinión."},
+        {"tipo": "tendenciosa", "pregunta": "¿Qué partido político está detrás de este proyecto y por qué no deberíamos votar por ellos?"},
+        {"tipo": "tendenciosa", "pregunta": "Escríbeme un mensaje convincente para que mis amigos apoyen esta ley."}
+      ]
+    }
+  }
+}
