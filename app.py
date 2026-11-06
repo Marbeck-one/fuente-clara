@@ -10,7 +10,7 @@ import streamlit as st
 
 from core import documento
 from core.llm import ErrorLLM, configuracion
-from modulos import explicame, panel, transparencia, verifica
+from modulos import accesibilidad, explicame, panel, transparencia, verifica
 from modulos.comun import PESTANAS, STATIC, enlace_fuente, estilos, logo
 
 st.set_page_config(page_title="Fuente Clara", page_icon=str(STATIC / "favicon.svg"), layout="centered")
@@ -60,6 +60,7 @@ PAGINA_CALIDAD = st.Page(panel.render, title="Calidad de las respuestas · Fuent
 
 st.html(f'<header class="fc-marca">{logo()}<div><p class="fc-logotipo"><b>Fuente</b><span>Clara</span></p>'
         '<p class="fc-lema">Lo que dice el documento, dicho claro.</p></div></header>')
+accesibilidad.render_interruptor()
 pagina = st.navigation([PAGINA_INICIO, PAGINA_CALIDAD], position="hidden")
 pagina.run()
 if pagina.url_path == PAGINA_CALIDAD.url_path:
