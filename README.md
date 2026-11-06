@@ -34,13 +34,24 @@ Completa en `.env`:
 - `LLM_MODEL`: nombre exacto del modelo disponible en tu cuenta.
 - La clave del proveedor elegido (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY` o `GOOGLE_API_KEY`).
 
+### Modelos de respaldo (opcional)
+
+Para que la demo no dependa de un solo modelo, define una cadena en `LLM_CADENA` (reemplaza a `LLM_PROVIDER` y `LLM_MODEL`):
+
+```bash
+LLM_CADENA=anthropic:claude-sonnet-5-5,anthropic:claude-haiku-5-5,groq:openai/gpt-oss-120b
+GROQ_API_KEY=...
+```
+
+Se prueban en orden. Si uno falla o se satura, responde el siguiente: un modelo saturado (429) se salta 45 s y uno con clave o nombre inválido (401, 403, 404), 10 min. Los modelos sin clave se saltan. Es el mismo criterio de los prototipos de referencia del Desafío 3. Bajo cada respuesta y en los votos queda el modelo que respondió de verdad, y el encabezado muestra cuántos respaldos hay. Proveedores: `anthropic`, `openai`, `google`, `groq`, `mistral`, `openrouter`, `cerebras`, `together` y `deepseek` (clave en `<PROVEEDOR>_API_KEY`). Las capturas de «Verifica esto» solo las leen los modelos de Google de la cadena.
+
 Antes de la demo, revisa que todo esté configurado sin gastar tokens:
 
 ```bash
 python scripts/verificar_entorno.py
 ```
 
-Con `--probar` hace además una llamada mínima real al modelo.
+Con `--probar` hace además una llamada mínima real al modelo y, si hay cadena, prueba cada respaldo por separado.
 
 ## Ejecutar
 
@@ -138,7 +149,7 @@ En los TXT, una línea `--- Página N ---` marca el inicio de una página nueva.
 
 ```
 app.py                     interfaz (3 pestañas, encabezado con fuente, pie fijo)
-core/llm.py                capa LLM intercambiable: complete(system, user, imagen=None) -> dict
+core/llm.py                capa LLM intercambiable con cadena de respaldo: complete(system, user, imagen=None) -> dict
 core/documento.py          carga PDF/TXT y segmenta por artículo con número de página
 core/prompts.py            prompts del filtro y de los 3 módulos
 core/citas.py              verificación literal de citas

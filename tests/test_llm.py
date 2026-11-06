@@ -35,12 +35,12 @@ def test_parsear_falla_sin_json_o_si_no_es_objeto():
 
 def test_complete_reintenta_una_vez_si_la_primera_respuesta_no_es_json(monkeypatch):
     respuestas = iter(["no es json", '{"ok": true}'])
-    monkeypatch.setattr(llm, "_llamar", lambda system, user, imagen=None: next(respuestas))
+    monkeypatch.setattr(llm, "_llamar", lambda system, user, imagen=None, *a, **k: next(respuestas))
     assert llm.complete("sistema", "usuario") == {"ok": True}
 
 
 def test_complete_falla_si_no_hay_json_valido(monkeypatch):
-    monkeypatch.setattr(llm, "_llamar", lambda system, user, imagen=None: "no es json")
+    monkeypatch.setattr(llm, "_llamar", lambda system, user, imagen=None, *a, **k: "no es json")
     with pytest.raises(llm.ErrorLLM):
         llm.complete("sistema", "usuario")
 
@@ -54,7 +54,7 @@ def test_contenido_google_pone_la_imagen_primero():
 def test_complete_reenvia_la_imagen(monkeypatch):
     vista = {}
 
-    def falso_llamar(system, user, imagen=None):
+    def falso_llamar(system, user, imagen=None, *a, **k):
         vista["imagen"] = imagen
         return '{"ok": true}'
 
