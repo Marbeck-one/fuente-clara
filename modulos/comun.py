@@ -28,17 +28,24 @@ def encabezado(antetitulo, titulo, bajada):
             f'<h2>{escape(titulo)}</h2><p class="fc-bajada">{escape(bajada)}</p></div>')
 
 
+def permitir_consulta():
+    """Comprueba el límite de uso. Muestra el aviso y devuelve False si no se permite."""
+    tope = limites.permitir(st.session_state.setdefault("consultas", []))
+    if not tope:
+        return True
+    st.warning("Hiciste muchas consultas seguidas. Espera unos minutos y vuelve a intentarlo." if tope == limites.SESION
+               else "Hay muchas personas usando Fuente Clara en este momento. Intenta de nuevo en un minuto.",
+               title="Un momento", icon=":material/hourglass_top:")
+    return False
+
+
 def ejecutar(funcion, *args):
     """Llama a la IA con un indicador de espera. Si falla, avisa y devuelve None.
 
     El primer argumento de `funcion` es siempre el texto de la persona. Al resultado se le agrega
     lo necesario para votarlo: un id, ese texto (queda solo en la sesión) y con qué se generó.
     """
-    tope = limites.permitir(st.session_state.setdefault("consultas", []))
-    if tope:
-        st.warning("Hiciste muchas consultas seguidas. Espera unos minutos y vuelve a intentarlo." if tope == limites.SESION
-                   else "Hay muchas personas usando Fuente Clara en este momento. Intenta de nuevo en un minuto.",
-                   title="Un momento", icon=":material/hourglass_top:")
+    if not permitir_consulta():
         return None
     try:
         with st.spinner("Leyendo el documento…"):

@@ -93,14 +93,15 @@ documentos:
     ejemplos:
       pregunta: "¿Quién puede afiliarse a un partido?"
 
-  # Documento inventado, solo para desarrollo. Coméntalo para que no aparezca en la demo.
-  - archivo: EJEMPLO_FICTICIO_tarjeta_muevete.txt
-    titulo: "EJEMPLO FICTICIO · Proyecto de ley que crea la Tarjeta «Muévete»"
-    fuente_nombre: "Documento inventado para pruebas (no es una fuente oficial)"
-    fuente_url: ""
-    ficticio: true
-    trata_de: "una tarjeta de descuento en el transporte público"
-    ejemplos:
-      pregunta: "¿Cuánto pagan los estudiantes?"
-      afirmacion: "«Con esta ley los estudiantes pierden el pase en vacaciones»"
-      duda: "¿Cuántas personas recibirán la tarjeta el primer año?"
+  # Documento inventado, solo para desarrollo. Descoméntalo si necesitas probar el flujo
+  # con un documento que no sea oficial; no debe aparecer en la demo.
+  # - archivo: EJEMPLO_FICTICIO_tarjeta_muevete.txt
+  #   titulo: "EJEMPLO FICTICIO · Proyecto de ley que crea la Tarjeta «Muévete»"
+  #   fuente_nombre: "Documento inventado para pruebas (no es una fuente oficial)"
+  #   fuente_url: ""
+  #   ficticio: true
+  #   trata_de: "una tarjeta de descuento en el transporte público"
+  #   ejemplos:
+  #     pregunta: "¿Cuánto pagan los estudiantes?"
+  #     afirmacion: "«Con esta ley los estudiantes pierden el pase en vacaciones»"
+  #     duda: "¿Cuántas personas recibirán la tarjeta el primer año?"
