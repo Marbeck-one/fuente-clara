@@ -11,6 +11,7 @@ from core import filtro, guardrail, prompts
 from core.citas import hay_verificada, verificar
 from core.documento import para_prompt
 from core.llm import ErrorLLM, complete
+from modulos import voz
 from modulos.comun import (aviso_otro_tema, encabezado, ejecutar, mostrar_citas,
                            permitir_consulta, repetido, valorar)
 
@@ -209,6 +210,7 @@ def render(doc):
         return
     if not r["comparaciones"]:
         st.warning("No encontramos afirmaciones sobre el contenido del documento para comparar.", icon=":material/report:")
+    voz.boton_escuchar(voz.texto_verifica(r, es_valida, ETIQUETAS), key="verifica")
     for i, c in enumerate(r["comparaciones"]):
         with st.container(border=True, key=f"fc-tarjeta-comparacion-{i}"):
             _tarjeta(c)

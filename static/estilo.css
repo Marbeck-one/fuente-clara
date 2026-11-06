@@ -129,3 +129,22 @@
 
 /* Panel de calidad: las cifras grandes en semibold, como el resto de los títulos */
 [data-testid="stMetricValue"] { font-weight: 700; }
+
+/* Lectura en voz alta (modulos/voz.py + static/voz.js). El estado se dice con texto e ícono, no solo con color. */
+.fc-voz { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; margin: 0 0 .75rem; }
+.fc-voz-botones { display: flex; flex-wrap: wrap; gap: .5rem; }
+.fc-voz button { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px;
+  padding: .5rem 1rem; border-radius: .5rem; border: 1px solid var(--fc-tinta); background: var(--fc-superficie);
+  color: var(--fc-tinta); font: inherit; font-weight: 700; line-height: 1.2; cursor: pointer; }
+.fc-voz button:hover:not(:disabled) { background: var(--fc-campo); }
+.fc-voz button[data-fc-accion="escuchar"] { background: var(--fc-tinta); color: #fff; }
+.fc-voz button[data-fc-accion="escuchar"]:hover:not(:disabled) { background: var(--fc-tinta-hover); }
+.fc-voz button[hidden] { display: none; }
+.fc-voz button:disabled { opacity: .55; cursor: not-allowed; }
+.fc-voz svg { flex: none; }
+.fc-voz-estado { font-size: .875rem; color: var(--fc-texto-2); }
+.fc-voz-estado:empty { display: none; }
+.fc-voz[data-estado="leyendo"] .fc-voz-estado::before { content: ""; display: inline-block; width: .5rem; height: .5rem;
+  margin-right: .5rem; border-radius: 50%; background: var(--fc-accion); animation: fc-latido 1s ease-in-out infinite; }
+@keyframes fc-latido { 0%, 100% { opacity: .35; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.1); } }
+@media (max-width: 480px) { .fc-voz-botones, .fc-voz button { width: 100%; } }

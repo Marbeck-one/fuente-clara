@@ -7,6 +7,7 @@ from core import filtro, guardrail, prompts
 from core.citas import hay_verificada, verificar
 from core.documento import para_prompt
 from core.llm import complete
+from modulos import voz
 from modulos.comun import PESTANAS, aviso_otro_tema, encabezado, ejecutar, mostrar_citas, valorar
 
 PERFILES = ["Estudiante", "Trabajador/a", "Adulto mayor"]  # por defecto; cada documento puede definir los suyos
@@ -67,6 +68,7 @@ def render(doc):
     else:
         with st.container(border=True, key="fc-tarjeta-respuesta"):
             st.html('<p class="fc-antetitulo">Respuesta</p>')
+            voz.boton_escuchar(voz.texto_explicame(r), key="explicame")
             st.markdown(r["respuesta"])
             if r["que_cambia"] and r["perfil"] != "ninguno":
                 with st.container(key="fc-para-ti"):
