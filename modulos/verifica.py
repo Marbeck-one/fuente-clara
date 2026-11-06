@@ -92,9 +92,13 @@ def _cerrar_camara():
     st.session_state.pop("ver_camara", None)
 
 
+def es_valida(c):
+    """Sin cita verificada, solo "no lo menciona" se puede mostrar como válido. También lo usa scripts/evaluar.py."""
+    return c["etiqueta"] == "no_menciona" or bool(c["etiqueta"] and hay_verificada(c["citas"]))
+
+
 def _tarjeta(c):
-    # Sin cita verificada, solo "no lo menciona" se puede mostrar como válido.
-    valida = c["etiqueta"] == "no_menciona" or (c["etiqueta"] and hay_verificada(c["citas"]))
+    valida = es_valida(c)
     oficial = (f"<p>{escape(c['texto_oficial'])}</p>" if valida
                else '<p class="fc-lado--vacio">Sin cita verificada: no mostramos esta comparación.</p>')
     st.html(f'<div class="fc-comparacion">'

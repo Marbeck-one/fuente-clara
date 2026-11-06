@@ -50,12 +50,20 @@ def _max_tokens():
 
 
 _ultima_llamada = [0.0]
+_espera_total = [0.0]
 
 
 def _respetar_intervalo():
     # Para APIs gratuitas con límite de velocidad: LLM_INTERVALO_MIN = segundos mínimos entre llamadas.
     intervalo = float(os.getenv("LLM_INTERVALO_MIN", "0") or 0)
-    time.sleep(max(0.0, intervalo - (time.time() - _ultima_llamada[0])))
+    pausa = max(0.0, intervalo - (time.time() - _ultima_llamada[0]))
+    _espera_total[0] += pausa
+    time.sleep(pausa)
+
+
+def segundos_esperados():
+    """Segundos que se esperó por LLM_INTERVALO_MIN. scripts/evaluar.py los descuenta del tiempo de respuesta."""
+    return _espera_total[0]
 
 
 def _contenido_google(user, imagen):

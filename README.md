@@ -56,11 +56,15 @@ Para verlo en el celular, abre la "Network URL" que muestra Streamlit (mismo wif
 python scripts/evaluar.py
 ```
 
-Corre `tests/preguntas_prueba.json` contra el filtro y el módulo Explícame, e imprime:
+Corre `tests/preguntas_prueba.json` contra los tres módulos, igual que la app (filtro y guardrail incluidos), y al final imprime una tabla en Markdown lista para el pitch y `DECLARACION_IA.md`:
 
-- % de respuestas con al menos una cita verificada,
-- % de preguntas tendenciosas rechazadas,
-- % de preguntas fuera del documento detectadas.
+- **Explícame:** % de respuestas con cita verificada, de preguntas sin el dato o de otro tema detectadas, y de tendenciosas e intentos de manipulación rechazados.
+- **Verifica esto:** % de afirmaciones con la etiqueta esperada.
+- **Pregúntale al Estado:** el organismo sugerido para cada pregunta sin el dato. Una persona marca si es razonable.
+- **Tiempo promedio de respuesta** por módulo, sin contar la espera de `LLM_INTERVALO_MIN`.
+- **Votos 👍/👎** de la app con ese documento y ese modelo.
+
+Con APIs gratuitas, que son lentas, se puede correr por partes: `--modulo explicame|verifica|estado` o `--tipo normal|fuera|otro_tema|tendenciosa|manipulacion` (solo Explícame).
 
 Para evaluar las afirmaciones de «Verifica esto»:
 
