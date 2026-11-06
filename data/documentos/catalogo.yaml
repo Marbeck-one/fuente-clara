@@ -19,7 +19,7 @@ documentos:
       afirmacion: "«Desde marzo los profes sí pueden usar el celular en clases, pero los alumnos no»"
       duda: "¿Cuántos colegios actualizaron su reglamento interno antes del 30 de junio de 2026?"
 
-  # Leyes subidas por Max (commit 6be912e). Título, versión y enlace salen del encabezado de cada PDF de la BCN.
+  # Leyes subidas por Max (commits 6be912e y 2760315). Título, versión y enlace salen del encabezado de cada PDF de la BCN.
   # Sin perfiles ni ejemplos propios: la app usa los que trae por defecto.
   # Ojo: las de Datos personales, Transparencia y Consumidor traen "Fin Vigencia: 30-NOV-2026"; después hay que bajar la versión nueva.
   - archivo: LEY-19628_28-AGO-1999.pdf
@@ -56,6 +56,13 @@ documentos:
     fuente_url: "https://bcn.cl/yRoHSk"
     ficticio: false
     trata_de: "la prevención, investigación y sanción del acoso laboral, sexual o de violencia en el trabajo"
+
+  - archivo: Ley-21663_08-ABR-2024.pdf
+    titulo: "Ley 21.663 · Ley marco de ciberseguridad"
+    fuente_nombre: "Biblioteca del Congreso Nacional · Ley Chile (versión del 01-mar-2025)"
+    fuente_url: "https://bcn.cl/ZuSFox"
+    ficticio: false
+    trata_de: "la institucionalidad, los principios y las normas generales de ciberseguridad"
 
   - archivo: Decreto-con Fuerza de Ley-3_31-MAY-2021.pdf
     titulo: "Ley 19.496 · Protección de los derechos de los consumidores (texto refundido, DFL 3 de 2019)"

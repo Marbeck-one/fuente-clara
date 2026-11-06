@@ -62,7 +62,7 @@ Bajo cada respuesta la persona vota 👍 o 👎. Los votos se guardan en `data/v
 
 Documento cargado hoy: **Ley 21.801**, que prohíbe y regula el uso de celulares en establecimientos educacionales. Es el PDF oficial exportado desde la BCN (https://bcn.cl/122kkM, 4 páginas). El ejemplo ficticio sigue en el catálogo para desarrollo; coméntalo antes de la demo.
 
-También están registradas siete leyes más, todas en PDF oficial de la BCN: 19.628 (datos personales), 19.880 (procedimientos administrativos), 20.285 (acceso a la información pública), 20.720 (reorganización y liquidación), 21.643 (Ley Karin), 19.496 (consumidor) y 18.603 (partidos políticos). Las leyes 20.720 (198 páginas) y 19.496 (98 páginas) son muy largas: cada consulta manda el documento completo a la IA y puede ser lenta o superar el límite del modelo gratuito.
+También están registradas ocho leyes más, todas en PDF oficial de la BCN: 19.628 (datos personales), 19.880 (procedimientos administrativos), 20.285 (acceso a la información pública), 20.720 (reorganización y liquidación), 21.643 (Ley Karin), 21.663 (ciberseguridad), 19.496 (consumidor) y 18.603 (partidos políticos). Las leyes 20.720 (198 páginas) y 19.496 (98 páginas) son muy largas: cada consulta manda el documento completo a la IA y puede ser lenta o superar el límite del modelo gratuito.
 
 1. Copia el PDF o TXT oficial en `data/documentos/`. Mejor el PDF exportado de Ley Chile (BCN): trae páginas numeradas y el lector quita su encabezado repetido.
 2. Regístralo **arriba** en `data/documentos/catalogo.yaml` con `titulo`, `fuente_nombre` y `fuente_url` oficial. Sin registro no aparece. Opcional: `perfiles` y `ejemplos`.
