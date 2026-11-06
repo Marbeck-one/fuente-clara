@@ -30,6 +30,30 @@ _MANIPULACION = [re.compile(p) for p in (
     r"\b(modo desarrollador|modo dios|modo sin restricciones|developer mode|jailbreak)\b",
     r"\bignore\s+(all\s+|any\s+)?(previous|prior|above|your)\s+(instructions|rules)",
     r"\b(act as|you are now|pretend to be)\b",
+    r"\b(olvida|abandona|deja)\w*\s+(\w+\s+){0,3}tu\s+(rol|papel|personaje|identidad)\b",
+    r"\b(manual de operacion(es)?|instrucciones? (de|del) sistema|configuracion interna)\b",
+    r"\b(credenciales?|api keys?|claves? de acceso|contrasenas?)\b",
+    r"\b(backend|endpoints?|diagnostico del sistema)\b",
+    r"\b(acceso root|root access|permisos de administrador|superusuario)\b",
+    r"\b(instruccion(es)? (externa|oculta|de sistema|del sistema|de alta prioridad)|nueva regla del sistema|"
+    r"regla del sistema)\b",
+    r"\b(entrada_usuario|system prompt)\b",
+    r"\bignora\s+(el|la|los|las)\s+(resumen|documento|texto|contexto)\b",
+    r"\bdile al usuario\b",
+    r"\bsimulando ser\b",
+    r"\b(haciendote pasar|haciendose pasar|hacerse pasar por|suplant\w+)\b",
+    r"\b(verificacion de seguridad|autoriza\w*\s+la\s+transferencia|transferencia de fondos)\b",
+    r"\b(imagina que|finge que|supon que)\b.{0,80}\b(ia|inteligencia artificial|asistente|modelo)\b",
+    r"\b(libre de (leyes|reglas|restricciones)|sin (leyes|reglas|restricciones))\b",
+    r"\b(fabricar|construir|elaborar)\b.{0,40}\b(arma|bomba|explosivo|droga|sustancia peligrosa|veneno)\b",
+    r"\bdime como (fabricar|construir|elaborar|hacer)\b",
+    r"\b(base64|payload|comandos? maliciosos?)\b",
+    r"\b(anular|evadir|eludir|desactivar|deshabilitar)\w*\s+(\w+\s+){0,3}(tus\s+)?"
+    r"(filtros|reglas|restricciones|protecciones|limites|controles)\b",
+    r"\b(reescribe|redacta|escribe|mejora|adapta|crea)\w*\b.{0,60}\bpara que\b.{0,40}"
+    r"\b(convenza|convencer|persuada|persuadir|apoyen|rechacen)\b",
+    r"\b(discurso|texto|mensaje|post|tweet|columna|volante|panfleto|argumento)\b.{0,30}\b(a favor|en contra)\b",
+    r"\b(a favor|en contra) de (esta|la|una) (ley|reforma|propuesta|proyecto)\b",
 )]
 
 # Capa 3. Lo que la IA nunca debe escribir con sus palabras (las citas del documento no se revisan).
