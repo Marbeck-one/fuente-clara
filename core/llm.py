@@ -126,14 +126,14 @@ def _parsear(texto):
 
 
 def complete(system, user, imagen=None):
-    """Pide al modelo una respuesta JSON y la devuelve como dict. Reintenta una vez si falla.
+    """Pide al modelo una respuesta JSON y la devuelve como dict. Reintenta hasta 3 veces si falla.
 
     `imagen` es un PIL.Image.Image opcional. Se envía en la misma petición que el texto y
     nunca se guarda ni se registra.
     """
     system += INSTRUCCION_JSON
     error = None
-    for _ in range(2):
+    for intento in range(3):
         nota = ("\n\nIMPORTANTE: tu respuesta anterior no era JSON válido. Responde solo con el objeto JSON."
                 if isinstance(error, ValueError) else "")
         try:
@@ -142,4 +142,6 @@ def complete(system, user, imagen=None):
             raise
         except Exception as e:  # error de red, de API o JSON inválido
             error = e
+            if intento < 2:
+                time.sleep(1.5 * (intento + 1))
     raise ErrorLLM(f"{type(error).__name__}: {str(error)[:200]}")
