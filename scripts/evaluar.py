@@ -67,6 +67,7 @@ def evaluar_explicame(preguntas, doc):
     aciertos = {tipo: 0 for tipo in ESPERADO}
     totales = {tipo: 0 for tipo in ESPERADO}
     tiempos, completas, errores, sin_ia, bloqueadas = [], [], 0, 0, 0
+    frases_total = frases_ok = 0
     for p in preguntas:
         tipo = p["tipo"]
         totales[tipo] += 1
@@ -90,9 +91,14 @@ def evaluar_explicame(preguntas, doc):
         ok = r["categoria"] == ESPERADO[tipo]
         if tipo == "normal":
             ok = ok and hay_verificada(r["citas"])
+            if r["categoria"] == filtro.DENTRO:  # frases generadas: las sin cita verificada no se muestran
+                frases_total += r.get("frases_total", 0)
+                frases_ok += r.get("frases_total", 0) - r.get("frases_sin_cita", 0)
         aciertos[tipo] += ok
         print(f"[{'OK' if ok else 'FALLA'}] ({tipo}) {p['pregunta']} -> {r['categoria']}{detalle}")
     filas = [(METRICAS[t], porcentaje(aciertos[t], totales[t])) for t in METRICAS if totales[t]]
+    if frases_total:
+        filas.append(("Frases con cita verificada (preguntas normales)", porcentaje(frases_ok, frases_total)))
     filas.append(("Guardrail", f"{sin_ia} rechazadas sin llamar a la IA · {bloqueadas} respuestas bloqueadas antes de mostrarse"))
     if completas:
         filas.append(("Tiempo de una respuesta completa (preguntas normales)",
