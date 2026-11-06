@@ -66,7 +66,7 @@ def evaluar_explicame(preguntas, doc):
     print("=== Explícame ===")
     aciertos = {tipo: 0 for tipo in ESPERADO}
     totales = {tipo: 0 for tipo in ESPERADO}
-    tiempos, errores, sin_ia, bloqueadas = [], 0, 0, 0
+    tiempos, completas, errores, sin_ia, bloqueadas = [], [], 0, 0, 0
     for p in preguntas:
         tipo = p["tipo"]
         totales[tipo] += 1
@@ -81,6 +81,8 @@ def evaluar_explicame(preguntas, doc):
             detalle = " (guardrail: rechazada sin llamar a la IA)"
         else:
             tiempos.append(segundos)
+            if tipo == "normal":  # las demás se resuelven solo con el filtro y tardan menos
+                completas.append(segundos)
             detalle = f" · {segundos:.1f} s"
         if r.get("bloqueada"):
             bloqueadas += 1
@@ -92,6 +94,9 @@ def evaluar_explicame(preguntas, doc):
         print(f"[{'OK' if ok else 'FALLA'}] ({tipo}) {p['pregunta']} -> {r['categoria']}{detalle}")
     filas = [(METRICAS[t], porcentaje(aciertos[t], totales[t])) for t in METRICAS if totales[t]]
     filas.append(("Guardrail", f"{sin_ia} rechazadas sin llamar a la IA · {bloqueadas} respuestas bloqueadas antes de mostrarse"))
+    if completas:
+        filas.append(("Tiempo de una respuesta completa (preguntas normales)",
+                      f"{sum(completas) / len(completas):.1f} s en promedio · máximo {max(completas):.1f} s"))
     return filas, tiempos, errores
 
 

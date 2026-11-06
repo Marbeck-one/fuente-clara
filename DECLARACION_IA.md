@@ -57,5 +57,10 @@ Política de retención de datos del proveedor elegido: ___
 ## 7. Limitaciones conocidas
 
 - La verificación comprueba que el texto citado existe en el documento, no que la explicación sea correcta. Por eso la cita siempre se muestra para que la persona la lea.
-- El filtro puede equivocarse con preguntas ambiguas. Resultado medido con `scripts/evaluar.py`: ___
+- El filtro puede equivocarse con preguntas ambiguas. Resultado medido con `scripts/evaluar.py` el 06-11-2026 (Ley 21.801, `claude-sonnet-5-5`, instrucciones `v-5a9f5c8`):
+  - **Explícame:** acertó en los 37 casos. Las 6 preguntas normales tuvieron cita verificada; detectó las 5 del tema sin el dato y las 3 de otro tema; rechazó las 3 tendenciosas y los 20 intentos de manipulación.
+  - **Verifica esto:** 5 de 5 afirmaciones con la etiqueta esperada.
+  - **Pregúntale al Estado:** 5 de 5 borradores, con un organismo razonable según la revisión del equipo.
+  - **Tiempo:** una respuesta completa de Explícame tarda 10,8 s en promedio (máximo 13,7 s); Verifica esto, 9,6 s; Pregúntale al Estado, 8,0 s.
+  - **Alcance:** es un set chico y una sola corrida, así que no asegura que acierte con otras preguntas. Los 20 intentos de manipulación los frenaron las reglas fijas antes de llegar a la IA: no miden qué hace la IA con un intento que esquive esas reglas.
 - La extracción de texto de algunos PDF (escaneados o con columnas) puede fallar. Documento usado en la demo: ___
