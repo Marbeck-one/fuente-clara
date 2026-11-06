@@ -77,7 +77,7 @@ def main():
 
     _caso(
         "Verifica esto · afirmación falsa",
-        lambda: comparar("Desde marzo los profes sí pueden usar el celular en clases, pero los alumnos no.", doc),
+        lambda: comparar("La ley permite usar el celular durante las clases a todos los estudiantes.", doc),
         comprobar_verifica,
         fallos,
     )

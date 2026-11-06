@@ -5,7 +5,7 @@
 Trabaja **solo** sobre un documento público oficial precargado (un proyecto de ley) con tres módulos:
 
 1. **Explícame:** responde en lenguaje claro, con citas verificadas del artículo exacto.
-2. **Verifica esto:** pone lado a lado una cadena o post y lo que dice el texto oficial, sin veredictos.
+2. **Verifica esto:** pone lado a lado una cadena o post y lo que dice el texto oficial, sin veredictos. También puede leer el texto de una captura de pantalla.
 3. **Pregúntale al Estado:** si el documento no responde la duda, prepara un borrador de solicitud de transparencia que la persona revisa y envía por su cuenta.
 
 ## Instalación
@@ -82,6 +82,16 @@ Prueba de integración real de los tres módulos (consume la API y requiere `.en
 python scripts/probar_app.py
 ```
 
+Prueba real de lectura de capturas en «Verifica esto» (genera la imagen en memoria, no la guarda,
+y consume unas 5 solicitudes):
+
+```bash
+python scripts/probar_imagen.py
+```
+
+La imagen no se guarda en disco ni en los votos. En la app, el texto extraído se puede corregir
+antes de comparar. No subas capturas con nombres, teléfonos, RUT u otros datos personales.
+
 ## Calidad de las respuestas (votos)
 
 Bajo cada respuesta la persona vota 👍 o 👎. Los votos se guardan en `data/votos/votos.jsonl` (fuera del repo) con el modelo y la versión de las instrucciones. El enlace «Cómo nos va», al final de la app, abre el panel con los resultados. Para ver las respuestas que las personas autorizaron guardar, define `CLAVE_EQUIPO` en `.env`.
@@ -106,7 +116,7 @@ En los TXT, una línea `--- Página N ---` marca el inicio de una página nueva.
 
 ```
 app.py                     interfaz (3 pestañas, encabezado con fuente, pie fijo)
-core/llm.py                capa LLM intercambiable: complete(system, user) -> dict
+core/llm.py                capa LLM intercambiable: complete(system, user, imagen=None) -> dict
 core/documento.py          carga PDF/TXT y segmenta por artículo con número de página
 core/prompts.py            prompts del filtro y de los 3 módulos
 core/citas.py              verificación literal de citas
@@ -121,6 +131,7 @@ tests/preguntas_prueba.json  casos de evaluación (requieren API)
 tests/test_*.py              pruebas unitarias (sin API)
 scripts/evaluar.py           evaluación con la IA
 scripts/probar_app.py        prueba de integración real de los 3 módulos
+scripts/probar_imagen.py     prueba real de lectura de capturas
 scripts/smoke.py             chequeo rápido sin IA
 scripts/verificar_entorno.py diagnóstico de .env, modelo y documento
 ```
@@ -128,6 +139,7 @@ scripts/verificar_entorno.py diagnóstico de .env, modelo y documento
 ## Principios del diseño
 
 - Sin base de datos ni login. Lo que escribe la persona vive en `st.session_state`; solo se guarda si lo autoriza al votar 👎 una respuesta.
+- Las capturas de «Verifica esto» se procesan en memoria y no se guardan; solo queda el texto que la persona revisa y edita.
 - Sin base vectorial: el documento completo va en el contexto del modelo.
 - Una respuesta sin al menos una cita verificada no se muestra como válida.
 - La app nunca envía nada: la decisión final es de la persona.
