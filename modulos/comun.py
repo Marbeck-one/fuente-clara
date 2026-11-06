@@ -1,5 +1,6 @@
 """Piezas de interfaz compartidas. Estilos en static/estilo.css; criterios en DESIGN.md."""
 import sys
+import time
 import uuid
 from html import escape
 from pathlib import Path
@@ -39,12 +40,37 @@ def permitir_consulta():
     return False
 
 
+def repetido(firma, segundos=10):
+    """True si la misma acción se pidió hace menos de `segundos` en esta sesión.
+
+    Evita gastar dos consultas si alguien presiona dos veces el mismo botón. Solo se
+    recuerda la última acción; no guarda el texto ni ningún dato de la persona.
+    """
+    ahora = time.monotonic()
+    ultima = st.session_state.get("_ultima_accion") or (None, 0.0)
+    if ultima[0] == firma and ahora - ultima[1] < segundos:
+        return True
+    st.session_state["_ultima_accion"] = (firma, ahora)
+    return False
+
+
+def _firma(funcion, args):
+    """Identifica una consulta por función y por sus argumentos simples (texto, números)."""
+    partes = [getattr(funcion, "__name__", str(funcion))]
+    partes += [str(a) for a in args if isinstance(a, (str, int, float))]
+    return "|".join(partes)
+
+
 def ejecutar(funcion, *args):
     """Llama a la IA con un indicador de espera. Si falla, avisa y devuelve None.
 
     El primer argumento de `funcion` es siempre el texto de la persona. Al resultado se le agrega
     lo necesario para votarlo: un id, ese texto (queda solo en la sesión) y con qué se generó.
     """
+    if repetido(_firma(funcion, args)):
+        st.toast("Ya hicimos esta consulta. Espera unos segundos antes de repetirla.",
+                 icon=":material/hourglass_top:")
+        return None
     if not permitir_consulta():
         return None
     try:

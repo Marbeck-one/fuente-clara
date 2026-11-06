@@ -47,6 +47,10 @@ def inicio():
     st.html(f'<section class="fc-doc"><p class="fc-antetitulo">Estás leyendo</p><h1>{escape(doc["titulo"])}</h1>'
             f'<p class="fc-fuente">{enlace_fuente(doc)}</p><div class="fc-pills">{"".join(pills)}</div></section>')
 
+    st.info("**Esta herramienta usa inteligencia artificial.** Puede equivocarse. No reemplaza tu criterio: "
+            "revisa siempre el texto oficial y decide tú.",
+            icon=":material/smart_toy:")
+
     tab1, tab2, tab3 = st.tabs(PESTANAS, key="pestana", on_change="rerun")
     with tab1:
         explicame.render(doc)
