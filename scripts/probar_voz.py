@@ -39,6 +39,18 @@ VOZ_FALSA = """
   window.__terminarTrozo = () => { const u = actual; actual = null; if (u && u.onend) u.onend({}); };
   Object.defineProperty(window, 'speechSynthesis', { value: ss, configurable: true });
   window.SpeechSynthesisUtterance = U;
+  // Reconocimiento de voz falso: registra lo que hace la app y deja al test "hablar".
+  const srLog = []; window.__srLog = srLog;
+  class SR {
+    constructor() { window.__sr = this; this.lang = ''; }
+    start() { srLog.push('start:' + this.lang + ':' + this.interimResults); }
+    stop() { srLog.push('stop'); setTimeout(() => this.onend && this.onend(), 0); }
+    abort() { srLog.push('abort'); }
+  }
+  window.SpeechRecognition = SR;
+  window.__decir = (texto) => window.__sr.onresult({ results: [[{ transcript: texto }]], resultIndex: 0 });
+  window.__finDictado = () => window.__sr.onend();
+  window.__errorDictado = (e) => window.__sr.onerror({ error: e });
 })();
 """
 
@@ -185,6 +197,64 @@ def main():
                                                  "Borrador de solicitud", "Pasos", "Plazos")))
             verificar("Estado: no se lee el contenido de otros módulos", "Los celulares están prohibidos" not in texto_e and "Respuesta simulada" not in texto_e)
             verificar("Estado: no se leen URLs", "http" not in texto_e)
+
+            # --- Dictado por micrófono ---
+            d = abrir(navegador)
+            d.get_by_role("button", name="Dictar con el micrófono").first.wait_for(timeout=20000)
+            verificar("Dictado: el botón aparece junto a los campos de texto (uno por módulo)",
+                      d.evaluate("() => [...document.querySelectorAll('.fc-dictado')].map(g => g.getAttribute('data-fc-destino')).join('|')")
+                      == "Tu pregunta|Texto a comparar|Tu duda")
+            d.get_by_label("Tu pregunta").fill("Antes de dictar")
+            d.get_by_role("button", name="Dictar con el micrófono").first.focus()
+            d.keyboard.press("Enter")
+            d.wait_for_function("() => window.__srLog.length > 0")
+            verificar("Dictado: no empieza solo y se inicia con teclado (es-CL)", d.evaluate("() => window.__srLog[0]") == "start:es-CL:true")
+            verificar("Dictado: se dice con texto que está escuchando", "Escuchando" in d.locator(".fc-dictado-estado:visible").first.inner_text())
+            verificar("Dictado: el foco pasa a «Terminar dictado»",
+                      d.evaluate("() => document.activeElement.getAttribute('data-fc-accion')") == "parar")
+            d.evaluate("() => window.__decir('cuando rige la prohibición')")
+            verificar("Dictado: la transcripción se agrega al campo sin borrar lo escrito",
+                      d.get_by_label("Tu pregunta").input_value() == "Antes de dictar cuando rige la prohibición")
+            d.get_by_role("button", name="Terminar el dictado").first.click()
+            d.wait_for_function("() => document.querySelector('.fc-dictado[data-estado=inactivo]') !== null && window.__srLog.includes('stop')")
+            d.wait_for_timeout(300)
+            mensaje_fin = d.locator(".fc-dictado-estado:visible").first.inner_text()
+            foco = d.evaluate("() => document.activeElement.tagName + ':' + (document.activeElement.getAttribute('aria-label') || '')")
+            verificar("Dictado: al terminar avisa que se revise el texto y deja el foco en el campo",
+                      "Revisa el texto" in mensaje_fin and foco == "TEXTAREA:Tu pregunta", f"{mensaje_fin!r} {foco!r}")
+            d.get_by_role("button", name="Explícame").last.click()
+            d.get_by_role("button", name="Escuchar la respuesta en voz alta").first.wait_for(timeout=20000)
+            verificar("Dictado: el texto dictado se envía como cualquier otro (llega a la IA)",
+                      "Antes de dictar cuando rige" in d.locator(".fc-voz:visible").first.get_attribute("data-fc-texto"))
+            # leer en voz alta se corta al dictar
+            d.get_by_role("button", name="Escuchar la respuesta en voz alta").first.click()
+            d.wait_for_function("() => window.__vozLog.some(e => e[0] === 'speak')")
+            d.get_by_role("button", name="Dictar con el micrófono").first.click()
+            d.wait_for_function("() => window.__fcVoz.estado().estado === 'inactivo'")
+            verificar("Dictado: al dictar se detiene la lectura en voz alta", "cancel" in acciones(d))
+            d.evaluate("() => window.__errorDictado('not-allowed')")
+            verificar("Dictado: sin permiso de micrófono lo explica",
+                      "permiso para usar el micrófono" in d.locator(".fc-dictado-estado:visible").first.inner_text())
+            d.get_by_role("button", name="Dictar con el micrófono").first.click()
+            d.evaluate("() => window.__errorDictado('no-speech')")
+            verificar("Dictado: si no se oye nada lo dice", "No te escuchamos" in d.locator(".fc-dictado-estado:visible").first.inner_text())
+            verificar("Dictado: sin errores de JavaScript", not d.errores, str(d.errores))
+
+            sin_dictado = abrir(navegador, voz=False)
+            sin_dictado.add_init_script("delete window.SpeechRecognition; delete window.webkitSpeechRecognition;")
+            sin_dictado.reload()
+            sin_dictado.get_by_role("tab").first.wait_for(timeout=30000)
+            sin_dictado.wait_for_timeout(500)
+            verificar("Dictado sin soporte: avisa y deshabilita el botón",
+                      "no permite dictar" in sin_dictado.locator(".fc-dictado-estado:visible").first.inner_text()
+                      and sin_dictado.get_by_role("button", name="Dictar con el micrófono").first.is_disabled())
+            inseguro = abrir(navegador)
+            inseguro.add_init_script("Object.defineProperty(window, 'isSecureContext', { value: false });")
+            inseguro.reload()
+            inseguro.get_by_role("tab").first.wait_for(timeout=30000)
+            inseguro.wait_for_timeout(500)
+            verificar("Dictado sin HTTPS: explica que el micrófono necesita conexión segura",
+                      "conexión segura" in inseguro.locator(".fc-dictado-estado:visible").first.inner_text())
 
             # tamaño de letra grande y pantalla chica
             movil = abrir(navegador, ancho=360)

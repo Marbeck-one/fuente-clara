@@ -43,6 +43,7 @@ def render(doc):
     with st.form("form_explicame"):
         ejemplo = (doc.get("ejemplos") or {}).get("pregunta", "¿A quién se aplica?")
         pregunta = st.text_area("Tu pregunta", max_chars=500, placeholder=f"Ej: {ejemplo}")
+        voz.boton_dictar("Tu pregunta")
         perfil = st.pills("¿Quieres saber qué cambia para ti? (opcional)", perfiles(doc),
                           format_func=lambda p: f"{ICONOS.get(p, ':material/person:')} {p}")
         enviar = st.form_submit_button("Explícame", type="primary", icon=":material/auto_stories:", width="stretch")

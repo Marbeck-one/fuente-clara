@@ -188,6 +188,7 @@ def render(doc):
         ejemplo = (doc.get("ejemplos") or {}).get("afirmacion", "«Con esta ley ya no se podrá…»")
         texto = st.text_area("Texto a comparar", max_chars=guardrail.LARGO_MAXIMO,
                              key="ver_texto", placeholder=f"Ej: {ejemplo}")
+        voz.boton_dictar("Texto a comparar")
         if st.session_state.get("ver_recortado"):
             st.caption("La captura tenía más de 1.500 caracteres. Recortamos el texto; puedes completarlo a mano.")
         enviar = st.form_submit_button("Comparar con el texto oficial", type="primary",

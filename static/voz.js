@@ -201,6 +201,7 @@
 
   window.addEventListener("pagehide", function () { if (SOPORTADO) limpiar(); });
 
-  window.__fcVoz = { pintar: pintar, estado: function () { return { id: s.id, estado: s.estado }; } };
+  window.__fcVoz = { pintar: pintar, detener: function () { if (SOPORTADO && s.estado !== "inactivo") detener(); },
+                     estado: function () { return { id: s.id, estado: s.estado }; } };
   pintar();
 })();

@@ -6,6 +6,9 @@ Qué hace este módulo:
 - `texto_explicame`, `texto_verifica` y `texto_estado` arman en Python lo que se lee a partir de la misma respuesta que se
   muestra: solo la respuesta y sus citas verificadas, sin menús, botones, HTML, Markdown ni enlaces.
 
+Además, `boton_dictar(destino)` permite dictar la pregunta (issue #6): usa el reconocimiento de voz del navegador
+(static/dictado.js) y escribe la transcripción en el campo, para que la persona la revise antes de enviar.
+
 Privacidad: el texto va de Python al navegador dentro de la página y se lee con `speechSynthesis`. Esta app no llama a ninguna
 API de voz ni a la IA, no guarda audio y no usa localStorage. Ojo: según el dispositivo, la voz del sistema puede ser
 de red (por ejemplo, algunas voces de Google en Chrome); eso lo decide el navegador, no Fuente Clara.
@@ -18,6 +21,7 @@ from pathlib import Path
 import streamlit as st
 
 JS = Path(__file__).resolve().parents[1] / "static" / "voz.js"
+JS_DICTADO = Path(__file__).resolve().parents[1] / "static" / "dictado.js"
 
 _BOTONES = [("escuchar", "Escuchar respuesta", "Escuchar la respuesta en voz alta"),
             ("pausar", "Pausar", "Pausar la lectura"),
@@ -122,3 +126,27 @@ def boton_escuchar(texto, key=None):
     texto = limpiar(texto)
     if texto:
         st.html(_html(texto, key), unsafe_allow_javascript=True)
+
+
+# ---------- dictado por micrófono (issue #6) ----------
+
+def _html_dictado(destino):
+    botones = (
+        '<button type="button" data-fc-accion="dictar" aria-label="Dictar con el micrófono"><span>Dictar con el micrófono</span></button>'
+        '<button type="button" data-fc-accion="parar" aria-label="Terminar el dictado" hidden><span>Terminar dictado</span></button>')
+    return (f'<div class="fc-dictado" role="group" aria-label="Dictado por micrófono" data-estado="inactivo" '
+            f'data-fc-destino="{escape(destino, quote=True)}">'
+            f'<div class="fc-dictado-botones">{botones}</div>'
+            f'<span class="fc-dictado-estado" role="status" aria-live="polite"></span></div>'
+            f'<script>{JS_DICTADO.read_text(encoding="utf-8")}</script>')
+
+
+def boton_dictar(destino):
+    """Botón «Dictar con el micrófono» para el campo de texto cuya etiqueta es `destino` (por ejemplo, «Tu pregunta»).
+
+    La transcripción se escribe en ese campo y la persona la revisa antes de enviar. Fuente Clara no recibe ni guarda
+    el audio; el reconocimiento lo hace el navegador (en Chrome, con el servicio de voz de Google).
+    """
+    st.html(_html_dictado(destino), unsafe_allow_javascript=True)
+    st.caption("El dictado usa el reconocimiento de voz de tu navegador: el audio puede enviarse al servicio de voz "
+               "del navegador (en Chrome, Google). Fuente Clara no lo guarda.")

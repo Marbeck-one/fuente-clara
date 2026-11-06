@@ -138,6 +138,37 @@ def test_el_css_dibuja_un_icono_para_cada_boton():
         assert re.search(rf'\.fc-voz button\[data-fc-accion="{accion}"\] \{{ --fc-icono: url\(', css), accion
 
 
+# ---------- dictado por micrófono ----------
+
+def test_boton_dictar_usa_botones_html_con_nombres_accesibles():
+    html = voz._html_dictado('Tu "pregunta"')
+    assert html.count('<button type="button"') == 2
+    assert 'aria-label="Dictar con el micrófono"' in html and 'aria-label="Terminar el dictado"' in html
+    assert 'role="group"' in html and 'role="status"' in html and 'aria-live="polite"' in html
+    assert "<svg" not in html and "onclick" not in html and "tabindex" not in html
+    assert 'data-fc-destino="Tu &quot;pregunta&quot;"' in html          # la etiqueta del campo va escapada
+    assert html.count(" hidden>") == 1                                    # en reposo solo se ve «Dictar»
+
+
+def test_el_javascript_del_dictado_no_usa_red_ni_almacenamiento():
+    js = re.sub(r"/\*.*?\*/", "", (RAIZ / "static" / "dictado.js").read_text(encoding="utf-8"), flags=re.S)
+    for prohibido in ("fetch(", "XMLHttpRequest", "WebSocket", "sendBeacon", "localStorage", "sessionStorage", "indexedDB",
+                      "document.cookie", "MediaRecorder", "getUserMedia", "eval(", "new Function", "http://", "https://"):
+        assert prohibido not in js, prohibido
+
+
+def test_el_dictado_usa_el_reconocimiento_del_navegador_en_espanol_y_pide_conexion_segura():
+    js = (RAIZ / "static" / "dictado.js").read_text(encoding="utf-8")
+    for pieza in ("SpeechRecognition", "webkitSpeechRecognition", '"es-CL"', "isSecureContext", ".start()", ".stop()", ".abort()"):
+        assert pieza in js, pieza
+    assert "autostart" not in js.lower()
+
+
+def test_la_declaracion_de_ia_dice_que_el_audio_del_dictado_sale_del_dispositivo():
+    texto = (RAIZ / "DECLARACION_IA.md").read_text(encoding="utf-8")
+    assert "Dictar la pregunta" in texto and "El audio sale del dispositivo" in texto
+
+
 # ---------- privacidad ----------
 
 def test_el_javascript_no_usa_red_ni_almacenamiento():
@@ -212,6 +243,15 @@ def test_explicame_muestra_el_boton_con_el_texto_correcto_y_sin_gastar_tokens_ex
     assert llamadas == [ia_simulada.prompts.FILTRO, ia_simulada.prompts.EXPLICAME]  # el botón no agrega llamadas a la IA
     at.run()  # un rerun cualquiera tampoco llama a la IA
     assert len(llamadas) == 2
+
+
+def test_cada_campo_de_texto_tiene_su_boton_de_dictado_apuntando_a_su_etiqueta(app):
+    at, llamadas = app
+    destinos = [re.search(r'data-fc-destino="([^"]*)"', str(e.value)).group(1)
+                for e in at.get("html") if 'class="fc-dictado"' in str(e.value)]
+    assert destinos == ["Tu pregunta", "Texto a comparar", "Tu duda"]
+    assert set(destinos) <= {a.label for a in at.text_area}  # cada botón apunta a un campo que existe
+    assert llamadas == []  # dictar no llama a la IA
 
 
 def test_verifica_y_estado_muestran_el_boton(app):

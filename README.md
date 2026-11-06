@@ -100,19 +100,21 @@ antes de comparar. No subas capturas con nombres, teléfonos, RUT u otros datos 
 
 Bajo cada respuesta la persona vota 👍 o 👎. Los votos se guardan en `data/votos/votos.jsonl` (fuera del repo) con el modelo y la versión de las instrucciones. El enlace «Cómo nos va», al final de la app, abre el panel con los resultados. Para ver las respuestas que las personas autorizaron guardar, define `CLAVE_EQUIPO` en `.env`.
 
-## Lectura en voz alta (issue #5)
+## Voz: escuchar (issue #5) y dictar (issue #6)
 
 Cada respuesta válida de los tres módulos tiene un botón **Escuchar respuesta**, con Pausar, Continuar y Detener. Usa la voz del propio navegador (`speechSynthesis`, español de Chile primero y luego otro español): Fuente Clara no llama a ninguna API de voz ni a la IA, no guarda audio y no usa `localStorage`.
 
 - **Qué se lee:** solo la respuesta y sus citas verificadas, armadas en Python desde los mismos datos que se muestran (`modulos/voz.py`: `texto_explicame`, `texto_verifica`, `texto_estado`). No se leen menús, botones, HTML, enlaces ni otros módulos.
 - **Cómo se usa en un módulo nuevo:** `voz.boton_escuchar(texto, key=None)`. La lógica de reproducción está una sola vez en `static/voz.js`; el estilo, en `static/estilo.css`.
-- **Pruebas:** `python -m pytest tests/test_voz.py` (texto, botón, privacidad e integración en la app, sin red). `python scripts/probar_voz.py` abre la app en Chromium con la IA y la voz simuladas y revisa pausar, continuar, detener, cancelar la anterior, teclado, sin soporte y pantallas pequeñas (necesita `pip install playwright`; si ya tienes un Chrome, indica su ruta en `CHROMIUM_RUTA`). Ninguna de las dos reemplaza la prueba a mano en un celular (ver abajo).
+- **Pruebas:** `python -m pytest tests/test_voz.py` (texto, botón, privacidad e integración en la app, sin red). `python scripts/probar_voz.py` abre la app en Chromium con la IA, la voz y el micrófono simulados y revisa pausar, continuar, detener, cancelar la anterior, el dictado, teclado, sin soporte y pantallas pequeñas (necesita `pip install playwright`; si ya tienes un Chrome, indica su ruta en `CHROMIUM_RUTA`). Ninguna de las dos reemplaza la prueba a mano en un celular (ver abajo).
+- **Dictado (issue #6):** junto a cada campo de texto hay un botón **Dictar con el micrófono** (`voz.boton_dictar(etiqueta_del_campo)`, lógica en `static/dictado.js`). Usa el reconocimiento de voz del navegador (`SpeechRecognition`, es-CL), escribe la transcripción en el campo y la persona la revisa antes de enviar. **El audio sale del dispositivo hacia el servicio de voz del navegador** (en Chrome, Google); Fuente Clara no lo recibe ni lo guarda, y está declarado en `DECLARACION_IA.md` §5c. Dictar corta la lectura en voz alta.
 - **Limitaciones conocidas:**
   - Chrome de Android no sabe pausar: al pulsar «Pausar» detenemos la lectura y lo decimos en pantalla.
   - La voz depende del dispositivo. Si no tiene ninguna en español, se avisa y no se lee (se instala en los ajustes de voz del sistema). En computadores sin voz `es-CL` se usa otra variante del español.
   - Según el sistema, la voz puede ser de red (por ejemplo, algunas de Google en Chrome). Eso lo decide el navegador, así que no prometemos que funcione sin conexión.
   - Las lecturas largas se parten en trozos de unas pocas frases para que Chrome no las corte.
   - El navegador exige un toque para empezar a hablar: nunca se lee solo.
+  - **Dictado:** solo funciona en navegadores con `SpeechRecognition` (Chrome y Edge; no Firefox) y **en una conexión segura**: `localhost` o HTTPS. Abierta por `http://IP-del-computador:8501` desde el celular, el navegador bloquea el micrófono y la app lo explica; para probarlo en el celular hace falta un túnel HTTPS. Necesita conexión a internet y permiso de micrófono.
 
 ## Cambiar el documento (para la demo)
 
@@ -144,7 +146,7 @@ core/filtro.py             filtro de alcance
 modulos/                   explicame.py, verifica.py, transparencia.py, comun.py, voz.py (lectura en voz alta)
 config/transparencia.yaml  ley, plazos, pasos, portal y plantilla (marcados VERIFICAR)
 .streamlit/config.toml     tokens de tema (colores, fuentes, radios); sin telemetría
-static/                    estilo.css, voz.js, logo, favicon y fuentes autoalojadas
+static/                    estilo.css, voz.js, dictado.js, logo, favicon y fuentes autoalojadas
 DESIGN.md                  identidad visual y reglas de diseño
 design_thinking/           fichas de cada etapa de la jornada: una vacía y otra rellenada con fuentes
 data/documentos/           catálogo y documento FICTICIO de ejemplo

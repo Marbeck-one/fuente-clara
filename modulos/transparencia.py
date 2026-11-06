@@ -49,6 +49,7 @@ def render(doc):
     with st.container(border=True, key="fc-tarjeta-duda"):
         ejemplo = (doc.get("ejemplos") or {}).get("duda", "¿Cuántas personas se verán beneficiadas?")
         duda = st.text_area("Tu duda", key="duda_estado", max_chars=500, placeholder=f"Ej: {ejemplo}")
+        voz.boton_dictar("Tu duda")
         st.caption("No escribas tu nombre ni otros datos personales aquí.")
         if st.button("Preparar borrador", type="primary", icon=":material/edit_note:", width="stretch") and duda.strip():
             st.session_state["est"] = ejecutar(preparar_solicitud, duda.strip(), doc, previo=st.session_state.get("est"))

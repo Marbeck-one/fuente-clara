@@ -395,3 +395,22 @@ img, svg, picture {
   margin-right: .5rem; border-radius: 50%; background: var(--fc-accion); animation: fc-latido 1s ease-in-out infinite; }
 @keyframes fc-latido { 0%, 100% { opacity: .35; transform: scale(.8); } 50% { opacity: 1; transform: scale(1.1); } }
 @media (max-width: 480px) { .fc-voz-botones, .fc-voz button { width: 100%; } }
+
+/* Dictado por micrófono (modulos/voz.py + static/dictado.js) */
+.fc-dictado { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .75rem; margin: 0 0 .25rem; }
+.fc-dictado-botones { display: flex; flex-wrap: wrap; gap: .5rem; }
+.fc-dictado button { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; min-height: 44px;
+  padding: .5rem 1rem; border-radius: .5rem; border: 1px solid var(--fc-tinta); background: var(--fc-superficie);
+  color: var(--fc-tinta); font: inherit; font-weight: 700; line-height: 1.2; cursor: pointer; }
+.fc-dictado button:hover:not(:disabled) { background: var(--fc-campo); }
+.fc-dictado button[hidden] { display: none; }
+.fc-dictado button:disabled { opacity: .55; cursor: not-allowed; }
+.fc-dictado button::before { content: ""; flex: none; width: 1.25rem; height: 1.25rem; background-color: currentColor;
+  -webkit-mask: var(--fc-icono) center / contain no-repeat; mask: var(--fc-icono) center / contain no-repeat; }
+.fc-dictado button[data-fc-accion="dictar"] { --fc-icono: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z'/%3E%3C/svg%3E"); }
+.fc-dictado button[data-fc-accion="parar"] { --fc-icono: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 6h12v12H6z'/%3E%3C/svg%3E"); }
+.fc-dictado-estado { font-size: .875rem; color: var(--fc-texto-2); }
+.fc-dictado-estado:empty { display: none; }
+.fc-dictado[data-estado="escuchando"] .fc-dictado-estado::before { content: ""; display: inline-block; width: .5rem; height: .5rem;
+  margin-right: .5rem; border-radius: 50%; background: var(--fc-accion); animation: fc-latido 1s ease-in-out infinite; }
+@media (max-width: 480px) { .fc-dictado-botones, .fc-dictado button { width: 100%; } }

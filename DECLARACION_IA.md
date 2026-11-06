@@ -49,6 +49,11 @@ Política de retención de datos del proveedor elegido: ___
 - Antes de guardar se ocultan RUT, correos y teléfonos. El archivo (`data/votos/`) está fuera del repositorio y solo el equipo lo lee, con una clave (`CLAVE_EQUIPO`).
 - Retención de las respuestas guardadas: **90 días** desde que la persona autoriza el guardado; después se eliminan.
 
+## 5c. Voz: escuchar y dictar
+
+- **Escuchar la respuesta:** usa la voz del propio navegador (`speechSynthesis`). Fuente Clara no envía el texto a ningún servicio de voz ni a la IA, y no guarda audio. Según el dispositivo, la voz del sistema puede ser de red; eso lo decide el navegador.
+- **Dictar la pregunta:** usa el reconocimiento de voz del navegador (`SpeechRecognition`). **El audio sale del dispositivo**: en Chrome lo procesa el servicio de voz de Google (en otros navegadores, el de su fabricante). Fuente Clara no recibe ni guarda el audio; solo recibe el texto transcrito, que la persona revisa antes de enviar, y desde ahí sigue el mismo camino que un texto escrito (sección 5). El botón nunca escucha solo y la pantalla avisa de este envío.
+
 ## 6. IA usada para construir el prototipo
 
 - Asistente de código: Claude Code (Anthropic), usado para generar la estructura inicial del proyecto. El equipo revisó y ajustó: ___
