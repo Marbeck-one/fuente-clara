@@ -83,6 +83,15 @@ def extraer_texto(imagen):
     return str(datos.get("texto", "")).strip()
 
 
+def _activar_camara():
+    st.session_state["ver_camara_activa"] = True
+
+
+def _cerrar_camara():
+    st.session_state["ver_camara_activa"] = False
+    st.session_state.pop("ver_camara", None)
+
+
 def _tarjeta(c):
     # Sin cita verificada, solo "no lo menciona" se puede mostrar como válido.
     valida = c["etiqueta"] == "no_menciona" or (c["etiqueta"] and hay_verificada(c["citas"]))
@@ -114,8 +123,14 @@ def render(doc):
         st.caption("Sube una imagen y la app intentará leer el texto. Revísalo y corrígelo antes de comparar.")
         archivo = st.file_uploader("Captura (PNG, JPG o WebP · máx. 5 MB)",
                                    type=["png", "jpg", "jpeg", "webp"], key="ver_archivo")
-        with st.expander("Usar la cámara"):
+        camara = None
+        if st.session_state.get("ver_camara_activa"):
             camara = st.camera_input("Toma una foto de la cadena", key="ver_camara")
+            st.button("Cerrar cámara", on_click=_cerrar_camara,
+                      icon=":material/videocam_off:", key="ver_cerrar_camara")
+        else:
+            st.button("Activar cámara", on_click=_activar_camara,
+                      icon=":material/photo_camera:", key="ver_activar_camara")
         fuente = archivo or camara
 
         if fuente:
