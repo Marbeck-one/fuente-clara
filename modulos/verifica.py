@@ -3,7 +3,7 @@ from html import escape
 
 import streamlit as st
 
-from core import filtro, prompts
+from core import filtro, guardrail, prompts
 from core.citas import hay_verificada, verificar
 from core.documento import para_prompt
 from core.llm import complete
@@ -23,7 +23,7 @@ def comparar(texto, doc):
     categoria = filtro.clasificar(texto, doc, tipo="afirmación")
     if categoria == filtro.OPINION:
         return {"categoria": categoria}
-    datos = complete(prompts.VERIFICA, f"{para_prompt(doc)}\n\nAFIRMACIÓN A COMPARAR:\n{texto}")
+    datos = complete(prompts.VERIFICA, f"{para_prompt(doc)}\n\nAFIRMACIÓN A COMPARAR:\n{guardrail.delimitar(texto)}")
     comparaciones = []
     for c in datos.get("comparaciones") or []:
         if isinstance(c, dict):

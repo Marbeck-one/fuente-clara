@@ -18,6 +18,7 @@
 |---|---|
 | Usar "Verifica esto" para "certificar" una cadena con un pantallazo | Las etiquetas solo describen el texto ("El texto lo respalda") y la pantalla muestra siempre la cita y la fuente. |
 | Forzar a la IA a opinar o hacer propaganda | Filtro de alcance + reglas en los prompts. Medido con `scripts/evaluar.py`: ___ % de tendenciosas rechazadas. |
+| Manipular a la IA con instrucciones escondidas en la pregunta ("ignora tus reglas", "actúa como…") | Guardrail en 3 capas (`core/guardrail.py`): reglas fijas que rechazan los intentos típicos sin llamar a la IA; el texto de la persona va entre marcas y se trata como dato; y antes de mostrar una respuesta se bloquea si la IA opinó, dio un veredicto o filtró sus instrucciones, y se le quitan los enlaces. Medido con `scripts/evaluar.py --tipo manipulacion`: ___ % rechazados. |
 | Cargar un documento alterado como si fuera oficial | Solo se muestran documentos registrados en `catalogo.yaml` con su fuente oficial; el equipo los compara con la fuente antes de la demo. |
 | Usar el módulo 3 para inundar organismos con solicitudes | La app no envía nada; cada solicitud la envía una persona identificada en el portal oficial. |
 | Preguntas sobre autoridades, candidaturas o partidos | El filtro las clasifica como "opinión o política partidista" y responde con el mensaje fijo. |

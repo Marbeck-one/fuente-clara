@@ -8,7 +8,7 @@ from pathlib import Path
 import streamlit as st
 import yaml
 
-from core import filtro, prompts
+from core import filtro, guardrail, prompts
 from core.citas import verificar
 from core.documento import para_prompt
 from core.llm import complete
@@ -27,7 +27,7 @@ def preparar_solicitud(duda, doc):
     categoria = filtro.clasificar(duda, doc)
     if categoria == filtro.OPINION:
         return {"categoria": categoria}
-    datos = complete(prompts.TRANSPARENCIA, f"{para_prompt(doc)}\n\nDUDA DE LA PERSONA:\n{duda}")
+    datos = complete(prompts.TRANSPARENCIA, f"{para_prompt(doc)}\n\nDUDA DE LA PERSONA:\n{guardrail.delimitar(duda)}")
     cfg = cargar_config()
     organismo = str(datos.get("organismo", "")).strip() or "[ORGANISMO]"
     borrador = cfg["plantilla"]["texto"].format(

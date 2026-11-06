@@ -5,7 +5,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from core import votos
+from core import filtro, votos
 from core.llm import ErrorLLM
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
@@ -35,7 +35,7 @@ def ejecutar(funcion, *args):
     """
     try:
         with st.spinner("Leyendo el documento…"):
-            r = funcion(*args)
+            r = filtro.revisar_respuesta(funcion(*args))  # guardrail, capa 3
     except ErrorLLM as e:
         st.error(f"Revisa tu archivo .env o intenta de nuevo. ({e})",
                  title="No pudimos obtener respuesta", icon=":material/cloud_off:")

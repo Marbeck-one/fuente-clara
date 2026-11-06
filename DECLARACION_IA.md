@@ -32,6 +32,7 @@ Se usa un solo modelo para las cuatro tareas. La app muestra en pantalla qué mo
 - **Verificación de citas** (`core/citas.py`): cada cita se busca literalmente en el documento. La pantalla marca "Cita verificada" o "Cita no encontrada en el documento".
 - **Respuestas sin cita verificada no se muestran** como válidas.
 - **Etiquetas fijas** del verificador definidas en `modulos/verifica.py`.
+- **Guardrail** (`core/guardrail.py`): antes de la IA se rechazan los intentos típicos de manipulación y las entradas demasiado largas; el texto de la persona va entre marcas y las reglas dicen que es dato, no instrucción; después de la IA, una respuesta que opina, da un veredicto ("verdadero", "falso") o muestra las instrucciones internas no se muestra, y se le quitan enlaces e imágenes.
 - **Borrador armado con plantilla** (`config/transparencia.yaml`) con marcadores `[TU NOMBRE]` y `[TU DIRECCIÓN]`.
 - **Sin base de datos ni login.** Lo que escribe la persona no se guarda, salvo que lo autorice al votar 👎 una respuesta (ver sección 5b).
 - **Trazabilidad** (`core/votos.py`): cada voto guarda el modelo y la versión de las instrucciones (`prompts.VERSION`, cambia sola al editar un prompt), para saber si un cambio mejoró o empeoró las respuestas. Panel público en la página «Calidad de las respuestas».

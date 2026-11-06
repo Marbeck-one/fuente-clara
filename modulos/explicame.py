@@ -3,7 +3,7 @@ from html import escape
 
 import streamlit as st
 
-from core import filtro, prompts
+from core import filtro, guardrail, prompts
 from core.citas import hay_verificada, verificar
 from core.documento import para_prompt
 from core.llm import complete
@@ -24,7 +24,7 @@ def explicar(pregunta, perfil, doc):
     if categoria != filtro.DENTRO:
         return {"categoria": categoria}
     perfil_txt = perfil if perfil in perfiles(doc) else "ninguno"
-    datos = complete(prompts.EXPLICAME, f"{para_prompt(doc)}\n\nPERFIL: {perfil_txt}\nPREGUNTA: {pregunta}")
+    datos = complete(prompts.EXPLICAME, f"{para_prompt(doc)}\n\nPERFIL: {perfil_txt}\nPREGUNTA:\n{guardrail.delimitar(pregunta)}")
     en_documento = str(datos.get("en_documento")).lower() == "true"
     return {"categoria": filtro.DENTRO if en_documento else filtro.FUERA, "perfil": perfil_txt,
             "respuesta": str(datos.get("respuesta", "")),

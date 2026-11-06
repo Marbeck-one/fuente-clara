@@ -76,7 +76,7 @@ def votar(r, pestana, bueno):
               "documento": r.get("documento"), "pestana": pestana, "perfil": r.get("perfil") or "ninguno",
               "categoria": r["categoria"], "citas_total": len(citas),
               "citas_verificadas": sum(bool(c["verificada"]) for c in citas),
-              **r["traza"], "voto": "bueno" if bueno else "malo"})
+              "bloqueada": r.get("bloqueada"), **r["traza"], "voto": "bueno" if bueno else "malo"})
 
 
 def detallar(r, motivo, autoriza):
