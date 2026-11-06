@@ -14,6 +14,7 @@ API de voz ni a la IA, no guarda audio y no usa localStorage. Ojo: según el dis
 de red (por ejemplo, algunas voces de Google en Chrome); eso lo decide el navegador, no Fuente Clara.
 """
 import hashlib
+import json
 import re
 from html import escape
 from pathlib import Path
@@ -27,6 +28,16 @@ _BOTONES = [("escuchar", "Escuchar respuesta", "Escuchar la respuesta en voz alt
             ("pausar", "Pausar", "Pausar la lectura"),
             ("continuar", "Continuar", "Continuar la lectura"),
             ("detener", "Detener", "Detener la lectura")]
+
+
+def incrustar_js(codigo):
+    """Devuelve el código listo para ir dentro de <script> en st.html.
+
+    Streamlit limpia el HTML con DOMPurify, que elimina todo <script> cuyo texto contenga algo parecido a una etiqueta
+    (`<div`, `</p>`...). Por eso el `<` de las etiquetas que arma el JavaScript se escribe como \\u003C, que dentro de un
+    texto de JavaScript vale exactamente lo mismo. El código de los .js no debe usar `<` pegado a una letra como operador.
+    """
+    return re.sub(r"<(?=[/!A-Za-z])", lambda _: "\\u003C", codigo)
 
 
 # ---------- texto que se lee ----------
@@ -114,7 +125,7 @@ def _html(texto, key):
             f'data-fc-voz-id="{huella}" data-fc-texto="{escape(texto, quote=True)}">'
             f'<div class="fc-voz-botones">{botones}</div>'
             f'<span class="fc-voz-estado" role="status" aria-live="polite"></span></div>'
-            f'<script>{JS.read_text(encoding="utf-8")}</script>')
+            f'<script>{incrustar_js(JS.read_text(encoding="utf-8"))}</script>')
 
 
 def boton_escuchar(texto, key=None):
@@ -128,6 +139,20 @@ def boton_escuchar(texto, key=None):
         st.html(_html(texto, key), unsafe_allow_javascript=True)
 
 
+# ---------- lector de página completa ----------
+
+def lector_pagina(key="lector_global"):
+    """Instala el controlador de voz de la página (static/voz.js) y le da nombre al lector de página completa.
+
+    Los botones «Leer página completa», Pausar, Continuar y Detener los trae el panel de accesibilidad
+    (modulos/accesibilidad.py). Comparten el controlador con «Escuchar respuesta»: nunca suenan dos a la vez, y
+    empezar uno corta el otro. Lo que se lee sale del contenido visible de la pestaña actual (títulos, explicaciones,
+    respuestas, citas verificadas y avisos); ver `recolectar` en static/voz.js. No hace nada hasta que la persona toca el botón.
+    """
+    codigo = f"window.__fcVozPagina = {json.dumps(key)};" + chr(10) + incrustar_js(JS.read_text(encoding="utf-8"))
+    st.html(f'<div class="fc-instalador" hidden></div><script>{codigo}</script>', unsafe_allow_javascript=True)
+
+
 # ---------- dictado por micrófono (issue #6) ----------
 
 def _html_dictado(destino):
@@ -137,8 +162,10 @@ def _html_dictado(destino):
     return (f'<div class="fc-dictado" role="group" aria-label="Dictado por micrófono" data-estado="inactivo" '
             f'data-fc-destino="{escape(destino, quote=True)}">'
             f'<div class="fc-dictado-botones">{botones}</div>'
-            f'<span class="fc-dictado-estado" role="status" aria-live="polite"></span></div>'
-            f'<script>{JS_DICTADO.read_text(encoding="utf-8")}</script>')
+            f'<span class="fc-dictado-estado" role="status" aria-live="polite"></span>'
+            f'<p class="fc-dictado-aviso">El dictado usa el reconocimiento de voz de tu navegador: el audio puede enviarse al '
+            f'servicio de voz del navegador (en Chrome, Google). Fuente Clara no lo guarda.</p></div>'
+            f'<script>{incrustar_js(JS_DICTADO.read_text(encoding="utf-8"))}</script>')
 
 
 def boton_dictar(destino):
@@ -148,5 +175,3 @@ def boton_dictar(destino):
     el audio; el reconocimiento lo hace el navegador (en Chrome, con el servicio de voz de Google).
     """
     st.html(_html_dictado(destino), unsafe_allow_javascript=True)
-    st.caption("El dictado usa el reconocimiento de voz de tu navegador: el audio puede enviarse al servicio de voz "
-               "del navegador (en Chrome, Google). Fuente Clara no lo guarda.")

@@ -127,6 +127,18 @@ Cada respuesta válida de los tres módulos tiene un botón **Escuchar respuesta
   - El navegador exige un toque para empezar a hablar: nunca se lee solo.
   - **Dictado:** solo funciona en navegadores con `SpeechRecognition` (Chrome y Edge; no Firefox) y **en una conexión segura**: `localhost` o HTTPS. Abierta por `http://IP-del-computador:8501` desde el celular, el navegador bloquea el micrófono y la app lo explica; para probarlo en el celular hace falta un túnel HTTPS. Necesita conexión a internet y permiso de micrófono.
 
+## Accesibilidad: tamaño de letra, alto contraste y lectura de la página (issues #3 y #19)
+
+El botón flotante con la figura de la persona (borde derecho) abre el panel. Lo crea `static/accesibilidad.js` directamente en la página (no usa iframe) y lo monta `modulos/accesibilidad.py`.
+
+- **Tamaño de letra (80–200 %, de 10 en 10):** cambia solo la variable `--fc-escala-texto`, que `static/estilo.css` usa en los `font-size` de los textos. No hay `zoom`, `transform` ni cambios al ancho de la página, las tarjetas, las imágenes ni los íconos; las tarjetas crecen hacia abajo si el texto lo necesita. Los títulos crecen menos que el texto (`--fc-escala-titulo`) para no perder la jerarquía. En 100 % se vuelve exactamente al original.
+- **Alto contraste:** el control va de 0 a 100 %. De 0 a 99 % la página es idéntica a la original (el control solo muestra su avance); al llegar a **100 %** se activa `html[data-fc-contraste="alto"]`, que redefine los mismos tokens de color con una versión oscura del petróleo institucional (`#083344`). No hay interruptor aparte ni `filter`. Con el teclado: tecla Fin = 100 %, Inicio = 0 %.
+- **Lectura por voz de la página:** «Leer página completa» (más Pausar, Continuar y Detener) lee, en el orden de la pantalla, el título, las explicaciones, las respuestas, las citas verificadas y los avisos de la pestaña visible. No lee botones, formularios, lo que escribió la persona, el pie ni pestañas ocultas. Comparte controlador con «Escuchar respuesta» (`static/voz.js`): nunca suenan dos a la vez, y cambiar de pestaña corta la lectura. `voz.lector_pagina(key="lector_global")` instala el controlador.
+- **Se guarda** (`localStorage`) solo el tamaño y el contraste. Nunca audio ni textos, y la lectura jamás empieza sola.
+- **Colores:** las relaciones de contraste de ambas paletas se comprueban en `tests/test_accesibilidad.py` (texto normal ≥ 4,5:1; foco e indicadores ≥ 3:1) y, ya renderizadas, en `scripts/probar_accesibilidad.py`.
+- **Pruebas:** `python -m pytest tests/test_accesibilidad.py` (paletas, CSS, controles) y `python scripts/probar_accesibilidad.py` (65 comprobaciones en Chromium con IA y voz simuladas: 80/100/150/200 %, 360 px, 0/50/99/100 % de contraste, lectura de la página, pausa, cambio de pestaña, sin soporte). No reemplazan la prueba a mano en Chrome de Android.
+- **Limitaciones:** el Espaciado de lectura de la primera versión del panel se quitó (el panel quedó con lo pedido). En alto contraste, la tabla del panel «Cómo nos va» (`st.dataframe`) conserva los colores de Streamlit. Una opción larga del selector de documentos se recorta con puntos suspensivos cuando la letra es muy grande (el título completo se ve en la tarjeta de abajo). Un `<script>` dentro de `st.html` se pierde si su texto parece contener etiquetas HTML (Streamlit lo limpia con DOMPurify): por eso `voz.incrustar_js` escribe esos `<` como `\u003C`.
+
 ## Cambiar el documento (para la demo)
 
 Documento cargado hoy: **Ley 21.801**, que prohíbe y regula el uso de celulares en establecimientos educacionales. Es el PDF oficial exportado desde la BCN (https://bcn.cl/122kkM, 4 páginas). El ejemplo ficticio está comentado en el catálogo; descoméntalo solo para desarrollo.
@@ -157,7 +169,7 @@ core/filtro.py             filtro de alcance
 modulos/                   explicame.py, verifica.py, transparencia.py, comun.py, voz.py (lectura en voz alta)
 config/transparencia.yaml  ley, plazos, pasos, portal y plantilla (marcados VERIFICAR)
 .streamlit/config.toml     tokens de tema (colores, fuentes, radios); sin telemetría
-static/                    estilo.css, voz.js, dictado.js, logo, favicon y fuentes autoalojadas
+static/                    estilo.css, accesibilidad.js, voz.js, dictado.js, logo, favicon y fuentes autoalojadas
 DESIGN.md                  identidad visual, reglas de diseño y bases de la competencia (§11)
 docs/                      PDF oficial de las bases de la hackathon
 design_thinking/           fichas de cada etapa de la jornada: una vacía y otra rellenada con fuentes
@@ -168,6 +180,7 @@ scripts/evaluar.py           evaluación con la IA
 scripts/probar_app.py        prueba de integración real de los 3 módulos
 scripts/probar_imagen.py     prueba real de lectura de capturas
 scripts/probar_voz.py        prueba en Chromium de la lectura en voz alta (IA y voz simuladas)
+scripts/probar_accesibilidad.py  prueba en Chromium del panel: tamaño de letra, contraste y lectura de la página
 scripts/smoke.py             chequeo rápido sin IA
 scripts/verificar_entorno.py diagnóstico de .env, modelo y documento
 ```

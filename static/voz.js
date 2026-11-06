@@ -21,12 +21,14 @@
     sinPausa: "Tu navegador no permite pausar. Detuvimos la lectura.",
     sinVoz: "Este dispositivo no tiene una voz en español. Instálala en los ajustes de voz del sistema.",
     error: "No pudimos leer la respuesta en voz alta.",
+    sinPagina: "No encontramos texto que leer en esta página.",
     noSoporta: "Tu navegador no permite escuchar respuestas. Puedes leerla en pantalla."
   };
 
   var s = { id: null, estado: "inactivo", mensaje: "", trozos: [], indice: 0, sesion: 0, voz: null };
 
   function grupos() { return document.querySelectorAll(".fc-voz"); }
+  function idPagina() { return window.__fcVozPagina || "lector_global"; }
 
   function pintar() {
     grupos().forEach(function (g) {
@@ -165,6 +167,56 @@
     terminar("inactivo", TEXTOS.detenida);
   }
 
+  // ---------- lector de página completa ----------
+  // Recorre una estructura controlada (títulos, párrafos, listas, citas, avisos) dentro del contenido principal,
+  // en el orden de la pantalla. No usa body.innerText: lo oculto, los menús, los botones y los formularios no se leen.
+  var RAIZ = '[data-testid="stMainBlockContainer"], [data-testid="stMain"], .block-container, main';
+  var LEIBLES = "h1,h2,h3,h4,p,li,blockquote,summary,td,th,figcaption";
+  var NO_LEER = [
+    "script", "style", "template", "button", "textarea", "input", "select", "nav", "header", "footer",
+    '[role="tablist"]', '[data-testid="stForm"]', '[data-testid="stWidgetLabel"]', '[data-testid="stFeedback"]',
+    '[data-testid="stPills"]', '[data-testid="stSelectbox"]', '[data-testid="stToast"]', '[data-testid="stFileUploader"]',
+    '[class*="st-key-fc-voto"]', ".fc-marca", ".fc-pie", ".fc-voz", ".fc-dictado", ".fc-cita--no", ".fc-instalador",
+    ".fc-acc-panel", "#fc-accesibilidad-host", '[data-fc-no-leer]', '[aria-hidden="true"]'
+  ].join(",");
+  var DECORATIVO = '[data-testid="stIconMaterial"], svg, img, [aria-hidden="true"], .fc-voz, .fc-dictado, button, script, style';
+
+  function visible(el, raiz) {
+    for (var a = el; a && a !== raiz.parentElement; a = a.parentElement) {
+      if (a.hidden) return false;
+      var c = window.getComputedStyle(a);
+      if (c.display === "none" || c.visibility === "hidden") return false;
+    }
+    return true;
+  }
+
+  function textoDe(el) {
+    var copia = el.cloneNode(true);
+    copia.querySelectorAll(DECORATIVO).forEach(function (n) { n.remove(); });
+    return (copia.textContent || "").replace(/\s+/g, " ").trim();
+  }
+
+  function recolectar() {
+    var raiz = document.querySelector(RAIZ);
+    if (!raiz) return "";
+    var partes = [], anterior = "";
+    raiz.querySelectorAll(LEIBLES).forEach(function (el) {
+      if (el.closest(NO_LEER) || el.querySelector(LEIBLES) || !visible(el, raiz)) return;  // solo hojas, visibles y legibles
+      var texto = textoDe(el);
+      if (!texto || texto === anterior) return;
+      anterior = texto;
+      partes.push(/[.!?:;»)]$/.test(texto) ? texto : texto + ".");
+    });
+    return partes.join(" ");
+  }
+
+  function leerPagina() {
+    if (!SOPORTADO) return;
+    var texto = recolectar();
+    if (!texto) { limpiar(); s.id = idPagina(); terminar("inactivo", TEXTOS.sinPagina); return; }
+    escuchar(idPagina(), texto);
+  }
+
   function enfocarPrimero(grupo) {
     var b = grupo && grupo.querySelector("[data-fc-accion]:not([hidden])");
     if (b) b.focus();
@@ -176,7 +228,8 @@
     var g = b.closest(".fc-voz");
     if (!g) return;
     var accion = b.getAttribute("data-fc-accion");
-    if (accion === "escuchar") escuchar(g.getAttribute("data-fc-voz-id"), g.getAttribute("data-fc-texto"));
+    if (accion === "escuchar" && g.hasAttribute("data-fc-pagina")) leerPagina();
+    else if (accion === "escuchar") escuchar(g.getAttribute("data-fc-voz-id"), g.getAttribute("data-fc-texto"));
     else if (accion === "pausar") pausar();
     else if (accion === "continuar") continuar();
     else if (accion === "detener") detener();
@@ -199,9 +252,14 @@
   }
   new MutationObserver(revisarPresencia).observe(document.body, { childList: true, subtree: true });
 
+  document.addEventListener("click", function (ev) {
+    var pestana = ev.target && ev.target.closest ? ev.target.closest('[role="tab"]') : null;
+    if (pestana && SOPORTADO && s.id === idPagina() && s.estado !== "inactivo") detener();
+  }, true);   // en la fase de captura: React Aria detiene la propagación de los clics de las pestañas
+
   window.addEventListener("pagehide", function () { if (SOPORTADO) limpiar(); });
 
-  window.__fcVoz = { pintar: pintar, detener: function () { if (SOPORTADO && s.estado !== "inactivo") detener(); },
+  window.__fcVoz = { pintar: pintar, recolectar: recolectar, leerPagina: leerPagina, detener: function () { if (SOPORTADO && s.estado !== "inactivo") detener(); },
                      estado: function () { return { id: s.id, estado: s.estado }; } };
   pintar();
 })();
