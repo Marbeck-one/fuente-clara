@@ -31,6 +31,8 @@ def falsa(system, user, imagen=None):
         return {"en_documento": "true", "respuesta": f"**Respuesta simulada** sobre «{_pregunta(user)}». "
                 "La ley [prohíbe](https://ejemplo.cl) el uso de celulares en los colegios.",
                 "que_cambia_para_ti": "Tu colegio debe actualizar su reglamento interno.",
+                "excepciones": ["Si el estudiante tiene necesidades educativas especiales, puede usar el celular como ayuda para aprender.",
+                                "En la enseñanza media, el reglamento del colegio puede permitirlo en ciertos horarios o actividades."],
                 "citas": [{"articulo": "Artículo 10 bis", "pagina": 1, "texto_literal": CITA_1}]}
     if system == prompts.VERIFICA:
         return {"comparaciones": [{"afirmacion": _pregunta(user), "etiqueta": "respalda",

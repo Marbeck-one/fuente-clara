@@ -30,9 +30,10 @@ TAREA:
 2. Respalda cada idea importante con al menos una cita del DOCUMENTO.
 3. "que_cambia_para_ti": si se indica un PERFIL, explica en 1 a 3 frases lo que el documento establece para ese perfil. Si el documento no dice nada específico para ese perfil, dilo así. Si el PERFIL es "ninguno", deja "".
 4. Si el DOCUMENTO no responde la pregunta: "en_documento": false, "citas": [] y en "respuesta" di claramente que el documento no trata ese tema. No adivines.
+5. "excepciones": lista de 0 a 3 frases cortas (máximo 30 palabras cada una, en lenguaje claro) con las EXCEPCIONES, condiciones o casos especiales en que lo que respondes NO se aplica o se permite algo distinto. Incluye solo las que el DOCUMENTO establece y que tienen relación directa con la pregunta (por ejemplo: la regla es una prohibición y el documento permite hacer algo en ciertos casos). En "respuesta" explica la regla general y no copies ahí las excepciones. Cada excepción debe estar respaldada por una cita en "citas". Si no hay excepciones relevantes, deja [].
 
 Formato:
-{{"respuesta": "...", "que_cambia_para_ti": "...", "citas": [{{"articulo": "Artículo 3", "pagina": 1, "texto_literal": "..."}}], "en_documento": true}}"""
+{{"respuesta": "...", "que_cambia_para_ti": "...", "excepciones": ["..."], "citas": [{{"articulo": "Artículo 3", "pagina": 1, "texto_literal": "..."}}], "en_documento": true}}"""
 
 VERIFICA = f"""Eres "Fuente Clara". Comparas lo que dice una AFIRMACIÓN (cadena, post o titular) con lo que dice un documento público oficial.
 {REGLAS_BASE}

@@ -73,6 +73,9 @@ def _citas(citas):
 
 def texto_explicame(r):
     partes = [_termina(limpiar(r.get("respuesta")))]
+    excepciones = [_termina(limpiar(e)) for e in r.get("excepciones") or [] if limpiar(e)]
+    if excepciones:
+        partes.append("Hay excepciones. " + " ".join(excepciones))
     if r.get("que_cambia") and r.get("perfil") != "ninguno":
         partes.append(f"Qué cambia para ti, {limpiar(r.get('perfil'))}. {_termina(limpiar(r['que_cambia']))}")
     citas = _citas(r.get("citas"))

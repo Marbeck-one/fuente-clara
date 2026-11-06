@@ -54,6 +54,7 @@ TEXTOS = {  # nombre -> selector (todos son texto normal: mínimo 4,5:1)
     "pestaña": '[data-testid="stTab"][aria-selected="false"] p', "pestaña activa": '[data-testid="stTab"][aria-selected="true"] p',
     "aviso de IA": '[data-testid="stAlert"] p', "texto del campo": "textarea", "pie": ".fc-pie",
     "leyenda (caption)": '[data-testid="stCaptionContainer"]', "aviso del dictado": ".fc-dictado-aviso",
+    "encabezado de la cita (desplegable)": '[data-testid="stExpander"] summary', "recuadro de excepciones": ".fc-excepciones-lista li",
     "cita": ".fc-cita", "texto resaltado": ".fc-cita mark", "botón de lectura": '.fc-voz button[data-fc-accion="escuchar"]',
     "botón de dictado": ".fc-dictado button", "panel: nombre de control": ".fc-acc-nombre", "panel: ayuda": ".fc-acc-ayuda",
     "panel: marcas": ".fc-acc-marcas", "panel: restablecer": ".fc-acc-restablecer", "ícono flotante": ".fc-acc-flotante",

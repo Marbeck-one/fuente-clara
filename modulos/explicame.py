@@ -19,6 +19,17 @@ def perfiles(doc):
     return doc.get("perfiles") or PERFILES
 
 
+MAX_EXCEPCIONES = 3
+
+
+def _excepciones(valor):
+    """Lista de frases cortas. Si el modelo devuelve otra cosa, se ignora: nunca se muestra algo a medias."""
+    if not isinstance(valor, list):
+        return []
+    frases = [" ".join(x.split()) for x in valor if isinstance(x, str) and x.strip()]
+    return [f[:300] for f in frases[:MAX_EXCEPCIONES]]
+
+
 def explicar(pregunta, perfil, doc):
     """Pasa por el filtro y, si corresponde, pide la explicación y verifica sus citas."""
     categoria = filtro.clasificar(pregunta, doc)
@@ -30,12 +41,24 @@ def explicar(pregunta, perfil, doc):
     return {"categoria": filtro.DENTRO if en_documento else filtro.FUERA, "perfil": perfil_txt,
             "respuesta": str(datos.get("respuesta", "")),
             "que_cambia": str(datos.get("que_cambia_para_ti", "")).strip(),
+            "excepciones": _excepciones(datos.get("excepciones")),
             "citas": verificar(datos.get("citas"), doc)}
 
 
 def _pasar_a_estado(duda):
     st.session_state["duda_estado"] = duda
     st.session_state["pestana"] = PESTANAS[2]  # abre la pestaña 3 con la duda ya escrita
+
+
+def bloque_excepciones(excepciones):
+    """Recuadro amarillo con las excepciones que el documento establece (el amarillo es el del texto oficial)."""
+    if not excepciones:
+        return
+    items = "".join(f"<li>{escape(e)}</li>" for e in excepciones)
+    st.html('<aside class="fc-excepciones" aria-label="Excepciones que establece el documento">'
+            '<p class="fc-excepciones-titulo">Hay excepciones</p>'
+            f'<ul class="fc-excepciones-lista">{items}</ul>'
+            '<p class="fc-excepciones-nota">Según el documento. Las citas de abajo las respaldan.</p></aside>')
 
 
 def render(doc):
@@ -71,6 +94,7 @@ def render(doc):
             st.html('<p class="fc-antetitulo">Respuesta</p>')
             voz.boton_escuchar(voz.texto_explicame(r), key="explicame")
             st.markdown(r["respuesta"])
+            bloque_excepciones(r.get("excepciones"))
             if r["que_cambia"] and r["perfil"] != "ninguno":
                 with st.container(key="fc-para-ti"):
                     st.html(f'<p class="fc-antetitulo">Qué cambia para ti · {escape(r["perfil"])}</p>')
