@@ -5,6 +5,8 @@ las ve el equipo ingresando la CLAVE_EQUIPO definida en el archivo .env.
 """
 import hmac
 import os
+import sqlite3
+import sys
 import time
 from html import escape
 
@@ -12,7 +14,8 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-from core import documento, filtro, votos
+from core import cuentas, documento, filtro, votos
+from modulos import cuenta
 from modulos.comun import encabezado
 
 # Una sola serie por gráfico: un solo color para todas las barras. Es la familia de «acción»,
@@ -99,6 +102,32 @@ def _publico(df):
                      hide_index=True, width="stretch")
 
 
+def _uso():
+    """Cuántas personas usan la cuenta y cuánto se consulta. Son conteos: no identifican a nadie."""
+    try:
+        datos = cuentas.resumen()
+    except sqlite3.Error as e:
+        print(f"[Fuente Clara] No se pudo leer el uso: {e}", file=sys.stderr)
+        st.caption("No pudimos leer los datos de uso.")
+        return
+    st.subheader("Uso de Fuente Clara")
+    if cuentas.es_mock():
+        st.caption("Modo demostración: estos datos vienen de un usuario simulado, no de personas reales.")
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Cuentas", datos["cuentas"])
+    c2.metric("Activas en 7 días", datos["activas"])
+    c3.metric("Volvieron otro día", datos["volvieron"])
+    c1, c2 = st.columns(2)
+    c1.metric("Consultas con cuenta", datos["con_cuenta"])
+    c2.metric("Consultas sin cuenta", datos["sin_cuenta"])
+    if datos["por_modulo"]:
+        tabla = pd.DataFrame([{"modulo": m, "consultas": n, "resultado": str(n)}
+                              for m, n in datos["por_modulo"].items()])
+        tabla = tabla.sort_values("consultas", ascending=False)
+        st.caption("Consultas por módulo")
+        _barras(tabla, "modulo", "consultas", tabla["consultas"].max(), "Cantidad de consultas en cada módulo.")
+
+
 def _verificar_clave():
     """Se revisa una sola vez por clave escrita (no en cada recarga), con 1 segundo de espera si falla."""
     ingresada = st.session_state.get("fc-clave", "")
@@ -159,4 +188,6 @@ def render():
     else:
         st.info("Todavía no hay votos. Aparecerán aquí cuando las personas evalúen las respuestas.",
                 icon=":material/hourglass_empty:")
+    if cuenta.modo():
+        _uso()
     _privado(registros, titulos)

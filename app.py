@@ -1,8 +1,8 @@
 """Fuente Clara: entender, verificar y preguntar sobre un documento público oficial.
 
 Ejecutar con:  streamlit run app.py
-Sin base de datos ni login. Lo que escribe la persona vive solo en st.session_state; se guarda únicamente
-si ella lo autoriza al votar una respuesta (ver core/votos.py).
+La cuenta es opcional y por defecto está desactivada (ver modulos/cuenta.py). Lo que escribe la persona vive
+solo en st.session_state; se guarda únicamente si ella lo autoriza al votar una respuesta (ver core/votos.py).
 """
 from html import escape
 
@@ -10,7 +10,7 @@ import streamlit as st
 
 from core import documento
 from core.llm import ErrorLLM, cadena
-from modulos import accesibilidad, explicame, panel, transparencia, verifica
+from modulos import accesibilidad, cuenta, explicame, panel, transparencia, verifica
 from modulos.comun import PESTANAS, STATIC, enlace_fuente, estilos, logo
 
 st.set_page_config(page_title="Fuente Clara", page_icon=str(STATIC / "favicon.svg"), layout="centered")
@@ -68,6 +68,7 @@ PAGINA_CALIDAD = st.Page(panel.render, title="Calidad de las respuestas · Fuent
 st.html(f'<header class="fc-marca">{logo()}<div><p class="fc-logotipo"><b>Fuente</b><span>Clara</span></p>'
         '<p class="fc-lema">Lo que dice el documento, dicho claro.</p></div></header>')
 accesibilidad.render_panel()
+cuenta.render()
 pagina = st.navigation([PAGINA_INICIO, PAGINA_CALIDAD], position="hidden")
 pagina.run()
 if pagina.url_path == PAGINA_CALIDAD.url_path:

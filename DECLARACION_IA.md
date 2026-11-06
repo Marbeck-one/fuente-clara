@@ -35,7 +35,7 @@ Se usa el mismo modelo para las cuatro tareas. La app muestra en pantalla qué m
 - **Etiquetas fijas** del verificador definidas en `modulos/verifica.py`.
 - **Guardrail** (`core/guardrail.py`): antes de la IA se rechazan los intentos típicos de manipulación y las entradas demasiado largas; el texto de la persona va entre marcas y las reglas dicen que es dato, no instrucción; después de la IA, una respuesta que opina, da un veredicto ("verdadero", "falso") o muestra las instrucciones internas no se muestra, y se le quitan enlaces e imágenes.
 - **Borrador armado con plantilla** (`config/transparencia.yaml`) con marcadores `[TU NOMBRE]` y `[TU DIRECCIÓN]`.
-- **Sin base de datos ni login.** Lo que escribe la persona no se guarda, salvo que lo autorice al votar 👎 una respuesta (ver sección 5b).
+- **Nada exige una cuenta.** La cuenta es opcional y por defecto está desactivada (ver sección 5d). Lo que escribe la persona no se guarda, salvo que lo autorice al votar 👎 una respuesta (ver sección 5b).
 - **Trazabilidad** (`core/votos.py`): cada voto guarda el modelo y la versión de las instrucciones (`prompts.VERSION`, cambia sola al editar un prompt), para saber si un cambio mejoró o empeoró las respuestas. Panel público en la página «Calidad de las respuestas».
 
 ## 5. Datos que se envían al proveedor de IA
@@ -57,6 +57,13 @@ Política de retención de datos del proveedor elegido (Anthropic, API comercial
 
 - **Escuchar la respuesta:** usa la voz del propio navegador (`speechSynthesis`). Fuente Clara no envía el texto a ningún servicio de voz ni a la IA, y no guarda audio. Según el dispositivo, la voz del sistema puede ser de red; eso lo decide el navegador.
 - **Dictar la pregunta:** usa el reconocimiento de voz del navegador (`SpeechRecognition`). **El audio sale del dispositivo**: en Chrome lo procesa el servicio de voz de Google (en otros navegadores, el de su fabricante). Fuente Clara no recibe ni guarda el audio; solo recibe el texto transcrito, que la persona revisa antes de enviar, y desde ahí sigue el mismo camino que un texto escrito (sección 5). El botón nunca escucha solo y la pantalla avisa de este envío.
+
+## 5d. Cuenta opcional
+
+- **Estado actual:** se puede entrar con Google en local, probado el 06-11-2026 con una cuenta. A Google solo se le pide la identidad (`scope=openid`), no el correo ni el nombre. También existe un modo demostración (`AUTH_MOCK=1`), que simula el login, no contacta a ningún proveedor y lo avisa en pantalla. Sin esta configuración no hay login.
+- **Para qué sirve:** subir el tope de 5 a 20 consultas cada 10 minutos y medir el uso. Sin cuenta se puede usar toda la app.
+- **Qué se guarda:** un identificador seudónimo, fechas de ingreso y conteos de consultas por día y módulo. Las consultas sin cuenta se suman sin distinguir personas. Nunca correo, nombre, tokens ni lo que la persona escribe, y los votos no se ligan a la cuenta. El identificador seudónimo sigue siendo un dato personal: solo se puede ligar a alguien con el secreto y los datos del proveedor.
+- **Retención:** se elimina tras 90 días sin uso, o al momento con el botón «Borrar mis datos».
 
 ## 6. IA usada para construir el prototipo
 

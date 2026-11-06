@@ -29,6 +29,14 @@ def test_permite_hasta_el_limite_global(monkeypatch):
     assert limites.permitir([]) == limites.GLOBAL
 
 
+def test_el_maximo_indicado_reemplaza_al_de_sesion(monkeypatch):
+    monkeypatch.setenv("LIMITE_CONSULTAS_SESION", "100")
+    monkeypatch.setenv("LIMITE_CONSULTAS_MINUTO", "100")
+    historial = []
+    assert limites.permitir(historial, maximo=1) is None
+    assert limites.permitir(historial, maximo=1) == limites.SESION
+
+
 def test_valores_invalidos_usan_el_defecto(monkeypatch):
     monkeypatch.setenv("LIMITE_CONSULTAS_SESION", "no-es-un-numero")
     monkeypatch.setenv("LIMITE_CONSULTAS_MINUTO", "no-es-un-numero")

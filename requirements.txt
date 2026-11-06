@@ -6,6 +6,7 @@ pyyaml==6.0.3
 Pillow==13.0.0
 pandas==3.1.1       # panel de calidad
 altair==6.3.0       # gráficos del panel de calidad
+Authlib==1.9.5      # login opcional con Google (st.login)
 # Proveedores de IA (basta con el que uses, pero dejarlos todos facilita cambiar)
 anthropic==2.5.0
 openai==3.46.0
