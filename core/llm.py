@@ -61,8 +61,18 @@ def _eslabon(proveedor, modelo):
     return proveedor, modelo
 
 
-def cadena():
-    """Lista ordenada de (proveedor, modelo) que se prueban. Sin LLM_CADENA es un solo modelo."""
+TAREAS = ("filtro", "jueza")  # tareas que pueden usar su propio modelo (model routing, issue #30)
+
+
+def cadena(tarea=None):
+    """Lista ordenada de (proveedor, modelo) que se prueban. Sin LLM_CADENA es un solo modelo.
+
+    Con `tarea` ("filtro" o "jueza"), si existe LLM_CADENA_FILTRO o LLM_CADENA_JUEZA se usa esa cadena: por ejemplo, un
+    modelo rápido y barato para clasificar cada pregunta y uno más capaz para las respuestas. Si no existe, la general.
+    """
+    propia = os.getenv(f"LLM_CADENA_{tarea.upper()}", "").strip() if tarea in TAREAS else ""
+    if propia:
+        return [_eslabon(*(parte.split(":", 1) + [""])[:2]) for parte in propia.split(",") if parte.strip()]
     texto = os.getenv("LLM_CADENA", "").strip()
     if not texto:
         return [_eslabon(os.getenv("LLM_PROVIDER", "anthropic"), os.getenv("LLM_MODEL", ""))]
@@ -258,7 +268,7 @@ def _codigo_http(error):
     return None
 
 
-def complete(system, user, imagen=None):
+def complete(system, user, imagen=None, tarea=None):
     """Pide al modelo una respuesta JSON y la devuelve como dict.
 
     Con un solo modelo, reintenta hasta 3 veces si falla, con una espera creciente. Con una cadena, prueba los modelos en orden
@@ -268,9 +278,10 @@ def complete(system, user, imagen=None):
 
     `imagen` es un PIL.Image.Image opcional. Se envía en la misma petición que el texto y
     nunca se guarda ni se registra. Solo se prueban los modelos que leen imágenes.
+    `tarea` elige la cadena de modelos de esa tarea, si está configurada (ver cadena()).
     """
     system += INSTRUCCION_JSON
-    eslabones = cadena()
+    eslabones = cadena(tarea)
     if imagen is not None and len(eslabones) > 1:  # con un solo modelo, _llamar_proveedor avisa si no lee imágenes
         eslabones = [e for e in eslabones if e[0] in LEEN_IMAGENES]
         if not eslabones:

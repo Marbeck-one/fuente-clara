@@ -215,7 +215,7 @@ def app(monkeypatch):
 
     llamadas = []
 
-    def falsa(system, user, imagen=None):
+    def falsa(system, user, imagen=None, tarea=None):
         llamadas.append(system)
         return ia_simulada.falsa(system, user, imagen)
 

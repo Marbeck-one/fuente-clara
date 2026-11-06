@@ -87,7 +87,8 @@ def evaluar_explicame(preguntas, doc):
             detalle = f" · {segundos:.1f} s"
         if r.get("bloqueada"):
             bloqueadas += 1
-            detalle += " (guardrail: respuesta de la IA bloqueada antes de mostrarse)"
+            quien = f"jueza: {r.get('motivo_jueza')}" if r["bloqueada"] == "jueza" else "guardrail"
+            detalle += f" ({quien}: respuesta de la IA bloqueada antes de mostrarse)"
         ok = r["categoria"] == ESPERADO[tipo]
         if tipo == "normal":
             ok = ok and hay_verificada(r["citas"])

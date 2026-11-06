@@ -24,7 +24,7 @@ def _pregunta(user):
     return user.split("<entrada_usuario>")[-1].split("</entrada_usuario>")[0].strip()[:40]
 
 
-def falsa(system, user, imagen=None):
+def falsa(system, user, imagen=None, tarea=None):
     if system == prompts.FILTRO:
         return {"categoria": "dentro_del_documento"}
     if system == prompts.EXPLICAME:

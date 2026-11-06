@@ -141,7 +141,7 @@ def test_el_recuadro_amarillo_cumple_contraste_wcag_aa(texto, fondo):
 def test_la_app_muestra_el_recuadro_con_las_excepciones_de_la_respuesta(monkeypatch):
     from streamlit.testing.v1 import AppTest
 
-    def falsa(system, user, imagen=None):
+    def falsa(system, user, imagen=None, tarea=None):
         return ia_simulada.falsa(system, user, imagen)
 
     monkeypatch.setenv("LLM_PROVIDER", "openai")

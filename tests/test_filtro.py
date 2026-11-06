@@ -3,13 +3,13 @@ from core import filtro
 
 def test_clasificar_usa_la_categoria_del_modelo(monkeypatch):
     monkeypatch.setattr(filtro, "para_prompt", lambda doc: "DOC")
-    monkeypatch.setattr(filtro, "complete", lambda system, user: {"categoria": filtro.DENTRO})
+    monkeypatch.setattr(filtro, "complete", lambda system, user, **k: {"categoria": filtro.DENTRO})
     assert filtro.clasificar("¿Qué dice la ley?", {}) == filtro.DENTRO
 
 
 def test_clasificar_convierte_una_categoria_desconocida_en_opinion(monkeypatch):
     monkeypatch.setattr(filtro, "para_prompt", lambda doc: "DOC")
-    monkeypatch.setattr(filtro, "complete", lambda system, user: {"categoria": "cualquier_cosa"})
+    monkeypatch.setattr(filtro, "complete", lambda system, user, **k: {"categoria": "cualquier_cosa"})
     assert filtro.clasificar("¿Qué dice la ley?", {}) == filtro.OPINION
 
 

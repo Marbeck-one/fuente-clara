@@ -1,5 +1,5 @@
 """Filtro de alcance: clasifica la entrada antes de llamar a cualquier módulo. Aplica el guardrail (core/guardrail.py)."""
-from core import guardrail, prompts
+from core import guardrail, jueza, prompts
 from core.documento import para_prompt
 from core.llm import complete
 
@@ -19,13 +19,18 @@ def clasificar(texto, doc, tipo="pregunta"):
     """Devuelve DENTRO, FUERA, OTRO_TEMA u OPINION. Si el modelo responde algo inesperado, se toma la opción prudente."""
     if guardrail.es_manipulacion(texto):  # capa 1: se rechaza sin llamar a la IA
         return OPINION
-    datos = complete(prompts.FILTRO, f"{para_prompt(doc)}\n\nTIPO DE ENTRADA: {tipo}\n{guardrail.delimitar(texto)}")
+    datos = complete(prompts.FILTRO, f"{para_prompt(doc)}\n\nTIPO DE ENTRADA: {tipo}\n{guardrail.delimitar(texto)}", tarea="filtro")
     categoria = str(datos.get("categoria", "")).strip()
     return categoria if categoria in (DENTRO, FUERA, OTRO_TEMA, OPINION) else OPINION
 
 
 def revisar_respuesta(r):
     """Capa 3 del guardrail: si la IA opinó, dio un veredicto o filtró sus instrucciones, no se muestra."""
-    if r.get("categoria") == OPINION or guardrail.salida_segura(r):
+    if r.get("categoria") == OPINION:
         return r
-    return {"categoria": OPINION, "bloqueada": "salida"}
+    if not guardrail.salida_segura(r):
+        return {"categoria": OPINION, "bloqueada": "salida"}
+    motivo = jueza.revisar(r)  # segunda revisión con IA (issue #29); apagada salvo LLM_JUEZA=1
+    if motivo:
+        return {"categoria": OPINION, "bloqueada": "jueza", "motivo_jueza": motivo}
+    return r
