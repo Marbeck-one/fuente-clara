@@ -58,19 +58,21 @@ def _firma(funcion, args):
     """Identifica una consulta por función y por sus argumentos simples (texto, números)."""
     partes = [getattr(funcion, "__name__", str(funcion))]
     partes += [str(a) for a in args if isinstance(a, (str, int, float))]
+    partes += [a["archivo"] for a in args if isinstance(a, dict) and a.get("archivo")]  # el documento también cuenta
     return "|".join(partes)
 
 
-def ejecutar(funcion, *args):
+def ejecutar(funcion, *args, previo=None):
     """Llama a la IA con un indicador de espera. Si falla, avisa y devuelve None.
 
     El primer argumento de `funcion` es siempre el texto de la persona. Al resultado se le agrega
     lo necesario para votarlo: un id, ese texto (queda solo en la sesión) y con qué se generó.
+    Si la consulta es un duplicado, devuelve `previo` (la respuesta que ya estaba en pantalla) para no borrarla.
     """
     if repetido(_firma(funcion, args)):
         st.toast("Ya hicimos esta consulta. Espera unos segundos antes de repetirla.",
                  icon=":material/hourglass_top:")
-        return None
+        return previo
     if not permitir_consulta():
         return None
     try:

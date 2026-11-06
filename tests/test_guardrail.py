@@ -55,3 +55,37 @@ def test_salida_segura_revisa_comparaciones():
 def test_salida_segura_permite_texto_normal():
     r = {"respuesta": "El documento dice que los colegios deben informar a los apoderados."}
     assert guardrail.salida_segura(r) is True
+
+
+PREGUNTAS_LEGITIMAS = [
+    "¿Qué dice la ley sobre contraseñas y datos personales?",
+    "¿Qué obligaciones tienen los organismos sobre las credenciales de acceso?",
+    "¿Quiénes votaron a favor de esta ley?",
+    "¿Se puede usar el celular sin restricciones en el recreo?",
+    "¿Qué pasa si un colegio actúa en contra de la ley?",
+    "¿Pueden pedirme la clave de acceso a mi celular en el colegio?",
+    "¿Qué es un incidente de ciberseguridad en el backend de una institución?",
+    "¿Qué instrucciones del sistema educativo establece la ley?",
+    "¿Cuáles son los derechos del titular de datos sobre su contraseña o clave?",
+    "¿Un funcionario puede suplantar la identidad de otro en un trámite?",
+    "¿Puedo hacer un reclamo en contra de un colegio por esta ley?",
+    "¿Se puede fabricar un reglamento interno distinto en cada colegio?",
+]
+
+
+def test_no_bloquea_preguntas_legitimas_con_palabras_de_las_leyes_del_catalogo():
+    """Palabras como contraseña, backend o «a favor de la ley» son tema legítimo (datos personales, ciberseguridad)."""
+    bloqueadas = [q for q in PREGUNTAS_LEGITIMAS if guardrail.es_manipulacion(q)]
+    assert bloqueadas == []
+
+
+def test_bloquea_todos_los_casos_de_manipulacion_de_las_preguntas_de_prueba():
+    import json
+    from pathlib import Path
+
+    ruta = Path(__file__).resolve().parents[1] / "tests" / "preguntas_prueba.json"
+    casos = json.loads(ruta.read_text(encoding="utf-8"))["documentos"]
+    for documento in casos.values():
+        for p in documento["preguntas"]:
+            if p["tipo"] == "manipulacion":
+                assert guardrail.es_manipulacion(p["pregunta"]), p["pregunta"]

@@ -195,7 +195,7 @@ def render(doc):
         if not texto.strip():
             st.warning("Escribe o extrae texto antes de comparar.", icon=":material/edit_note:")
         else:
-            st.session_state["ver"] = ejecutar(comparar, texto.strip(), doc)
+            st.session_state["ver"] = ejecutar(comparar, texto.strip(), doc, previo=st.session_state.get("ver"))
 
     r = st.session_state.get("ver")
     if not r:

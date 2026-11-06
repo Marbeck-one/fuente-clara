@@ -47,7 +47,7 @@ def render(doc):
         enviar = st.form_submit_button("Explícame", type="primary", icon=":material/auto_stories:", width="stretch")
     if enviar and pregunta.strip():
         st.session_state["exp_pregunta"] = pregunta.strip()
-        st.session_state["exp"] = ejecutar(explicar, pregunta.strip(), perfil, doc)
+        st.session_state["exp"] = ejecutar(explicar, pregunta.strip(), perfil, doc, previo=st.session_state.get("exp"))
 
     r = st.session_state.get("exp")
     if not r:

@@ -52,3 +52,25 @@ def test_ejecutar_bloquea_la_misma_consulta_repetida(sesion, monkeypatch):
     assert comun.ejecutar(comparar, "hola") is not None
     assert comun.ejecutar(comparar, "hola") is None
     assert llamadas == ["hola"]
+
+
+def test_ejecutar_duplicada_devuelve_la_respuesta_que_ya_estaba(sesion, monkeypatch):
+    """Al apretar dos veces el botón no se debe borrar la respuesta que ya se mostró."""
+    monkeypatch.setattr(comun, "permitir_consulta", lambda: True)
+    monkeypatch.setattr(comun.st, "spinner", lambda *a, **k: contextlib.nullcontext())
+    monkeypatch.setattr(comun.st, "toast", lambda *a, **k: None)
+    monkeypatch.setattr(comun.filtro, "revisar_respuesta", lambda r: r)
+    monkeypatch.setattr(comun.votos, "traza", lambda: {"modelo": "prueba", "version": "v"})
+
+    def comparar(texto):
+        return {"categoria": "dentro_del_documento"}
+
+    primera = comun.ejecutar(comparar, "hola")
+    assert comun.ejecutar(comparar, "hola", previo=primera) is primera
+
+
+def test_firma_distingue_el_documento():
+    def comparar(texto, doc):
+        pass
+
+    assert comun._firma(comparar, ("hola", {"archivo": "a.pdf"})) != comun._firma(comparar, ("hola", {"archivo": "b.pdf"}))

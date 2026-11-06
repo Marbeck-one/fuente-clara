@@ -50,7 +50,7 @@ def render(doc):
         duda = st.text_area("Tu duda", key="duda_estado", max_chars=500, placeholder=f"Ej: {ejemplo}")
         st.caption("No escribas tu nombre ni otros datos personales aquí.")
         if st.button("Preparar borrador", type="primary", icon=":material/edit_note:", width="stretch") and duda.strip():
-            st.session_state["est"] = ejecutar(preparar_solicitud, duda.strip(), doc)
+            st.session_state["est"] = ejecutar(preparar_solicitud, duda.strip(), doc, previo=st.session_state.get("est"))
 
     r = st.session_state.get("est")
     if not r:
