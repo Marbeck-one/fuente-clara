@@ -47,7 +47,7 @@ Política de retención de datos del proveedor elegido: ___
 - Bajo cada respuesta la persona puede votar 👍 o 👎. Cada voto guarda solo su contexto: pestaña, perfil, cuántas citas se verificaron, modelo, versión de las instrucciones y fecha. **Nunca la pregunta ni la respuesta.**
 - Si vota 👎, puede elegir un motivo de una lista fija (sin texto libre) y, **solo si marca la casilla**, autorizar que se guarden su pregunta y la respuesta "para mejorar las respuestas del modelo". La app no entrena ningún modelo: con esas respuestas el equipo corrige las instrucciones.
 - Antes de guardar se ocultan RUT, correos y teléfonos. El archivo (`data/votos/`) está fuera del repositorio y solo el equipo lo lee, con una clave (`CLAVE_EQUIPO`).
-- Retención de las respuestas guardadas: ___
+- Retención de las respuestas guardadas: **90 días** desde que la persona autoriza el guardado; después se eliminan.
 
 ## 6. IA usada para construir el prototipo
 
