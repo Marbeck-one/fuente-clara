@@ -35,14 +35,39 @@ def test_parsear_falla_sin_json_o_si_no_es_objeto():
 
 def test_complete_reintenta_una_vez_si_la_primera_respuesta_no_es_json(monkeypatch):
     respuestas = iter(["no es json", '{"ok": true}'])
-    monkeypatch.setattr(llm, "_llamar", lambda system, user: next(respuestas))
+    monkeypatch.setattr(llm, "_llamar", lambda system, user, imagen=None: next(respuestas))
     assert llm.complete("sistema", "usuario") == {"ok": True}
 
 
 def test_complete_falla_si_no_hay_json_valido(monkeypatch):
-    monkeypatch.setattr(llm, "_llamar", lambda system, user: "no es json")
+    monkeypatch.setattr(llm, "_llamar", lambda system, user, imagen=None: "no es json")
     with pytest.raises(llm.ErrorLLM):
         llm.complete("sistema", "usuario")
+
+
+def test_contenido_google_pone_la_imagen_primero():
+    imagen = object()
+    assert llm._contenido_google("texto", imagen) == [imagen, "texto"]
+    assert llm._contenido_google("texto", None) == "texto"
+
+
+def test_complete_reenvia_la_imagen(monkeypatch):
+    vista = {}
+
+    def falso_llamar(system, user, imagen=None):
+        vista["imagen"] = imagen
+        return '{"ok": true}'
+
+    monkeypatch.setattr(llm, "_llamar", falso_llamar)
+    imagen = object()
+    assert llm.complete("sistema", "usuario", imagen) == {"ok": True}
+    assert vista["imagen"] is imagen
+
+
+def test_imagen_rechazada_si_el_proveedor_no_es_google(monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "openai")
+    with pytest.raises(llm.ErrorLLM):
+        llm._llamar_proveedor("sistema", "usuario", imagen=object())
 
 
 def test_opcionales_solo_incluye_temperatura_si_esta_definida(monkeypatch):

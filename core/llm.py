@@ -58,17 +58,24 @@ def _respetar_intervalo():
     time.sleep(max(0.0, intervalo - (time.time() - _ultima_llamada[0])))
 
 
-def _llamar(system, user):
+def _contenido_google(user, imagen):
+    """La imagen va primero; google-genai la convierte a inlineData en base64."""
+    return [imagen, user] if imagen is not None else user
+
+
+def _llamar(system, user, imagen=None):
     _respetar_intervalo()
     try:
-        return _llamar_proveedor(system, user)
+        return _llamar_proveedor(system, user, imagen)
     finally:
         _ultima_llamada[0] = time.time()
 
 
-def _llamar_proveedor(system, user):
+def _llamar_proveedor(system, user, imagen=None):
     # El cliente se guarda en una variable: google-genai cierra su conexión si el cliente se descarta antes de la llamada.
     proveedor, modelo = configuracion()
+    if imagen is not None and proveedor != "google":
+        raise ErrorLLM("La lectura de imágenes requiere LLM_PROVIDER=google.")
     timeout = _timeout()
     max_tokens = _max_tokens()
     if proveedor == "anthropic":
@@ -92,7 +99,7 @@ def _llamar_proveedor(system, user):
     # En google-genai el timeout de HttpOptions se expresa en milisegundos.
     http_options = types.HttpOptions(timeout=int(timeout * 1000)) if timeout else None
     r = cliente.models.generate_content(
-        model=modelo, contents=user,
+        model=modelo, contents=_contenido_google(user, imagen),
         config=types.GenerateContentConfig(
             system_instruction=system, response_mime_type="application/json",
             max_output_tokens=max_tokens, http_options=http_options, **_opcionales()))
@@ -110,15 +117,19 @@ def _parsear(texto):
     return datos
 
 
-def complete(system, user):
-    """Pide al modelo una respuesta JSON y la devuelve como dict. Reintenta una vez si falla."""
+def complete(system, user, imagen=None):
+    """Pide al modelo una respuesta JSON y la devuelve como dict. Reintenta una vez si falla.
+
+    `imagen` es un PIL.Image.Image opcional. Se envía en la misma petición que el texto y
+    nunca se guarda ni se registra.
+    """
     system += INSTRUCCION_JSON
     error = None
     for _ in range(2):
         nota = ("\n\nIMPORTANTE: tu respuesta anterior no era JSON válido. Responde solo con el objeto JSON."
                 if isinstance(error, ValueError) else "")
         try:
-            return _parsear(_llamar(system, user + nota))
+            return _parsear(_llamar(system, user + nota, imagen))
         except ErrorLLM:
             raise
         except Exception as e:  # error de red, de API o JSON inválido
