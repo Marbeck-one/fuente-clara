@@ -3,6 +3,7 @@ streamlit==1.66.1
 pypdf==6.21.4
 python-dotenv==1.2.4
 pyyaml==6.0.3
+Pillow==13.0.0
 pandas==3.1.1       # panel de calidad
 altair==6.3.0       # gráficos del panel de calidad
 # Proveedores de IA (basta con el que uses, pero dejarlos todos facilita cambiar)

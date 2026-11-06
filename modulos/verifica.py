@@ -1,13 +1,17 @@
 """Módulo 2 · Verifica esto: pone lado a lado una afirmación y el texto oficial. No da veredictos."""
+import io
+import sys
 from html import escape
 
 import streamlit as st
+from PIL import Image, ImageOps
 
 from core import filtro, guardrail, prompts
 from core.citas import hay_verificada, verificar
 from core.documento import para_prompt
-from core.llm import complete
-from modulos.comun import aviso_otro_tema, encabezado, ejecutar, mostrar_citas, valorar
+from core.llm import ErrorLLM, complete
+from modulos.comun import (aviso_otro_tema, encabezado, ejecutar, mostrar_citas,
+                           permitir_consulta, valorar)
 
 # Etiquetas descriptivas fijadas por la app (la IA solo elige la clave).
 # Las tres comparten el mismo color: el color nunca da veredicto (DESIGN.md §4).
@@ -16,6 +20,9 @@ ETIQUETAS = {
     "dice_otra_cosa": "≠ El texto dice otra cosa",
     "no_menciona": "∅ El texto no lo menciona",
 }
+
+MAX_BYTES = 5 * 1024 * 1024
+FORMATOS = {"PNG", "JPEG", "WEBP"}
 
 
 def comparar(texto, doc):
@@ -34,6 +41,46 @@ def comparar(texto, doc):
                 "citas": verificar(c.get("citas"), doc),
             })
     return {"categoria": categoria, "comparaciones": comparaciones}
+
+
+def leer_imagen(datos):
+    """Valida y normaliza una captura. Lanza ValueError con un mensaje para la persona."""
+    if not datos:
+        raise ValueError("No recibimos ninguna imagen.")
+    if len(datos) > MAX_BYTES:
+        raise ValueError("La imagen supera los 5 MB. Recórtala o usa una captura más liviana.")
+
+    try:
+        imagen = Image.open(io.BytesIO(datos))
+        formato = imagen.format
+        imagen.load()
+        if formato not in FORMATOS:
+            raise ValueError("Formato no compatible. Usa PNG, JPG o WebP.")
+        if min(imagen.size) < 60:
+            raise ValueError("La imagen es demasiado pequeña para leer texto.")
+
+        # Respeta la orientación del celular y deja la imagen en RGB antes de enviarla.
+        imagen = ImageOps.exif_transpose(imagen)
+        if imagen.mode != "RGB":
+            if imagen.mode in ("RGBA", "LA", "PA") or (
+                    imagen.mode == "P" and "transparency" in imagen.info):
+                fondo = Image.new("RGB", imagen.size, "white")
+                rgba = imagen.convert("RGBA")
+                fondo.paste(rgba, mask=rgba.getchannel("A"))
+                imagen = fondo
+            else:
+                imagen = imagen.convert("RGB")
+        return imagen
+    except ValueError:
+        raise
+    except Exception:
+        raise ValueError("El archivo no es una imagen válida. Usa PNG, JPG o WebP.")
+
+
+def extraer_texto(imagen):
+    """Transcribe literalmente la imagen. La imagen no se guarda."""
+    datos = complete(prompts.TRANSCRIBIR, "Transcribe el texto visible en la imagen.", imagen=imagen)
+    return str(datos.get("texto", "")).strip()
 
 
 def _tarjeta(c):
@@ -56,13 +103,60 @@ def _tarjeta(c):
 def render(doc):
     encabezado("Paso 2 · Verificar", "Verifica esto",
                "Pega una cadena, post o titular. Lo ponemos al lado de lo que dice el texto oficial.")
+    st.session_state.setdefault("ver_texto", "")
+
+    st.warning("No subas capturas con nombres, teléfonos, RUT, correos ni otros datos personales. "
+               "Si aparecen, recórtalos antes de subir la imagen.",
+               icon=":material/privacy_tip:")
+
+    with st.container(border=True):
+        st.subheader("¿La cadena está en una captura?")
+        st.caption("Sube una imagen y la app intentará leer el texto. Revísalo y corrígelo antes de comparar.")
+        archivo = st.file_uploader("Captura (PNG, JPG o WebP · máx. 5 MB)",
+                                   type=["png", "jpg", "jpeg", "webp"], key="ver_archivo")
+        with st.expander("Usar la cámara"):
+            camara = st.camera_input("Toma una foto de la cadena", key="ver_camara")
+        fuente = archivo or camara
+
+        if fuente:
+            try:
+                imagen = leer_imagen(fuente.getvalue())
+            except ValueError as e:
+                st.error(str(e), title="No pudimos usar esa imagen", icon=":material/image_not_supported:")
+            else:
+                st.image(imagen, caption="Vista previa. La imagen no se guarda.", width=420)
+                if st.button("Leer texto de la imagen", icon=":material/document_scanner:",
+                             width="stretch", key="ver_leer") and permitir_consulta():
+                    with st.spinner("Leyendo la imagen…"):
+                        try:
+                            extraido = extraer_texto(imagen)
+                        except ErrorLLM as e:
+                            print(f"[Fuente Clara] No se pudo leer la imagen: {e}", file=sys.stderr)
+                            st.error("No pudimos leer la imagen. Intenta de nuevo o pega el texto a mano.",
+                                     title="No pudimos leer la imagen", icon=":material/cloud_off:")
+                        else:
+                            if not extraido:
+                                st.warning("No encontramos texto legible. Prueba con una captura más nítida "
+                                           "o pega el texto a mano.", icon=":material/search_off:")
+                            else:
+                                st.session_state["ver_texto"] = extraido[:guardrail.LARGO_MAXIMO]
+                                st.session_state["ver_recortado"] = len(extraido) > guardrail.LARGO_MAXIMO
+                                st.session_state.pop("ver", None)
+                                st.rerun()
+
     with st.form("form_verifica"):
         ejemplo = (doc.get("ejemplos") or {}).get("afirmacion", "«Con esta ley ya no se podrá…»")
-        texto = st.text_area("Texto a comparar", max_chars=1500, placeholder=f"Ej: {ejemplo}")
+        texto = st.text_area("Texto a comparar", max_chars=guardrail.LARGO_MAXIMO,
+                             key="ver_texto", placeholder=f"Ej: {ejemplo}")
+        if st.session_state.get("ver_recortado"):
+            st.caption("La captura tenía más de 1.500 caracteres. Recortamos el texto; puedes completarlo a mano.")
         enviar = st.form_submit_button("Comparar con el texto oficial", type="primary",
                                        icon=":material/compare_arrows:", width="stretch")
-    if enviar and texto.strip():
-        st.session_state["ver"] = ejecutar(comparar, texto.strip(), doc)
+    if enviar:
+        if not texto.strip():
+            st.warning("Escribe o extrae texto antes de comparar.", icon=":material/edit_note:")
+        else:
+            st.session_state["ver"] = ejecutar(comparar, texto.strip(), doc)
 
     r = st.session_state.get("ver")
     if not r:
