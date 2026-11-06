@@ -114,8 +114,22 @@ def render(doc):
                "Pega una cadena, post o titular. Lo ponemos al lado de lo que dice el texto oficial.")
     st.session_state.setdefault("ver_texto", "")
 
+    st.info(
+        "**Qué puedes hacer aquí:** comparar una afirmación, cadena, post o titular con el texto oficial del documento.\n\n"
+        "- **Escribe o sube:** una afirmación concreta sobre el tema del documento, o una captura nítida "
+        "donde se lea el texto (publicación, mensaje, titular).\n"
+        "- **No sirve para:** fotos de personas, paisajes o memes sin texto, capturas borrosas, "
+        "conversaciones privadas con datos personales, opiniones o temas que el documento no trata.\n"
+        "- **Cómo usarla:** extrae o pega el texto, revísalo y corrígelo, y después compáralo. "
+        "La app no da veredictos: muestra el texto oficial para que tú decidas.\n\n"
+        "Para explicaciones usa **Explícame**; si falta un dato, usa **Pregúntale al Estado**.",
+        title="Cómo usar Verifica esto",
+        icon=":material/info:",
+    )
+
     st.warning("No subas capturas con nombres, teléfonos, RUT, correos ni otros datos personales. "
-               "Si aparecen, recórtalos antes de subir la imagen.",
+               "Si aparecen, recórtalos antes de subir la imagen. La captura se envía al proveedor de IA "
+               "para transcribirla y no se guarda en Fuente Clara.",
                icon=":material/privacy_tip:")
 
     with st.container(border=True):
