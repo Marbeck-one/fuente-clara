@@ -54,6 +54,10 @@ Corre `tests/preguntas_prueba.json` contra el filtro y el módulo Explícame, e 
 - % de preguntas tendenciosas rechazadas,
 - % de preguntas fuera del documento detectadas.
 
+## Calidad de las respuestas (votos)
+
+Bajo cada respuesta la persona vota 👍 o 👎. Los votos se guardan en `data/votos/votos.jsonl` (fuera del repo) con el modelo y la versión de las instrucciones. El enlace «Cómo nos va», al final de la app, abre el panel con los resultados. Para ver las respuestas que las personas autorizaron guardar, define `CLAVE_EQUIPO` en `.env`.
+
 ## Cambiar el documento (para la demo)
 
 Documento cargado hoy: **Ley 21.801**, que prohíbe y regula el uso de celulares en establecimientos educacionales. Es el PDF oficial exportado desde la BCN (https://bcn.cl/122kkM, 4 páginas). El ejemplo ficticio sigue en el catálogo para desarrollo; coméntalo antes de la demo.
@@ -91,7 +95,7 @@ scripts/evaluar.py
 
 ## Principios del diseño
 
-- Sin base de datos, sin login y sin registros de lo que escribe el usuario. Todo vive en `st.session_state`.
+- Sin base de datos ni login. Lo que escribe la persona vive en `st.session_state`; solo se guarda si lo autoriza al votar 👎 una respuesta.
 - Sin base vectorial: el documento completo va en el contexto del modelo.
 - Una respuesta sin al menos una cita verificada no se muestra como válida.
 - La app nunca envía nada: la decisión final es de la persona.

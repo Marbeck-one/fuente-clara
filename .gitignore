@@ -2,3 +2,6 @@
 .venv/
 __pycache__/
 *.pyc
+
+# Votos de las personas (pueden incluir preguntas que autorizaron guardar): nunca al repo
+data/votos/

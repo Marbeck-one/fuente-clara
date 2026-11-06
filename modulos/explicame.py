@@ -7,7 +7,7 @@ from core import filtro, prompts
 from core.citas import hay_verificada, verificar
 from core.documento import para_prompt
 from core.llm import complete
-from modulos.comun import PESTANAS, encabezado, ejecutar, mostrar_citas
+from modulos.comun import PESTANAS, encabezado, ejecutar, mostrar_citas, valorar
 
 PERFILES = ["Estudiante", "Trabajador/a", "Adulto mayor"]  # por defecto; cada documento puede definir los suyos
 ICONOS = {"Estudiante": ":material/school:", "Trabajador/a": ":material/work:", "Adulto mayor": ":material/elderly:",
@@ -72,3 +72,4 @@ def render(doc):
                     st.markdown(r["que_cambia"])
             st.html('<p class="fc-antetitulo">De dónde sale</p>')
             mostrar_citas(r["citas"], doc)
+    valorar(r, "Explícame")

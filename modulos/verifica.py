@@ -7,7 +7,7 @@ from core import filtro, prompts
 from core.citas import hay_verificada, verificar
 from core.documento import para_prompt
 from core.llm import complete
-from modulos.comun import encabezado, ejecutar, mostrar_citas
+from modulos.comun import encabezado, ejecutar, mostrar_citas, valorar
 
 # Etiquetas descriptivas fijadas por la app (la IA solo elige la clave).
 # Las tres comparten el mismo color: el color nunca da veredicto (DESIGN.md §4).
@@ -69,6 +69,7 @@ def render(doc):
         return
     if r["categoria"] == filtro.OPINION:
         st.info(filtro.MENSAJE_FIJO, title="Fuente Clara no opina", icon=":material/balance:")
+        valorar(r, "Verifica esto")
         return
     if not r["comparaciones"]:
         st.warning("No encontramos afirmaciones sobre el contenido del documento para comparar.", icon=":material/report:")
@@ -77,3 +78,4 @@ def render(doc):
             _tarjeta(c)
             mostrar_citas(c["citas"], doc)
     st.caption("Fuente Clara no dice quién tiene razón: muestra el texto oficial para que tú compares y decidas.")
+    valorar(r, "Verifica esto")

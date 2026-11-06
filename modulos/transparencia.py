@@ -12,7 +12,7 @@ from core import filtro, prompts
 from core.citas import verificar
 from core.documento import para_prompt
 from core.llm import complete
-from modulos.comun import encabezado, ejecutar, mostrar_citas
+from modulos.comun import encabezado, ejecutar, mostrar_citas, valorar
 
 CONFIG = Path(__file__).resolve().parents[1] / "config" / "transparencia.yaml"
 POR_VERIFICAR = '<span class="fc-pill fc-pill--aviso">Por verificar</span>'
@@ -57,6 +57,7 @@ def render(doc):
         return
     if r["categoria"] == filtro.OPINION:
         st.info(filtro.MENSAJE_FIJO, title="Fuente Clara no opina", icon=":material/balance:")
+        valorar(r, "Pregúntale al Estado")
         return
     if r["categoria"] == filtro.DENTRO:
         st.info("Puede que el documento ya responda esto. Prueba también en «Explícame».", icon=":material/menu_book:")
@@ -75,7 +76,8 @@ def render(doc):
     with st.container(border=True, key="fc-decision"):
         st.html('<p class="fc-antetitulo">Tú decides</p>'
                 '<h3 class="fc-h3">Revisa el borrador. Tú decides si lo envías en el Portal de Transparencia.</h3>'
-                '<p class="fc-texto-2">Fuente Clara no envía nada ni guarda tus datos. Tu nombre y dirección los '
+                '<p class="fc-texto-2">Fuente Clara no envía nada y no guarda tu duda, salvo que tú lo autorices '
+                'al votar la respuesta. Tu nombre y dirección los '
                 'completas directamente en el portal oficial.</p>'
                 '<p class="fc-antetitulo" style="margin-top:1rem">Pasos</p>'
                 f'<ol class="fc-pasos">{"".join(f"<li>{_dato(p)}</li>" for p in cfg["pasos"])}</ol>'
@@ -86,3 +88,4 @@ def render(doc):
         if st.checkbox("Revisé el borrador y entiendo que yo decido si enviarlo."):
             st.link_button(f"Ir al {cfg['portal']['texto']}", cfg["portal"]["url"], type="primary",
                            icon=":material/open_in_new:", width="stretch")
+    valorar(r, "Pregúntale al Estado")

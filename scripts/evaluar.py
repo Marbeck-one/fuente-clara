@@ -5,13 +5,14 @@ Si no se indica archivo, usa el primer documento de data/documentos/catalogo.yam
 """
 import json
 import sys
+from datetime import datetime
 from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ))
 sys.stdout.reconfigure(encoding="utf-8")
 
-from core import documento, filtro  # noqa: E402
+from core import documento, filtro, prompts  # noqa: E402
 from core.citas import hay_verificada  # noqa: E402
 from core.llm import ErrorLLM, configuracion  # noqa: E402
 from modulos.explicame import explicar  # noqa: E402
@@ -31,7 +32,8 @@ def main():
         sys.exit(f"No hay preguntas de prueba para '{archivo}' en tests/preguntas_prueba.json")
     preguntas = casos[archivo]["preguntas"]
     proveedor, modelo = configuracion()
-    print(f"Documento: {doc['titulo']}\nModelo: {modelo} ({proveedor})\n")
+    print(f"Documento: {doc['titulo']}\nModelo: {modelo} ({proveedor})\n"
+          f"Instrucciones: {prompts.VERSION}\nFecha: {datetime.now():%d-%m-%Y %H:%M}\n")
 
     aciertos = {tipo: 0 for tipo in ESPERADO}
     totales = {tipo: 0 for tipo in ESPERADO}

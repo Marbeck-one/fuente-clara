@@ -25,7 +25,7 @@ Se usa un solo modelo para las cuatro tareas. La app muestra en pantalla qué mo
 - No dice si algo es "verdadero" o "falso". Las etiquetas del verificador las fija la app y solo describen lo que dice el texto.
 - No genera datos jurídicos (ley, plazos, pasos, portal). Salen de `config/transparencia.yaml`, revisado por el equipo.
 - No envía solicitudes ni toma decisiones. La persona revisa y decide.
-- No pide ni guarda nombre, dirección ni otros datos personales.
+- No pide nombre, dirección ni otros datos personales.
 
 ## 4. Controles que no dependen de la IA (están en el código)
 
@@ -33,12 +33,20 @@ Se usa un solo modelo para las cuatro tareas. La app muestra en pantalla qué mo
 - **Respuestas sin cita verificada no se muestran** como válidas.
 - **Etiquetas fijas** del verificador definidas en `modulos/verifica.py`.
 - **Borrador armado con plantilla** (`config/transparencia.yaml`) con marcadores `[TU NOMBRE]` y `[TU DIRECCIÓN]`.
-- **Sin base de datos, sin login y sin registros** de lo que escribe el usuario.
+- **Sin base de datos ni login.** Lo que escribe la persona no se guarda, salvo que lo autorice al votar 👎 una respuesta (ver sección 5b).
+- **Trazabilidad** (`core/votos.py`): cada voto guarda el modelo y la versión de las instrucciones (`prompts.VERSION`, cambia sola al editar un prompt), para saber si un cambio mejoró o empeoró las respuestas. Panel público en la página «Calidad de las respuestas».
 
 ## 5. Datos que se envían al proveedor de IA
 
 En cada consulta se envía el documento público completo y el texto que escribió la persona. No se envían datos de identificación porque la app no los pide.
 Política de retención de datos del proveedor elegido: ___
+
+## 5b. Votos sobre las respuestas
+
+- Bajo cada respuesta la persona puede votar 👍 o 👎. Cada voto guarda solo su contexto: pestaña, perfil, cuántas citas se verificaron, modelo, versión de las instrucciones y fecha. **Nunca la pregunta ni la respuesta.**
+- Si vota 👎, puede elegir un motivo de una lista fija (sin texto libre) y, **solo si marca la casilla**, autorizar que se guarden su pregunta y la respuesta "para mejorar las respuestas del modelo". La app no entrena ningún modelo: con esas respuestas el equipo corrige las instrucciones.
+- Antes de guardar se ocultan RUT, correos y teléfonos. El archivo (`data/votos/`) está fuera del repositorio y solo el equipo lo lee, con una clave (`CLAVE_EQUIPO`).
+- Retención de las respuestas guardadas: ___
 
 ## 6. IA usada para construir el prototipo
 

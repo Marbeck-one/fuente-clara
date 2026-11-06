@@ -126,3 +126,6 @@
   *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important;
     transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* Panel de calidad: las cifras grandes en semibold, como el resto de los títulos */
+[data-testid="stMetricValue"] { font-weight: 700; }

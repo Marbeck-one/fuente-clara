@@ -1,9 +1,11 @@
 """Piezas de interfaz compartidas. Estilos en static/estilo.css; criterios en DESIGN.md."""
+import uuid
 from html import escape
 from pathlib import Path
 
 import streamlit as st
 
+from core import votos
 from core.llm import ErrorLLM
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
@@ -26,14 +28,61 @@ def encabezado(antetitulo, titulo, bajada):
 
 
 def ejecutar(funcion, *args):
-    """Llama a la IA con un indicador de espera. Si falla, avisa y devuelve None."""
+    """Llama a la IA con un indicador de espera. Si falla, avisa y devuelve None.
+
+    El primer argumento de `funcion` es siempre el texto de la persona. Al resultado se le agrega
+    lo necesario para votarlo: un id, ese texto (queda solo en la sesión) y con qué se generó.
+    """
     try:
         with st.spinner("Leyendo el documento…"):
-            return funcion(*args)
+            r = funcion(*args)
     except ErrorLLM as e:
         st.error(f"Revisa tu archivo .env o intenta de nuevo. ({e})",
                  title="No pudimos obtener respuesta", icon=":material/cloud_off:")
         return None
+    r.update(id=uuid.uuid4().hex[:12], entrada=args[0], documento=st.session_state.get("doc_actual"),
+             traza=votos.traza())
+    return r
+
+
+def _al_votar(r, pestana):
+    valor = st.session_state.get(f"fc-pulgar-{r['id']}")
+    if valor is None:
+        return
+    try:
+        votos.votar(r, pestana, bueno=valor == 1)
+    except OSError:
+        st.toast("No pudimos guardar tu voto.", icon=":material/error:")
+        return
+    st.session_state.setdefault("votos", {})[r["id"]] = "bueno" if valor == 1 else "malo"
+
+
+def _al_detallar(r):
+    rid = r["id"]
+    try:
+        votos.detallar(r, st.session_state.get(f"fc-motivo-{rid}"), st.session_state.get(f"fc-autoriza-{rid}"))
+    except OSError:
+        st.toast("No pudimos guardar tu comentario.", icon=":material/error:")
+    st.session_state["votos"][rid] = "listo"
+
+
+def valorar(r, pestana):
+    """Voto 👍/👎 bajo cada respuesta. Con 👎 pide el motivo y, solo si la persona autoriza, guarda el texto."""
+    rid, estado = r["id"], st.session_state.get("votos", {}).get(r["id"])
+    with st.container(key=f"fc-voto-{rid}"):
+        if estado is None:
+            st.caption("¿Te sirvió esta respuesta?")
+            st.feedback("thumbs", key=f"fc-pulgar-{rid}", on_change=_al_votar, args=(r, pestana))
+        elif estado == "malo":
+            with st.form(f"fc-detalle-{rid}", border=False):
+                st.pills("¿Qué falló?", votos.MOTIVOS, key=f"fc-motivo-{rid}")
+                st.checkbox("Guardar mi pregunta y esta respuesta para mejorar las respuestas del modelo. "
+                            "Solo el equipo de Fuente Clara podrá leerlas.", key=f"fc-autoriza-{rid}")
+                st.caption("Si escribiste datos personales, no lo marques. Igual ocultamos RUT, correos y teléfonos.")
+                st.form_submit_button("Enviar", on_click=_al_detallar, args=(r,))
+        else:
+            st.caption("Gracias. Tu voto nos ayuda a medir la calidad de las respuestas.")
+        st.caption(f"Respuesta generada con {r['traza']['modelo']} · instrucciones {r['traza']['version']}")
 
 
 def enlace_fuente(doc):
