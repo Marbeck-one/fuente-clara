@@ -18,4 +18,4 @@ jobs:
       - name: Compilar
         run: python -m compileall -q app.py core modulos scripts
       - name: Pruebas
-        run: pytest -q
+        run: python -m pytest -q
