@@ -99,13 +99,13 @@ def test_si_todos_fallan_dice_por_que(monkeypatch, cadena):
 
 
 def test_las_imagenes_van_solo_a_modelos_que_las_leen(monkeypatch, cadena):
-    llamadas = _simular(monkeypatch, {"google": ['{"ok": 1}']})
+    llamadas = _simular(monkeypatch, {"anthropic": ['{"ok": 1}']})
     assert llm.complete("s", "u", imagen=object()) == {"ok": 1}
-    assert [p for p, _ in llamadas] == ["google"]
+    assert [p for p, _ in llamadas] == ["anthropic"]
 
 
 def test_imagen_sin_modelo_que_la_lea(monkeypatch, cadena):
-    monkeypatch.setenv("LLM_CADENA", "anthropic:claude-a,groq:openai/gpt-oss-120b")
+    monkeypatch.setenv("LLM_CADENA", "groq:openai/gpt-oss-120b,deepseek:deepseek-chat")
     with pytest.raises(llm.ErrorLLM):
         llm.complete("s", "u", imagen=object())
 

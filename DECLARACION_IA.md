@@ -6,7 +6,8 @@
 
 | Uso en la app | Proveedor | Modelo | Dónde se configura |
 |---|---|---|---|
-| Filtro de alcance, Explícame, Verifica esto y Pregúntale al Estado | ___ (anthropic / openai / google) | ___ | `LLM_PROVIDER` y `LLM_MODEL` en `.env` |
+| Filtro de alcance, Explícame, Verifica esto y Pregúntale al Estado | anthropic (Claude Haiku 5.5) o google, según `.env` | `claude-haiku-5-5` | `LLM_PROVIDER` y `LLM_MODEL` en `.env` |
+| Lectura de capturas en Verifica esto | Mismo proveedor activo | Mismo modelo | La captura viaja solo al proveedor activo; no se guarda |
 
 Se usa un solo modelo para las cuatro tareas. La app muestra en pantalla qué modelo está activo.
 

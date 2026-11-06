@@ -7,7 +7,7 @@ from html import escape
 import streamlit as st
 from PIL import Image, ImageOps
 
-from core import filtro, guardrail, prompts
+from core import filtro, guardrail, llm, prompts
 from core.citas import hay_verificada, verificar
 from core.documento import para_prompt
 from core.llm import ErrorLLM, complete
@@ -140,49 +140,53 @@ def render(doc):
 
     with st.container(border=True):
         st.subheader("¿La cadena está en una captura?")
-        st.caption("Sube una imagen y la app intentará leer el texto. Revísalo y corrígelo antes de comparar.")
-        archivo = st.file_uploader("Captura (PNG, JPG o WebP · máx. 5 MB)",
-                                   type=["png", "jpg", "jpeg", "webp"], key="ver_archivo")
-        camara = None
-        if st.session_state.get("ver_camara_activa"):
-            camara = st.camera_input("Toma una foto de la cadena", key="ver_camara")
-            st.button("Cerrar cámara", on_click=_cerrar_camara,
-                      icon=":material/videocam_off:", key="ver_cerrar_camara")
+        if not llm.soporta_imagenes():
+            st.info("La lectura de capturas no está disponible con el proveedor de IA activo. Pega el texto a mano.",
+                    icon=":material/image_not_supported:")
         else:
-            st.button("Activar cámara", on_click=_activar_camara,
-                      icon=":material/photo_camera:", key="ver_activar_camara")
-        fuente = archivo or camara
-
-        if fuente:
-            try:
-                imagen = leer_imagen(fuente.getvalue())
-            except ValueError as e:
-                st.error(str(e), title="No pudimos usar esa imagen", icon=":material/image_not_supported:")
+            st.caption("Sube una imagen y la app intentará leer el texto. Revísalo y corrígelo antes de comparar.")
+            archivo = st.file_uploader("Captura (PNG, JPG o WebP · máx. 5 MB)",
+                                       type=["png", "jpg", "jpeg", "webp"], key="ver_archivo")
+            camara = None
+            if st.session_state.get("ver_camara_activa"):
+                camara = st.camera_input("Toma una foto de la cadena", key="ver_camara")
+                st.button("Cerrar cámara", on_click=_cerrar_camara,
+                          icon=":material/videocam_off:", key="ver_cerrar_camara")
             else:
-                st.image(imagen, caption="Vista previa. La imagen no se guarda.", width=420)
-                if st.button("Leer texto de la imagen", icon=":material/document_scanner:",
-                             width="stretch", key="ver_leer"):
-                    firma = "imagen:" + hashlib.sha256(fuente.getvalue()).hexdigest()
-                    if repetido(firma):
-                        st.toast("Ya leímos esta imagen. Corrige el texto o prueba con otra captura.",
-                                 icon=":material/hourglass_top:")
-                    elif permitir_consulta():
-                        with st.spinner("Leyendo la imagen…"):
-                            try:
-                                extraido = extraer_texto(imagen)
-                            except ErrorLLM as e:
-                                print(f"[Fuente Clara] No se pudo leer la imagen: {e}", file=sys.stderr)
-                                st.error("No pudimos leer la imagen. Intenta de nuevo o pega el texto a mano.",
-                                         title="No pudimos leer la imagen", icon=":material/cloud_off:")
-                            else:
-                                if not extraido:
-                                    st.warning("No encontramos texto legible. Prueba con una captura más nítida "
-                                               "o pega el texto a mano.", icon=":material/search_off:")
+                st.button("Activar cámara", on_click=_activar_camara,
+                          icon=":material/photo_camera:", key="ver_activar_camara")
+            fuente = archivo or camara
+
+            if fuente:
+                try:
+                    imagen = leer_imagen(fuente.getvalue())
+                except ValueError as e:
+                    st.error(str(e), title="No pudimos usar esa imagen", icon=":material/image_not_supported:")
+                else:
+                    st.image(imagen, caption="Vista previa. La imagen no se guarda.", width=420)
+                    if st.button("Leer texto de la imagen", icon=":material/document_scanner:",
+                                 width="stretch", key="ver_leer"):
+                        firma = "imagen:" + hashlib.sha256(fuente.getvalue()).hexdigest()
+                        if repetido(firma):
+                            st.toast("Ya leímos esta imagen. Corrige el texto o prueba con otra captura.",
+                                     icon=":material/hourglass_top:")
+                        elif permitir_consulta():
+                            with st.spinner("Leyendo la imagen…"):
+                                try:
+                                    extraido = extraer_texto(imagen)
+                                except ErrorLLM as e:
+                                    print(f"[Fuente Clara] No se pudo leer la imagen: {e}", file=sys.stderr)
+                                    st.error("No pudimos leer la imagen. Intenta de nuevo o pega el texto a mano.",
+                                             title="No pudimos leer la imagen", icon=":material/cloud_off:")
                                 else:
-                                    st.session_state["ver_texto"] = extraido[:guardrail.LARGO_MAXIMO]
-                                    st.session_state["ver_recortado"] = len(extraido) > guardrail.LARGO_MAXIMO
-                                    st.session_state.pop("ver", None)
-                                    st.rerun()
+                                    if not extraido:
+                                        st.warning("No encontramos texto legible. Prueba con una captura más nítida "
+                                                   "o pega el texto a mano.", icon=":material/search_off:")
+                                    else:
+                                        st.session_state["ver_texto"] = extraido[:guardrail.LARGO_MAXIMO]
+                                        st.session_state["ver_recortado"] = len(extraido) > guardrail.LARGO_MAXIMO
+                                        st.session_state.pop("ver", None)
+                                        st.rerun()
 
     with st.form("form_verifica"):
         ejemplo = (doc.get("ejemplos") or {}).get("afirmacion", "«Con esta ley ya no se podrá…»")

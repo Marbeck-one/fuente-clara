@@ -7,6 +7,8 @@
 
 No registra ni guarda lo que escribe el usuario.
 """
+import base64
+import io
 import json
 import os
 import re
@@ -19,7 +21,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 MODELOS_POR_DEFECTO = {
-    "anthropic": "claude-sonnet-5-5",
+    "anthropic": "claude-haiku-5-5",
     "openai": "gpt-4.1-mini",
     "google": "gemini-2.5-flash",
 }
@@ -38,10 +40,11 @@ CLAVES = {
     "google": ("GOOGLE_API_KEY", "GEMINI_API_KEY"),
     **{p: (variable,) for p, (_, variable) in COMPATIBLES_OPENAI.items()},
 }
-LEEN_IMAGENES = {"google"}
+LEEN_IMAGENES = {"google", "anthropic"}
+MAX_BYTES_IMAGEN = 5 * 1024 * 1024  # Anthropic acepta hasta 5 MB por imagen
 PAUSA_SATURADO, PAUSA_INVALIDO = 45, 600  # segundos que se salta un modelo saturado o con clave/modelo inválido
 INSTRUCCION_JSON = "\n\nResponde ÚNICAMENTE con un objeto JSON válido, sin texto adicional ni bloques de código."
-SIN_IMAGENES = "La lectura de imágenes requiere un modelo de Google (LLM_PROVIDER o LLM_CADENA)."
+SIN_IMAGENES = "La lectura de imágenes requiere un modelo de Google o Anthropic (LLM_PROVIDER o LLM_CADENA)."
 
 
 class ErrorLLM(Exception):
@@ -76,6 +79,11 @@ def tiene_clave(proveedor):
     return any(os.getenv(v, "").strip() for v in CLAVES[proveedor])
 
 
+def soporta_imagenes():
+    """True si algún modelo de la cadena puede leer capturas."""
+    return any(proveedor in LEEN_IMAGENES for proveedor, _ in cadena())
+
+
 # --- Modelos en pausa: compartido entre todas las sesiones de la app ---------------------------
 _pausas = {}
 _candado = threading.Lock()
@@ -99,8 +107,11 @@ def ultimo_modelo():
     return getattr(_hilo, "ultimo", None) or configuracion()
 
 
-def _opcionales():
+def _opcionales(modelo=""):
     # La temperatura es opcional porque algunos modelos nuevos no la aceptan.
+    # Claude Haiku 5.5 no tiene temperatura configurable, así que nunca se envía.
+    if modelo.startswith("claude-haiku-5"):
+        return {}
     temperatura = os.getenv("LLM_TEMPERATURE", "").strip()
     return {"temperature": float(temperatura)} if temperatura else {}
 
@@ -139,6 +150,27 @@ def _contenido_google(user, imagen):
     return [imagen, user] if imagen is not None else user
 
 
+def _imagen_jpeg_base64(imagen):
+    """Codifica la captura en JPEG base64. Se usa solo para la petición; nunca se guarda."""
+    salida = io.BytesIO()
+    imagen.save(salida, format="JPEG", quality=92)
+    datos = salida.getvalue()
+    if len(datos) > MAX_BYTES_IMAGEN:
+        raise ErrorLLM("La imagen es demasiado grande para enviarla al modelo.")
+    return base64.standard_b64encode(datos).decode("ascii")
+
+
+def _contenido_anthropic(user, imagen):
+    """Anthropic recibe la imagen como bloque base64 antes del texto."""
+    if imagen is None:
+        return user
+    return [
+        {"type": "image", "source": {"type": "base64", "media_type": "image/jpeg",
+                                     "data": _imagen_jpeg_base64(imagen)}},
+        {"type": "text", "text": user},
+    ]
+
+
 def _llamar(system, user, imagen=None, eslabon=None, reintentos=True):
     _respetar_intervalo()
     try:
@@ -162,7 +194,8 @@ def _llamar_proveedor(system, user, imagen=None, eslabon=None, reintentos=True):
         cliente = anthropic.Anthropic(**opciones)
         r = cliente.messages.create(
             model=modelo, max_tokens=max_tokens, system=system,
-            messages=[{"role": "user", "content": user}], **_opcionales())
+            messages=[{"role": "user", "content": _contenido_anthropic(user, imagen)}],
+            **_opcionales(modelo))
         return "".join(b.text for b in r.content if b.type == "text")
     if proveedor == "google":
         from google import genai
@@ -174,7 +207,7 @@ def _llamar_proveedor(system, user, imagen=None, eslabon=None, reintentos=True):
             model=modelo, contents=_contenido_google(user, imagen),
             config=types.GenerateContentConfig(
                 system_instruction=system, response_mime_type="application/json",
-                max_output_tokens=max_tokens, http_options=http_options, **_opcionales()))
+                max_output_tokens=max_tokens, http_options=http_options, **_opcionales(modelo)))
         return r.text or ""
     # openai y los compatibles (groq, mistral…): mismo cliente, cambian la dirección y la clave.
     from openai import OpenAI
@@ -185,7 +218,7 @@ def _llamar_proveedor(system, user, imagen=None, eslabon=None, reintentos=True):
     r = cliente.chat.completions.create(
         model=modelo, max_tokens=max_tokens, response_format={"type": "json_object"},
         messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
-        **_opcionales())
+        **_opcionales(modelo))
     return r.choices[0].message.content or ""
 
 
