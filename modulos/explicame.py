@@ -7,7 +7,7 @@ from core import filtro, guardrail, prompts
 from core.citas import hay_verificada, verificar
 from core.documento import para_prompt
 from core.llm import complete
-from modulos.comun import PESTANAS, encabezado, ejecutar, mostrar_citas, valorar
+from modulos.comun import PESTANAS, aviso_otro_tema, encabezado, ejecutar, mostrar_citas, valorar
 
 PERFILES = ["Estudiante", "Trabajador/a", "Adulto mayor"]  # por defecto; cada documento puede definir los suyos
 ICONOS = {"Estudiante": ":material/school:", "Trabajador/a": ":material/work:", "Adulto mayor": ":material/elderly:",
@@ -22,7 +22,7 @@ def explicar(pregunta, perfil, doc):
     """Pasa por el filtro y, si corresponde, pide la explicación y verifica sus citas."""
     categoria = filtro.clasificar(pregunta, doc)
     if categoria != filtro.DENTRO:
-        return {"categoria": categoria}
+        return {"categoria": categoria}  # FUERA, OTRO_TEMA u OPINION: no se llama al modelo de respuesta
     perfil_txt = perfil if perfil in perfiles(doc) else "ninguno"
     datos = complete(prompts.EXPLICAME, f"{para_prompt(doc)}\n\nPERFIL: {perfil_txt}\nPREGUNTA:\n{guardrail.delimitar(pregunta)}")
     en_documento = str(datos.get("en_documento")).lower() == "true"
@@ -54,6 +54,8 @@ def render(doc):
         return
     if r["categoria"] == filtro.OPINION:
         st.info(filtro.MENSAJE_FIJO, title="Fuente Clara no opina", icon=":material/balance:")
+    elif r["categoria"] == filtro.OTRO_TEMA:
+        aviso_otro_tema(doc)  # sin botón: preguntarle al Estado no sirve para un tema que el documento no trata
     elif r["categoria"] == filtro.FUERA:
         st.info("Preferimos decírtelo antes que adivinar. Puedes preguntarle directamente al organismo que tiene la información.",
                 title="El documento no responde esta pregunta", icon=":material/search_off:")

@@ -4,6 +4,7 @@
 # Campos opcionales:
 #   perfiles: opciones de "Qué cambia para ti" (por defecto: Estudiante, Trabajador/a, Adulto mayor)
 #   ejemplos: textos de ejemplo que se muestran dentro de cada campo
+#   trata_de: de qué trata el documento, en una frase. Se usa en «Estás leyendo la ley que trata de …»
 
 documentos:
   - archivo: ley_21801_celulares_en_colegios.pdf
@@ -11,6 +12,7 @@ documentos:
     fuente_nombre: "Biblioteca del Congreso Nacional · Ley Chile (versión del 11-feb-2026)"
     fuente_url: "https://bcn.cl/122kkM"
     ficticio: false
+    trata_de: "el uso de celulares en los colegios"
     perfiles: ["Estudiante", "Apoderado/a", "Docente"]
     ejemplos:
       pregunta: "¿Puedo usar el celular en el recreo si estoy en la media?"
@@ -23,6 +25,7 @@ documentos:
     fuente_nombre: "Documento inventado para pruebas (no es una fuente oficial)"
     fuente_url: ""
     ficticio: true
+    trata_de: "una tarjeta de descuento en el transporte público"
     ejemplos:
       pregunta: "¿Cuánto pagan los estudiantes?"
       afirmacion: "«Con esta ley los estudiantes pierden el pase en vacaciones»"

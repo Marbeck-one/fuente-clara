@@ -12,7 +12,7 @@ from core import filtro, guardrail, prompts
 from core.citas import verificar
 from core.documento import para_prompt
 from core.llm import complete
-from modulos.comun import encabezado, ejecutar, mostrar_citas, valorar
+from modulos.comun import aviso_otro_tema, encabezado, ejecutar, mostrar_citas, valorar
 
 CONFIG = Path(__file__).resolve().parents[1] / "config" / "transparencia.yaml"
 POR_VERIFICAR = '<span class="fc-pill fc-pill--aviso">Por verificar</span>'
@@ -25,7 +25,7 @@ def cargar_config():
 def preparar_solicitud(duda, doc):
     """La IA sugiere organismo y redacta lo que se pide; la app arma el borrador con la plantilla."""
     categoria = filtro.clasificar(duda, doc)
-    if categoria == filtro.OPINION:
+    if categoria in (filtro.OPINION, filtro.OTRO_TEMA):
         return {"categoria": categoria}
     datos = complete(prompts.TRANSPARENCIA, f"{para_prompt(doc)}\n\nDUDA DE LA PERSONA:\n{guardrail.delimitar(duda)}")
     cfg = cargar_config()
@@ -57,6 +57,10 @@ def render(doc):
         return
     if r["categoria"] == filtro.OPINION:
         st.info(filtro.MENSAJE_FIJO, title="Fuente Clara no opina", icon=":material/balance:")
+        valorar(r, "Pregúntale al Estado")
+        return
+    if r["categoria"] == filtro.OTRO_TEMA:
+        aviso_otro_tema(doc)  # el documento no trata el asunto: no se prepara borrador
         valorar(r, "Pregúntale al Estado")
         return
     if r["categoria"] == filtro.DENTRO:

@@ -4,7 +4,8 @@ from core.documento import para_prompt
 from core.llm import complete
 
 DENTRO = "dentro_del_documento"
-FUERA = "fuera_del_documento"
+FUERA = "fuera_del_documento"  # mismo tema del documento, pero falta el dato
+OTRO_TEMA = "otro_tema"  # el documento no trata ese asunto
 OPINION = "opinion_o_politica_partidista"
 
 MENSAJE_FIJO = (
@@ -15,12 +16,12 @@ MENSAJE_FIJO = (
 
 
 def clasificar(texto, doc, tipo="pregunta"):
-    """Devuelve DENTRO, FUERA u OPINION. Si el modelo responde algo inesperado, se toma la opción prudente."""
+    """Devuelve DENTRO, FUERA, OTRO_TEMA u OPINION. Si el modelo responde algo inesperado, se toma la opción prudente."""
     if guardrail.es_manipulacion(texto):  # capa 1: se rechaza sin llamar a la IA
         return OPINION
     datos = complete(prompts.FILTRO, f"{para_prompt(doc)}\n\nTIPO DE ENTRADA: {tipo}\n{guardrail.delimitar(texto)}")
     categoria = str(datos.get("categoria", "")).strip()
-    return categoria if categoria in (DENTRO, FUERA, OPINION) else OPINION
+    return categoria if categoria in (DENTRO, FUERA, OTRO_TEMA, OPINION) else OPINION
 
 
 def revisar_respuesta(r):

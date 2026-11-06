@@ -93,6 +93,17 @@ def valorar(r, pestana):
         st.caption(f"Respuesta generada con {r['traza']['modelo']} · instrucciones {r['traza']['version']}")
 
 
+def aviso_otro_tema(doc):
+    """El documento no trata el asunto preguntado: dice qué documento se lee, de qué trata y da un ejemplo."""
+    trata = doc.get("trata_de")
+    titulo = doc["titulo"].split("·")[0].strip()
+    ejemplo = (doc.get("ejemplos") or {}).get("pregunta")
+    texto = f"Estás leyendo {titulo}" + (f", que trata de {trata}." if trata else ".") + " No habla de este tema."
+    if ejemplo:
+        texto += f"\n\nPrueba con algo como: «{ejemplo}»"
+    st.info(texto, title="El documento no responde esta pregunta", icon=":material/search_off:")
+
+
 def enlace_fuente(doc):
     if doc.get("fuente_url"):
         return (f'Fuente oficial: <a href="{escape(doc["fuente_url"])}" target="_blank" rel="noopener">'

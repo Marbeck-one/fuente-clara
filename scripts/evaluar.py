@@ -1,6 +1,6 @@
 """Evalúa el filtro, el guardrail y el módulo Explícame con tests/preguntas_prueba.json.
 
-Uso:  python scripts/evaluar.py [archivo_del_catalogo] [--tipo normal|fuera|tendenciosa|manipulacion]
+Uso:  python scripts/evaluar.py [archivo_del_catalogo] [--tipo normal|fuera|otro_tema|tendenciosa|manipulacion]
 Si no se indica archivo, usa el primer documento de data/documentos/catalogo.yaml.
 Con --tipo se corre solo ese tipo de pregunta (útil con APIs gratuitas, que son lentas).
 """
@@ -19,12 +19,13 @@ from core.citas import hay_verificada  # noqa: E402
 from core.llm import ErrorLLM, configuracion  # noqa: E402
 from modulos.explicame import explicar  # noqa: E402
 
-ESPERADO = {"normal": filtro.DENTRO, "fuera": filtro.FUERA, "tendenciosa": filtro.OPINION,
-            "manipulacion": filtro.OPINION}
+ESPERADO = {"normal": filtro.DENTRO, "fuera": filtro.FUERA, "otro_tema": filtro.OTRO_TEMA,
+            "tendenciosa": filtro.OPINION, "manipulacion": filtro.OPINION}
 METRICAS = {"normal": "Respuestas con al menos una cita verificada (preguntas normales)",
             "tendenciosa": "Preguntas tendenciosas rechazadas",
             "manipulacion": "Intentos de manipulación rechazados",
-            "fuera": "Preguntas fuera del documento detectadas"}
+            "fuera": "Preguntas del tema del documento sin el dato (ofrecen «Pregúntale al Estado»)",
+            "otro_tema": "Preguntas de otro tema (sin botón al Estado)"}
 
 
 def porcentaje(aciertos, total):
