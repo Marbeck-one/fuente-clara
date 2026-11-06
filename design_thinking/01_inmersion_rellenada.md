@@ -104,7 +104,7 @@ No hay registro en el repo de conversaciones con personas afectadas. El #18 pide
 > - Quien no puede leer bien la pantalla o prefiere la voz: letra grande (#3), lectura en voz alta (#5), dictado (#6) y WCAG 2.2 AA (#19) siguen pendientes.
 > - Quien tiene la duda en una captura de pantalla: leer capturas está pendiente (#4).
 > - Directivos y asistentes de la educación: la prohibición también los alcanza (Ley, art. 10 bis), pero la app solo tiene los perfiles Estudiante, Apoderado/a y Docente (`catalogo.yaml`).
-> - Quien necesita lo que dice el reglamento de su colegio: hoy la app solo tiene la ley (más documentos: #2 y #14).
+> - Quien necesita lo que dice el reglamento de su colegio: hoy la app no tiene reglamentos de colegios (más documentos: #2 y #14).
 >
 > **Nuestra decisión:** lo que ya está decidido en el prototipo. La IA no opina ni da veredictos. Cada respuesta muestra su cita y la fuente oficial. No hay login ni base de datos. La app no envía nada: la persona revisa y decide (`README.md`, Principios del diseño; `CHECKLIST_ETICO.md`). Sobre las brechas de la lista anterior: ___
 
@@ -151,7 +151,7 @@ Usuarios que nombran las bases para el Desafío 3: votantes jóvenes, organizaci
 | Tipo | Restricción | Fuente |
 |---|---|---|
 | Tiempo | Jornada del 6 de noviembre, de 08:30 a 18:45. Se evalúa la versión congelada al cierre técnico (14:45). Pitch de 5 minutos con demo y 3 de preguntas. | Bases §3 y §12 |
-| Datos disponibles | Un documento oficial precargado: la Ley 21.801, PDF de la BCN de 4 páginas. Las bases sugieren datos abiertos del Congreso, SERVEL, Consejo para la Transparencia, datos.gob.cl y presupuestos municipales; las APIs que funcionan están en `APIS-DATOS-ABIERTOS-CHILE.md`. | `README.md`; Bases, Desafío 3 |
+| Datos disponibles | Ocho leyes oficiales precargadas, todas en PDF de la BCN; la principal es la Ley 21.801 (4 páginas), y las otras siete las subió Max (`data/documentos/catalogo.yaml`). Las bases sugieren datos abiertos del Congreso, SERVEL, Consejo para la Transparencia, datos.gob.cl y presupuestos municipales; las APIs que funcionan están en `APIS-DATOS-ABIERTOS-CHILE.md`. | `README.md`; Bases, Desafío 3 |
 | Tecnología | App en Streamlit (Python 3.11 o superior). Modelo de IA intercambiable (Anthropic, OpenAI o Google) desde `.env`. Sin base de datos ni login. Sin base vectorial: el documento completo va en el contexto del modelo. Cada equipo usa sus propios notebooks. | `README.md`; Bases §11 |
 | Normativa | Restricciones éticas y nota para la demostración del Desafío 3. No usar datos sensibles reales sin resguardo y consentimiento explícito. Checklist ético como requisito de admisibilidad. Falta confirmar en la BCN qué ley de datos personales aplica. | Bases; #25 |
 | Presupuesto | La organización entrega cuentas para herramientas de IA. Límite de uso: 20 consultas cada 10 minutos por persona y 30 por minuto para toda la app. Costo por pregunta: sin calcular. Riesgo de que el modelo gratuito se quede sin tokens. | Bases §11; `core/limites.py`; #20; #30 |

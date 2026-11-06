@@ -10,8 +10,8 @@ OPINION = "opinion_o_politica_partidista"
 
 MENSAJE_FIJO = (
     "Fuente Clara solo explica lo que dice el documento cargado. No entrega opiniones, no evalúa si algo "
-    "es bueno o malo, no recomienda cómo votar y no responde sobre candidaturas, partidos o personas en "
-    "cargos públicos. Puedes preguntar qué dice el texto sobre un tema concreto."
+    "es bueno o malo, no recomienda cómo votar y no responde sobre candidaturas, un partido en particular "
+    "o personas en cargos públicos. Puedes preguntar qué dice el texto sobre un tema concreto."
 )
 
 

@@ -19,6 +19,59 @@ documentos:
       afirmacion: "«Desde marzo los profes sí pueden usar el celular en clases, pero los alumnos no»"
       duda: "¿Cuántos colegios actualizaron su reglamento interno antes del 30 de junio de 2026?"
 
+  # Leyes subidas por Max (commit 6be912e). Título, versión y enlace salen del encabezado de cada PDF de la BCN.
+  # Sin perfiles ni ejemplos propios: la app usa los que trae por defecto.
+  # Ojo: las de Datos personales, Transparencia y Consumidor traen "Fin Vigencia: 30-NOV-2026"; después hay que bajar la versión nueva.
+  - archivo: LEY-19628_28-AGO-1999.pdf
+    titulo: "Ley 19.628 · Sobre protección de la vida privada (datos personales)"
+    fuente_nombre: "Biblioteca del Congreso Nacional · Ley Chile (versión del 09-may-2023)"
+    fuente_url: "https://bcn.cl/3a0ih"
+    ficticio: false
+    trata_de: "la protección de la vida privada y de los datos personales"
+
+  - archivo: LEY-19880_29-MAY-2003.pdf
+    titulo: "Ley 19.880 · Bases de los procedimientos administrativos de los órganos del Estado"
+    fuente_nombre: "Biblioteca del Congreso Nacional · Ley Chile (versión del 01-nov-2026)"
+    fuente_url: "https://bcn.cl/pYxskj"
+    ficticio: false
+    trata_de: "los procedimientos administrativos de los órganos de la Administración del Estado"
+
+  - archivo: LEY-20285_20-AGO-2008.pdf
+    titulo: "Ley 20.285 · Sobre acceso a la información pública"
+    fuente_nombre: "Biblioteca del Congreso Nacional · Ley Chile (versión del 11-jul-2025)"
+    fuente_url: "https://bcn.cl/gPKjtt"
+    ficticio: false
+    trata_de: "la transparencia de la función pública y el acceso a la información del Estado"
+
+  - archivo: Ley-20720_09-ENE-2014.pdf
+    titulo: "Ley 20.720 · Reorganización y liquidación de empresas y personas"
+    fuente_nombre: "Biblioteca del Congreso Nacional · Ley Chile (versión del 30-dic-2023)"
+    fuente_url: "https://bcn.cl/3l2cz"
+    ficticio: false
+    trata_de: "la reorganización y liquidación de empresas y personas"
+
+  - archivo: Ley-21643_15-ENE-2024.pdf
+    titulo: "Ley 21.643 · Ley Karin: acoso laboral, sexual y violencia en el trabajo"
+    fuente_nombre: "Biblioteca del Congreso Nacional · Ley Chile (versión del 03-ene-2025)"
+    fuente_url: "https://bcn.cl/yRoHSk"
+    ficticio: false
+    trata_de: "la prevención, investigación y sanción del acoso laboral, sexual o de violencia en el trabajo"
+
+  - archivo: Decreto-con Fuerza de Ley-3_31-MAY-2021.pdf
+    titulo: "Ley 19.496 · Protección de los derechos de los consumidores (texto refundido, DFL 3 de 2019)"
+    fuente_nombre: "Biblioteca del Congreso Nacional · Ley Chile (versión del 11-jul-2025)"
+    fuente_url: "https://bcn.cl/sG7L2q"
+    ficticio: false
+    trata_de: "la protección de los derechos de los consumidores"
+
+  # Ley sobre cómo funciona el sistema de partidos, no sobre un partido en particular.
+  - archivo: Decreto-con Fuerza de Ley-4_06-SEP-2017.pdf
+    titulo: "Ley 18.603 · Orgánica constitucional de los partidos políticos (texto refundido, DFL 4 de 2017)"
+    fuente_nombre: "Biblioteca del Congreso Nacional · Ley Chile (versión del 16-feb-2021)"
+    fuente_url: "https://bcn.cl/3ldan"
+    ficticio: false
+    trata_de: "la constitución, organización y funcionamiento de los partidos políticos"
+
   # Documento inventado, solo para desarrollo. Coméntalo para que no aparezca en la demo.
   - archivo: EJEMPLO_FICTICIO_tarjeta_muevete.txt
     titulo: "EJEMPLO FICTICIO · Proyecto de ley que crea la Tarjeta «Muévete»"
