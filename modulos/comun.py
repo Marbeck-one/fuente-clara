@@ -9,10 +9,12 @@ import streamlit as st
 
 from core import filtro, limites, votos
 from core.llm import ErrorLLM
+from modulos import cuenta
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
 PESTANAS = [":material/menu_book: Explícame", ":material/compare_arrows: Verifica esto",
             ":material/account_balance: Pregúntale al Estado"]
+_MODULOS = {"explicar": "Explícame", "comparar": "Verifica esto", "preparar_solicitud": "Pregúntale al Estado"}
 
 
 def estilos():
@@ -31,10 +33,10 @@ def encabezado(antetitulo, titulo, bajada):
 
 def permitir_consulta():
     """Comprueba el límite de uso. Muestra el aviso y devuelve False si no se permite."""
-    tope = limites.permitir(st.session_state.setdefault("consultas", []))
+    tope = cuenta.permitir()
     if not tope:
         return True
-    st.warning("Hiciste muchas consultas seguidas. Espera unos minutos y vuelve a intentarlo." if tope == limites.SESION
+    st.warning(cuenta.aviso_tope() if tope == limites.SESION
                else "Hay muchas personas usando Fuente Clara en este momento. Intenta de nuevo en un minuto.",
                title="Un momento", icon=":material/hourglass_top:")
     return False
@@ -83,6 +85,7 @@ def ejecutar(funcion, *args, previo=None):
         print(f"[Fuente Clara] Falló la llamada a la IA: {e}", file=sys.stderr)
         st.error("Intenta de nuevo en un momento.", title="No pudimos obtener respuesta", icon=":material/cloud_off:")
         return None
+    cuenta.contar_consulta(_MODULOS.get(funcion.__name__, funcion.__name__))
     r.update(id=uuid.uuid4().hex[:12], entrada=args[0], documento=st.session_state.get("doc_actual"),
              traza=votos.traza())
     return r

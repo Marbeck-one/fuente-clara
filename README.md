@@ -100,6 +100,15 @@ antes de comparar. No subas capturas con nombres, teléfonos, RUT u otros datos 
 
 Bajo cada respuesta la persona vota 👍 o 👎. Los votos se guardan en `data/votos/votos.jsonl` (fuera del repo) con el modelo y la versión de las instrucciones. El enlace «Cómo nos va», al final de la app, abre el panel con los resultados. Para ver las respuestas que las personas autorizaron guardar, define `CLAVE_EQUIPO` en `.env`.
 
+## Cuenta opcional
+
+Por defecto no hay login y la app funciona como siempre. Si se activa, cualquiera sigue usando todo sin cuenta; lo único que cambia es el tope: **5 consultas cada 10 minutos sin cuenta y 20 con cuenta** (el tope global de 30 por minuto no cambia, así que el gasto máximo de la API tampoco). Módulos, citas, voz y accesibilidad nunca dependen de la cuenta.
+
+- **Modo demostración (`AUTH_MOCK=1` en `.env`):** simula el login sin contactar a ningún proveedor, y la pantalla lo avisa. Usa su propio archivo de datos. La sesión simulada se pierde al recargar; al volver a entrar, el contador de consultas sigue donde estaba.
+- **Google:** copia `.streamlit/secrets.toml.example` como `.streamlit/secrets.toml`, complétalo con el cliente OAuth de Google Cloud, define `CUENTAS_SECRETO` en `.env` e instala Authlib. Solo funciona en `localhost` o HTTPS, no por `http://IP:8501`.
+- **Qué se guarda (`data/cuentas/`, fuera del repo):** un identificador seudónimo, las fechas de ingreso y los conteos de consultas por día y módulo; las consultas sin cuenta se suman sin distinguir personas. Nunca correo, nombre, tokens ni lo que la persona escribe. Los votos no se ligan a la cuenta. Se elimina tras 90 días sin uso o con «Borrar mis datos». Los totales se ven en el panel «Cómo nos va».
+- **Limitación conocida:** sin cuenta, el contador vive en la sesión y se reinicia al recargar. El tope sin cuenta es un incentivo, no una barrera; la cuota de la API la protege el tope global.
+
 ## Voz: escuchar (issue #5) y dictar (issue #6)
 
 Cada respuesta válida de los tres módulos tiene un botón **Escuchar respuesta**, con Pausar, Continuar y Detener. Usa la voz del propio navegador (`speechSynthesis`, español de Chile primero y luego otro español): Fuente Clara no llama a ninguna API de voz ni a la IA, no guarda audio y no usa `localStorage`.
@@ -143,7 +152,8 @@ core/documento.py          carga PDF/TXT y segmenta por artículo con número de
 core/prompts.py            prompts del filtro y de los 3 módulos
 core/citas.py              verificación literal de citas
 core/filtro.py             filtro de alcance
-modulos/                   explicame.py, verifica.py, transparencia.py, comun.py, voz.py (lectura en voz alta)
+core/cuentas.py            cuenta opcional: identificador seudónimo y conteos de uso (SQLite)
+modulos/                   explicame.py, verifica.py, transparencia.py, comun.py, voz.py (lectura en voz alta), cuenta.py (login y topes)
 config/transparencia.yaml  ley, plazos, pasos, portal y plantilla (marcados VERIFICAR)
 .streamlit/config.toml     tokens de tema (colores, fuentes, radios); sin telemetría
 static/                    estilo.css, voz.js, dictado.js, logo, favicon y fuentes autoalojadas
@@ -162,7 +172,7 @@ scripts/verificar_entorno.py diagnóstico de .env, modelo y documento
 
 ## Principios del diseño
 
-- Sin base de datos ni login. Lo que escribe la persona vive en `st.session_state`; solo se guarda si lo autoriza al votar 👎 una respuesta.
+- Cuenta opcional y desactivada por defecto: nada de la app exige entrar (ver «Cuenta opcional»). Lo que escribe la persona vive en `st.session_state`; solo se guarda si lo autoriza al votar 👎 una respuesta.
 - Las capturas de «Verifica esto» se procesan en memoria y no se guardan; solo queda el texto que la persona revisa y edita.
 - Sin base vectorial: el documento completo va en el contexto del modelo.
 - Una respuesta sin al menos una cita verificada no se muestra como válida.
