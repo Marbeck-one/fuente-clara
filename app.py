@@ -31,7 +31,7 @@ def inicio():
     elegido = st.selectbox("Documento", list(titulos)) if len(titulos) > 1 else next(iter(titulos))
     archivo = titulos[elegido]
     if st.session_state.get("doc_actual") != archivo:  # al cambiar de documento se borran los resultados
-        for clave in ("exp", "ver", "est"):
+        for clave in ("exp", "ver", "est", "faq_abierta"):
             st.session_state.pop(clave, None)
         st.session_state["doc_actual"] = archivo
     doc = cargar_documento(archivo)
