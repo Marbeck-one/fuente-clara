@@ -1,4 +1,5 @@
 """Módulo 2 · Verifica esto: pone lado a lado una afirmación y el texto oficial. No da veredictos."""
+import hashlib
 import io
 import sys
 from html import escape
@@ -11,7 +12,7 @@ from core.citas import hay_verificada, verificar
 from core.documento import para_prompt
 from core.llm import ErrorLLM, complete
 from modulos.comun import (aviso_otro_tema, encabezado, ejecutar, mostrar_citas,
-                           permitir_consulta, valorar)
+                           permitir_consulta, repetido, valorar)
 
 # Etiquetas descriptivas fijadas por la app (la IA solo elige la clave).
 # Las tres comparten el mismo color: el color nunca da veredicto (DESIGN.md §4).
@@ -155,23 +156,28 @@ def render(doc):
             else:
                 st.image(imagen, caption="Vista previa. La imagen no se guarda.", width=420)
                 if st.button("Leer texto de la imagen", icon=":material/document_scanner:",
-                             width="stretch", key="ver_leer") and permitir_consulta():
-                    with st.spinner("Leyendo la imagen…"):
-                        try:
-                            extraido = extraer_texto(imagen)
-                        except ErrorLLM as e:
-                            print(f"[Fuente Clara] No se pudo leer la imagen: {e}", file=sys.stderr)
-                            st.error("No pudimos leer la imagen. Intenta de nuevo o pega el texto a mano.",
-                                     title="No pudimos leer la imagen", icon=":material/cloud_off:")
-                        else:
-                            if not extraido:
-                                st.warning("No encontramos texto legible. Prueba con una captura más nítida "
-                                           "o pega el texto a mano.", icon=":material/search_off:")
+                             width="stretch", key="ver_leer"):
+                    firma = "imagen:" + hashlib.sha256(fuente.getvalue()).hexdigest()
+                    if repetido(firma):
+                        st.toast("Ya leímos esta imagen. Corrige el texto o prueba con otra captura.",
+                                 icon=":material/hourglass_top:")
+                    elif permitir_consulta():
+                        with st.spinner("Leyendo la imagen…"):
+                            try:
+                                extraido = extraer_texto(imagen)
+                            except ErrorLLM as e:
+                                print(f"[Fuente Clara] No se pudo leer la imagen: {e}", file=sys.stderr)
+                                st.error("No pudimos leer la imagen. Intenta de nuevo o pega el texto a mano.",
+                                         title="No pudimos leer la imagen", icon=":material/cloud_off:")
                             else:
-                                st.session_state["ver_texto"] = extraido[:guardrail.LARGO_MAXIMO]
-                                st.session_state["ver_recortado"] = len(extraido) > guardrail.LARGO_MAXIMO
-                                st.session_state.pop("ver", None)
-                                st.rerun()
+                                if not extraido:
+                                    st.warning("No encontramos texto legible. Prueba con una captura más nítida "
+                                               "o pega el texto a mano.", icon=":material/search_off:")
+                                else:
+                                    st.session_state["ver_texto"] = extraido[:guardrail.LARGO_MAXIMO]
+                                    st.session_state["ver_recortado"] = len(extraido) > guardrail.LARGO_MAXIMO
+                                    st.session_state.pop("ver", None)
+                                    st.rerun()
 
     with st.form("form_verifica"):
         ejemplo = (doc.get("ejemplos") or {}).get("afirmacion", "«Con esta ley ya no se podrá…»")
