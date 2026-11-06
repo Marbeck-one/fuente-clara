@@ -88,6 +88,7 @@ config/transparencia.yaml  ley, plazos, pasos, portal y plantilla (marcados VERI
 .streamlit/config.toml     tokens de tema (colores, fuentes, radios); sin telemetría
 static/                    estilo.css, logo, favicon y fuentes autoalojadas
 DESIGN.md                  identidad visual y reglas de diseño
+design_thinking/           fichas de cada etapa de la jornada: una vacía y otra rellenada con fuentes
 data/documentos/           catálogo y documento FICTICIO de ejemplo
 tests/preguntas_prueba.json
 scripts/evaluar.py
