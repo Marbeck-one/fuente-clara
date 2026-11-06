@@ -5,6 +5,7 @@ No registra ni guarda lo que escribe el usuario.
 import json
 import os
 import re
+import time
 
 from dotenv import load_dotenv
 
@@ -36,24 +37,45 @@ def _opcionales():
     return {"temperature": float(temperatura)} if temperatura else {}
 
 
+_ultima_llamada = [0.0]
+
+
+def _respetar_intervalo():
+    # Para APIs gratuitas con límite de velocidad: LLM_INTERVALO_MIN = segundos mínimos entre llamadas.
+    intervalo = float(os.getenv("LLM_INTERVALO_MIN", "0") or 0)
+    time.sleep(max(0.0, intervalo - (time.time() - _ultima_llamada[0])))
+
+
 def _llamar(system, user):
+    _respetar_intervalo()
+    try:
+        return _llamar_proveedor(system, user)
+    finally:
+        _ultima_llamada[0] = time.time()
+
+
+def _llamar_proveedor(system, user):
+    # El cliente se guarda en una variable: google-genai cierra su conexión si el cliente se descarta antes de la llamada.
     proveedor, modelo = configuracion()
     if proveedor == "anthropic":
         import anthropic
-        r = anthropic.Anthropic().messages.create(
+        cliente = anthropic.Anthropic()
+        r = cliente.messages.create(
             model=modelo, max_tokens=3000, system=system,
             messages=[{"role": "user", "content": user}], **_opcionales())
         return "".join(b.text for b in r.content if b.type == "text")
     if proveedor == "openai":
         from openai import OpenAI
-        r = OpenAI().chat.completions.create(
+        cliente = OpenAI()
+        r = cliente.chat.completions.create(
             model=modelo, response_format={"type": "json_object"},
             messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
             **_opcionales())
         return r.choices[0].message.content or ""
     from google import genai
     from google.genai import types
-    r = genai.Client().models.generate_content(
+    cliente = genai.Client()
+    r = cliente.models.generate_content(
         model=modelo, contents=user,
         config=types.GenerateContentConfig(
             system_instruction=system, response_mime_type="application/json", **_opcionales()))

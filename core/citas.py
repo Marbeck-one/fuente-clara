@@ -3,12 +3,13 @@ import re
 import unicodedata
 
 LARGO_MINIMO = 15  # evita "citas" triviales como "de la ley"
-_EQUIVALENCIAS = str.maketrans({"“": '"', "”": '"', "«": '"', "»": '"', "‘": "'", "’": "'",
-                                "–": "-", "—": "-", "º": "°", " ": " "})
+# Las comillas se eliminan: al escribir JSON, los modelos suelen cambiar comillas dobles por simples.
+_EQUIVALENCIAS = str.maketrans({'"': None, "'": None, "“": None, "”": None, "«": None, "»": None, "‘": None,
+                                "’": None, "–": "-", "—": "-", "º": "°", " ": " "})
 
 
 def normalizar(texto):
-    """Minúsculas, sin tildes, comillas y guiones unificados y espacios colapsados."""
+    """Minúsculas, sin tildes ni comillas, guiones unificados y espacios colapsados."""
     texto = unicodedata.normalize("NFKD", str(texto).translate(_EQUIVALENCIAS).lower())
     texto = "".join(c for c in texto if not unicodedata.combining(c))
     return re.sub(r"\s+", " ", texto).strip()
