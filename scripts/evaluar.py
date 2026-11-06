@@ -13,6 +13,8 @@ Qué mide:
   sugerido para que una persona marque si es razonable.
 - Tiempo promedio por consulta que llega a la IA, sin contar la espera obligada de LLM_INTERVALO_MIN.
 - Votos 👍/👎 que dejaron las personas en la app con este documento y este modelo (data/votos).
+- Si la IA «jueza» está activada (LLM_JUEZA=1), cuántas respuestas bloqueó, por qué motivo y
+  cuántos fueron falsos rechazos (casos que debían mostrarse).
 Al final imprime una tabla en Markdown, lista para el pitch y para DECLARACION_IA.md.
 """
 import argparse
@@ -25,9 +27,10 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ))
-sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stdout, "reconfigure"):  # en pytest la salida está capturada y no siempre lo tiene
+    sys.stdout.reconfigure(encoding="utf-8")
 
-from core import documento, filtro, guardrail, prompts, votos  # noqa: E402
+from core import documento, filtro, guardrail, jueza, prompts, votos  # noqa: E402
 from core.citas import hay_verificada  # noqa: E402
 from core.llm import ErrorLLM, configuracion, segundos_esperados  # noqa: E402
 from modulos.explicame import explicar  # noqa: E402
@@ -49,6 +52,24 @@ def porcentaje(aciertos, total):
     return f"{100 * aciertos / total:.0f}% ({aciertos}/{total})" if total else "sin casos"
 
 
+def resumen_jueza(bloqueos, falsos):
+    """Filas de la segunda revisión con IA: bloqueos por motivo y falsos rechazos.
+
+    `bloqueos` son los motivos de las respuestas que la jueza no dejó mostrar; `falsos` cuenta
+    los casos que debían mostrarse y quedaron bloqueados. Sin bloqueos no agrega filas.
+    """
+    if not bloqueos and not falsos:
+        return []
+    conteo = {}
+    for motivo in bloqueos:
+        conteo[motivo] = conteo.get(motivo, 0) + 1
+    detalle = ", ".join(f"{jueza.MOTIVOS.get(m, m)}: {n}" for m, n in sorted(conteo.items()))
+    filas = [("Respuestas bloqueadas por la jueza",
+              f"{len(bloqueos)}" + (f" ({detalle})" if detalle else ""))]
+    filas.append(("Falsos rechazos de la jueza (casos que debían mostrarse)", str(falsos)))
+    return filas
+
+
 def medir(funcion, *args):
     """Corre una consulta igual que la app (con la capa 3 del guardrail) y toma su tiempo.
 
@@ -67,6 +88,7 @@ def evaluar_explicame(preguntas, doc):
     aciertos = {tipo: 0 for tipo in ESPERADO}
     totales = {tipo: 0 for tipo in ESPERADO}
     tiempos, completas, errores, sin_ia, bloqueadas = [], [], 0, 0, 0
+    bloqueos_jueza, falsos_jueza = [], 0
     frases_total = frases_ok = 0
     for p in preguntas:
         tipo = p["tipo"]
@@ -87,7 +109,13 @@ def evaluar_explicame(preguntas, doc):
             detalle = f" · {segundos:.1f} s"
         if r.get("bloqueada"):
             bloqueadas += 1
-            quien = f"jueza: {r.get('motivo_jueza')}" if r["bloqueada"] == "jueza" else "guardrail"
+            if r["bloqueada"] == "jueza":
+                bloqueos_jueza.append(r.get("motivo_jueza", "otro"))
+                if tipo == "normal":
+                    falsos_jueza += 1
+                quien = f"jueza: {r.get('motivo_jueza')}"
+            else:
+                quien = "guardrail"
             detalle += f" ({quien}: respuesta de la IA bloqueada antes de mostrarse)"
         ok = r["categoria"] == ESPERADO[tipo]
         if tipo == "normal":
@@ -101,6 +129,7 @@ def evaluar_explicame(preguntas, doc):
     if frases_total:
         filas.append(("Frases con cita verificada (preguntas normales)", porcentaje(frases_ok, frases_total)))
     filas.append(("Guardrail", f"{sin_ia} rechazadas sin llamar a la IA · {bloqueadas} respuestas bloqueadas antes de mostrarse"))
+    filas += resumen_jueza(bloqueos_jueza, falsos_jueza)
     if completas:
         filas.append(("Tiempo de una respuesta completa (preguntas normales)",
                       f"{sum(completas) / len(completas):.1f} s en promedio · máximo {max(completas):.1f} s"))
@@ -110,6 +139,7 @@ def evaluar_explicame(preguntas, doc):
 def evaluar_verifica(afirmaciones, doc):
     print("\n=== Verifica esto ===")
     aciertos, tiempos, errores = 0, [], 0
+    bloqueos_jueza, falsos_jueza = [], 0
     for a in afirmaciones:
         r, segundos = medir(comparar, a["texto"], doc)
         if "error" in r:
@@ -120,20 +150,28 @@ def evaluar_verifica(afirmaciones, doc):
         validas = [c["etiqueta"] for c in r.get("comparaciones") or [] if es_valida(c)]
         ok = a["esperado"] in validas
         aciertos += ok
+        if r.get("bloqueada") == "jueza":
+            bloqueos_jueza.append(r.get("motivo_jueza", "otro"))
+            falsos_jueza += 1
         if validas:
             obtenido = ", ".join(validas)
+        elif r.get("bloqueada") == "jueza":
+            obtenido = f"bloqueada por la jueza: {r.get('motivo_jueza')}"
         elif r["categoria"] == filtro.OPINION:
             obtenido = "rechazada por el filtro"
         else:
             obtenido = "ninguna comparación válida"
         print(f"[{'OK' if ok else 'FALLA'}] {a['texto']} -> esperado: {a['esperado']} · obtenido: {obtenido}"
               f" · {segundos:.1f} s")
-    return [("Afirmaciones con la etiqueta esperada", porcentaje(aciertos, len(afirmaciones)))], tiempos, errores
+    filas = [("Afirmaciones con la etiqueta esperada", porcentaje(aciertos, len(afirmaciones)))]
+    filas += resumen_jueza(bloqueos_jueza, falsos_jueza)
+    return filas, tiempos, errores
 
 
 def evaluar_estado(preguntas, doc):
     print("\n=== Pregúntale al Estado (marca a mano si cada organismo es razonable) ===")
     con_borrador, tiempos, errores = 0, [], 0
+    bloqueos_jueza, falsos_jueza = [], 0
     for i, p in enumerate(preguntas, 1):
         r, segundos = medir(preparar_solicitud, p["pregunta"], doc)
         if "error" in r:
@@ -146,11 +184,19 @@ def evaluar_estado(preguntas, doc):
             print(f"{i}. {p['pregunta']} · {segundos:.1f} s\n   Organismo sugerido: {r['organismo']}\n"
                   f"   Por qué: {r['justificacion']}\n   ¿Razonable?  [ ] sí   [ ] no")
         else:
-            motivo = "bloqueada por el guardrail" if r.get("bloqueada") else r["categoria"]
+            if r.get("bloqueada") == "jueza":
+                bloqueos_jueza.append(r.get("motivo_jueza", "otro"))
+                falsos_jueza += 1
+                motivo = f"bloqueada por la jueza: {r.get('motivo_jueza')}"
+            elif r.get("bloqueada"):
+                motivo = "bloqueada por el guardrail"
+            else:
+                motivo = r["categoria"]
             print(f"{i}. {p['pregunta']} · {segundos:.1f} s\n   Sin borrador ({motivo})")
     filas = [("Preguntas sin el dato que reciben un borrador de solicitud", porcentaje(con_borrador, len(preguntas)))]
     if con_borrador:
         filas.append(("Organismo sugerido razonable (revisión humana)", f"___ de {con_borrador} · marcar en la lista"))
+    filas += resumen_jueza(bloqueos_jueza, falsos_jueza)
     return filas, tiempos, errores
 
 
@@ -188,8 +234,10 @@ def main():
     modulos = [args.modulo] if args.modulo else (["explicame"] if args.tipo else list(MODULOS))
 
     proveedor, modelo = configuracion()
+    estado_jueza = "activada" if jueza.activa() else "apagada"
     encabezado = (f"Documento: {doc['titulo']} · Modelo: {modelo} ({proveedor}) · "
-                  f"Instrucciones: {prompts.VERSION} · Fecha: {datetime.now():%d-%m-%Y %H:%M}")
+                  f"Instrucciones: {prompts.VERSION} · Jueza: {estado_jueza} · "
+                  f"Fecha: {datetime.now():%d-%m-%Y %H:%M}")
     print(encabezado + "\n")
 
     resultados = []  # (módulo, filas, tiempos, errores)

@@ -29,6 +29,7 @@ Medición real del repositorio con la Ley 21.801 (el documento de la demo):
 | **Entrada de una pregunta normal** (2 llamadas: filtro + explicación) | — | **7.913** |
 
 - Una pregunta normal hace **2 llamadas** al modelo y envía el documento completo en cada una.
+- Si `LLM_JUEZA=1`, la segunda revisión suma **1 llamada** con la respuesta a mostrar y las citas verificadas (sin la pregunta): la pregunta normal pasa a 3 llamadas.
 - Un intento de manipulación rechazado por el guardrail hace **0 llamadas**.
 - Las preguntas tendenciosas o fuera del documento hacen **1 llamada** (solo el filtro).
 
@@ -66,8 +67,6 @@ Cifras de referencia, todas marcadas como supuesto hasta confirmarlas:
 - #10 · P7 · Contrasta tu programa: verificar una afirmación contra un programa de gobierno
 - #11 · P8 · Clave Única para opinar sobre proyectos de ley
 - #27 · P22 · Analítica por perfil
-- #29 · Guardrail: segunda revisión de cada respuesta con una IA «jueza»
-- #30 · Model routing: elegir el modelo según la tarea
 
 ### Decisión de equipo
 
@@ -81,6 +80,8 @@ Estos cuatro también aparecen arriba, pero necesitan una decisión antes de imp
 ### Ya cerrado
 
 - #15 · P11 · Más fuentes oficiales para verificar: 9 fuentes cargadas y verificadas en `FUENTES_OFICIALES.md`.
+- #29 · Guardrail: segunda revisión de cada respuesta con una IA «jueza»: `core/jueza.py`, apagada por defecto (`LLM_JUEZA=1`), con bloqueos contados en el panel y en `scripts/evaluar.py`.
+- #30 · Model routing: elegir el modelo según la tarea: `LLM_CADENA_FILTRO` y `LLM_CADENA_JUEZA`, con la cadena principal como respaldo (`core/llm.py`, `tests/test_jueza.py`).
 
 ## 6. Datos pendientes para cerrar esta diapositiva
 

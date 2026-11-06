@@ -5,9 +5,12 @@ from core import llm
 
 @pytest.fixture(autouse=True)
 def ia_limpia(monkeypatch):
-    """Cada prueba parte sin cadena de modelos (aunque el .env local tenga una), sin pausas
-    y sin un «último modelo» que haya dejado otra prueba."""
+    """Cada prueba parte sin cadena de modelos (aunque el .env local tenga una), sin pausas,
+    sin jueza y sin un «último modelo» que haya dejado otra prueba."""
     monkeypatch.delenv("LLM_CADENA", raising=False)
+    monkeypatch.delenv("LLM_CADENA_FILTRO", raising=False)
+    monkeypatch.delenv("LLM_CADENA_JUEZA", raising=False)
+    monkeypatch.delenv("LLM_JUEZA", raising=False)
     llm._pausas.clear()
     llm._hilo.ultimo = None
     yield

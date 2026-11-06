@@ -45,6 +45,15 @@ GROQ_API_KEY=...
 
 Se prueban en orden. Si uno falla o se satura, responde el siguiente: un modelo saturado (429) se salta 45 s y uno con clave o nombre inválido (401, 403, 404), 10 min. Los modelos sin clave se saltan. Es el mismo criterio de los prototipos de referencia del Desafío 3. Bajo cada respuesta y en los votos queda el modelo que respondió de verdad, y el encabezado muestra cuántos respaldos hay. Proveedores: `anthropic`, `openai`, `google`, `groq`, `mistral`, `openrouter`, `cerebras`, `together` y `deepseek` (clave en `<PROVEEDOR>_API_KEY`). Las capturas de «Verifica esto» solo las leen los modelos de Google de la cadena.
 
+### Modelo por tarea y segunda revisión (opcional)
+
+Dos ajustes independientes de la cadena principal, apagados por defecto:
+
+- `LLM_CADENA_FILTRO`: cadena propia para clasificar el alcance de la pregunta, por ejemplo un modelo más barato y rápido.
+- `LLM_JUEZA=1`: activa una segunda revisión con IA de cada respuesta antes de mostrarla. Puede usar su propia cadena con `LLM_CADENA_JUEZA`; si no se define, usa la principal. Si la jueza opina, recomienda, toma partido o afirma algo sin respaldo en las citas, la respuesta no se muestra. Si la jueza falla, la respuesta se muestra igual: ya pasó por el filtro, las citas verificadas y el guardrail.
+
+La jueza suma una llamada por consulta. Lo que bloquea se cuenta en el panel «Cómo nos va» y en `scripts/evaluar.py`.
+
 Antes de la demo, revisa que todo esté configurado sin gastar tokens:
 
 ```bash
@@ -74,6 +83,7 @@ Corre `tests/preguntas_prueba.json` contra los tres módulos, igual que la app (
 - **Pregúntale al Estado:** el organismo sugerido para cada pregunta sin el dato. Una persona marca si es razonable.
 - **Tiempo promedio de respuesta** por módulo, sin contar la espera de `LLM_INTERVALO_MIN`.
 - **Votos 👍/👎** de la app con ese documento y ese modelo.
+- **Segunda revisión con IA:** si `LLM_JUEZA=1`, cuántas respuestas bloqueó, por qué motivo y cuántos fueron falsos rechazos (casos que debían mostrarse).
 
 Con APIs gratuitas, que son lentas, se puede correr por partes: `--modulo explicame|verifica|estado` o `--tipo normal|fuera|otro_tema|tendenciosa|manipulacion` (solo Explícame).
 
@@ -109,7 +119,7 @@ antes de comparar. No subas capturas con nombres, teléfonos, RUT u otros datos 
 
 ## Calidad de las respuestas (votos)
 
-Bajo cada respuesta la persona vota 👍 o 👎. Los votos se guardan en `data/votos/votos.jsonl` (fuera del repo) con el modelo y la versión de las instrucciones. El enlace «Cómo nos va», al final de la app, abre el panel con los resultados. Para ver las respuestas que las personas autorizaron guardar, define `CLAVE_EQUIPO` en `.env`.
+Bajo cada respuesta la persona vota 👍 o 👎. Los votos se guardan en `data/votos/votos.jsonl` (fuera del repo) con el modelo y la versión de las instrucciones. El enlace «Cómo nos va», al final de la app, abre el panel con los resultados. Para ver las respuestas que las personas autorizaron guardar, define `CLAVE_EQUIPO` en `.env`. Si `LLM_JUEZA=1`, el panel también muestra la segunda revisión con IA: cuántas respuestas bloqueó y por qué motivo, sin guardar el texto.
 
 ## Cuenta opcional
 
@@ -170,11 +180,12 @@ En los TXT, una línea `--- Página N ---` marca el inicio de una página nueva.
 
 ```
 app.py                     interfaz (3 pestañas, encabezado con fuente, pie fijo)
-core/llm.py                capa LLM intercambiable con cadena de respaldo: complete(system, user, imagen=None) -> dict
+core/llm.py                capa LLM intercambiable con cadena de respaldo: complete(system, user, imagen=None, tarea=None) -> dict
 core/documento.py          carga PDF/TXT y segmenta por artículo con número de página
-core/prompts.py            prompts del filtro y de los 3 módulos
+core/prompts.py            prompts del filtro, de los 3 módulos y de la jueza
 core/citas.py              verificación literal de citas
-core/filtro.py             filtro de alcance
+core/filtro.py             filtro de alcance y segunda revisión con IA
+core/jueza.py              IA «jueza» opcional: bloquea respuestas sin respaldo (LLM_JUEZA=1)
 core/cuentas.py            cuenta opcional: identificador seudónimo y conteos de uso (SQLite)
 modulos/                   explicame.py, verifica.py, transparencia.py, comun.py, voz.py (lectura en voz alta), cuenta.py (login y topes)
 config/transparencia.yaml  ley, plazos, pasos, portal y plantilla (marcados VERIFICAR)
