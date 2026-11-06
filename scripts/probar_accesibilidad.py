@@ -344,7 +344,7 @@ def main():
             texto = lector.evaluate("() => window.__fcVoz.recolectar()")
             verificar("Página completa: empieza por el título principal del documento", texto.startswith("Estás leyendo. Ley 21.801"), texto[:90])
             verificar("Página completa: incluye introducción, secciones y la respuesta visible",
-                      all(x in texto for x in ("Explícame.", "Pregunta con tus palabras", "Respuesta simulada", "Tu colegio debe actualizar su reglamento interno")))
+                      all(x in texto for x in ("Explícame.", "Pregunta con tus palabras", "La ley prohíbe el uso de celulares sobre", "Tu colegio debe actualizar su reglamento interno")))
             verificar("Página completa: incluye las citas verificadas y sus datos",
                       "Prohíbese el uso de dispositivos móviles electrónicos" in texto and "Artículo 10 bis" in texto)
             verificar("Página completa: incluye los avisos informativos", "Esta herramienta usa inteligencia artificial" in texto)
@@ -399,7 +399,7 @@ def main():
             lector.wait_for_timeout(300)
             texto2 = lector.evaluate("() => window.__fcVoz.recolectar()")
             verificar("Página completa: en otra pestaña lee solo el contenido de esa pestaña",
-                      "Paso 2" in texto2 and "Verifica esto" in texto2 and "Respuesta simulada" not in texto2 and "Paso 1" not in texto2, texto2[:120])
+                      "Paso 2" in texto2 and "Verifica esto" in texto2 and "La ley prohíbe el uso de celulares sobre" not in texto2 and "Paso 1" not in texto2, texto2[:120])
             lector.get_by_role("button", name="Detener la lectura").first.click()
             verificar("Lectores: sin errores de JavaScript", not lector.errores and not page.errores, str(lector.errores + page.errores))
 

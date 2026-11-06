@@ -52,8 +52,13 @@ def test_como_maximo_tres_excepciones(explicar_con):
     assert explicar_con(items)["excepciones"] == ["Excepción 0.", "Excepción 1.", "Excepción 2."]
 
 
-def test_una_excepcion_muy_larga_se_recorta(explicar_con):
-    assert len(explicar_con([{"texto": "x" * 1000, "citas": CITA_OK}])["excepciones"][0]) == 300
+def test_una_excepcion_muy_larga_se_recorta_sin_partir_palabras(explicar_con):
+    larga = ("Primera frase completa y clara. " * 10) + "Segunda parte " * 60
+    corta = explicar_con([{"texto": larga, "citas": CITA_OK}])["excepciones"][0]
+    assert len(corta) <= 400 and corta.endswith("clara.")                    # corta al final de una frase
+    sin_puntos = explicar_con([{"texto": "palabra " * 200, "citas": CITA_OK}])["excepciones"][0]
+    assert len(sin_puntos) <= 401 and sin_puntos.endswith("palabra…")           # o al final de una palabra
+    assert explicar_con([{"texto": "Corta.", "citas": CITA_OK}])["excepciones"] == ["Corta."]
 
 
 def test_el_prompt_pide_excepciones_solo_si_el_documento_las_establece():

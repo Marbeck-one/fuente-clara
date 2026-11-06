@@ -114,7 +114,7 @@ def main():
             boton.first.wait_for(timeout=20000)
             verificar("Explícame: aparece el botón «Escuchar respuesta» tras una respuesta válida", boton.count() == 1)
             texto = page.locator(".fc-voz:visible").first.get_attribute("data-fc-texto")
-            verificar("Explícame: se lee la respuesta", "Respuesta simulada sobre" in texto and "prohíbe el uso" in texto)
+            verificar("Explícame: se lee la respuesta", "La ley prohíbe el uso de celulares sobre" in texto and "prohíbe el uso" in texto)
             verificar("Explícame: se lee «qué cambia para ti»", "Tu colegio debe actualizar su reglamento interno" in texto)
             verificar("Explícame: se lee la cita verificada con su artículo", "Artículo 10 bis" in texto and "Prohíbese el uso de dispositivos" in texto)
             verificar("Explícame: no se lee HTML, Markdown, enlaces ni menús",
@@ -195,7 +195,7 @@ def main():
             verificar("Estado: se lee organismo, justificación, cita, borrador, pasos y plazos",
                       all(x in texto_e for x in ("Ministerio de Educación", "política escolar", "Lo dispuesto en el artículo 10 bis",
                                                  "Borrador de solicitud", "Pasos", "Plazos")))
-            verificar("Estado: no se lee el contenido de otros módulos", "Los celulares están prohibidos" not in texto_e and "Respuesta simulada" not in texto_e)
+            verificar("Estado: no se lee el contenido de otros módulos", "Los celulares están prohibidos" not in texto_e and "La ley prohíbe el uso de celulares sobre" not in texto_e)
             verificar("Estado: no se leen URLs", "http" not in texto_e)
 
             # --- Dictado por micrófono ---

@@ -171,6 +171,23 @@ def _contenido_anthropic(user, imagen):
     ]
 
 
+# Cómo se apaga el razonamiento en cada modelo de Anthropic. Haiku 5.5 lo activa por defecto y se come los tokens de
+# salida (el JSON llega cortado), así que se manda "disabled". Sonnet 5.5 rechaza "disabled" y pide "between_tools":
+# la respuesta de la API lo dice, y se recuerda por modelo para no repetir el intento fallido.
+_APAGAR_RAZONAMIENTO = {}
+
+
+def _crear_mensaje_anthropic(cliente, modelo, **datos):
+    forma = _APAGAR_RAZONAMIENTO.get(modelo, "disabled")
+    try:
+        return cliente.messages.create(thinking={"type": forma}, **datos)
+    except Exception as e:  # noqa: BLE001
+        if forma == "disabled" and "between_tools" in str(e):
+            _APAGAR_RAZONAMIENTO[modelo] = "between_tools"
+            return cliente.messages.create(thinking={"type": "between_tools"}, **datos)
+        raise
+
+
 def _llamar(system, user, imagen=None, eslabon=None, reintentos=True):
     _respetar_intervalo()
     try:
@@ -192,11 +209,9 @@ def _llamar_proveedor(system, user, imagen=None, eslabon=None, reintentos=True):
     if proveedor == "anthropic":
         import anthropic
         cliente = anthropic.Anthropic(**opciones)
-        r = cliente.messages.create(
-            model=modelo, max_tokens=max_tokens, system=system,
-            messages=[{"role": "user", "content": _contenido_anthropic(user, imagen)}],
-            # Sin razonamiento: Haiku 5.5 lo activa por defecto y se come los tokens de salida, y el JSON llega cortado.
-            thinking={"type": "disabled"}, **_opcionales(modelo))
+        r = _crear_mensaje_anthropic(
+            cliente, modelo, model=modelo, max_tokens=max_tokens, system=system,
+            messages=[{"role": "user", "content": _contenido_anthropic(user, imagen)}], **_opcionales(modelo))
         return "".join(b.text for b in r.content if b.type == "text")
     if proveedor == "google":
         from google import genai

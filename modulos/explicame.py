@@ -20,6 +20,17 @@ def perfiles(doc):
 
 
 MAX_EXCEPCIONES = 3
+LARGO_EXCEPCION = 400
+
+
+def _recortar(texto, limite=LARGO_EXCEPCION):
+    """Si una excepción es demasiado larga, se corta al final de una frase (o de una palabra) y no a mitad de palabra."""
+    if len(texto) <= limite:
+        return texto
+    corte = texto.rfind(". ", 0, limite)
+    if corte > limite // 2:
+        return texto[:corte + 1]
+    return texto[:texto.rfind(" ", 0, limite)].rstrip(" ,;:") + "…"
 
 
 def _frases(items, doc):
@@ -63,7 +74,7 @@ def explicar(pregunta, perfil, doc):
             "respuesta": " ".join(f["texto"] for f in frases),
             "que_cambia": " ".join(f["texto"] for f in que_cambia),
             "frases": frases, "que_cambia_frases": que_cambia,
-            "excepciones": [e["texto"][:300] for e in excepciones],
+            "excepciones": [_recortar(e["texto"]) for e in excepciones],
             "frases_total": len(frases) + sin_cita,
             "frases_sin_cita": sin_cita,
             "citas": revisadas + revisadas_perfil + revisadas_exc,

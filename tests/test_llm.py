@@ -115,6 +115,50 @@ def test_haiku_no_recibe_temperatura(monkeypatch):
     assert llm._opcionales("gemini-2.5-flash") == {"temperature": 0.0}
 
 
+def test_si_el_modelo_pide_between_tools_se_reintenta_y_se_recuerda(monkeypatch):
+    """Sonnet 5.5 rechaza thinking=disabled (el error pide between_tools): sin este ajuste siempre caía al modelo de respaldo."""
+    llamadas = []
+
+    class Cliente:
+        def __init__(self, **k):
+            self.messages = self
+
+        def create(self, **k):
+            llamadas.append(k["thinking"]["type"])
+            if k["thinking"]["type"] == "disabled":
+                raise RuntimeError('To turn thinking off on this model, send "thinking": {"type": "between_tools"} instead')
+            return types.SimpleNamespace(content=[types.SimpleNamespace(type="text", text='{"texto": "hola"}')])
+
+    monkeypatch.setitem(sys.modules, "anthropic", types.SimpleNamespace(Anthropic=Cliente))
+    monkeypatch.setattr(llm, "_APAGAR_RAZONAMIENTO", {})
+    monkeypatch.setenv("LLM_PROVIDER", "anthropic")
+    monkeypatch.setenv("LLM_MODEL", "claude-sonnet-5-5")
+    assert llm.complete("sistema", "usuario") == {"texto": "hola"}
+    assert llamadas == ["disabled", "between_tools"]
+    assert llm.complete("sistema", "usuario") == {"texto": "hola"}
+    assert llamadas == ["disabled", "between_tools", "between_tools"]      # ya no vuelve a probar con disabled
+
+
+def test_otros_errores_de_anthropic_no_se_reintentan_con_otra_forma(monkeypatch):
+    llamadas = []
+
+    class Cliente:
+        def __init__(self, **k):
+            self.messages = self
+
+        def create(self, **k):
+            llamadas.append(k["thinking"]["type"])
+            raise RuntimeError("overloaded")
+
+    monkeypatch.setitem(sys.modules, "anthropic", types.SimpleNamespace(Anthropic=Cliente))
+    monkeypatch.setattr(llm, "_APAGAR_RAZONAMIENTO", {})
+    monkeypatch.setenv("LLM_PROVIDER", "anthropic")
+    monkeypatch.setenv("LLM_MODEL", "claude-sonnet-5-5")
+    with pytest.raises(llm.ErrorLLM):
+        llm.complete("sistema", "usuario")
+    assert set(llamadas) == {"disabled"}
+
+
 def test_anthropic_envia_la_imagen_en_el_mensaje(monkeypatch):
     vista = {}
 
