@@ -147,7 +147,8 @@ modulos/                   explicame.py, verifica.py, transparencia.py, comun.py
 config/transparencia.yaml  ley, plazos, pasos, portal y plantilla (marcados VERIFICAR)
 .streamlit/config.toml     tokens de tema (colores, fuentes, radios); sin telemetría
 static/                    estilo.css, voz.js, dictado.js, logo, favicon y fuentes autoalojadas
-DESIGN.md                  identidad visual y reglas de diseño
+DESIGN.md                  identidad visual, reglas de diseño y bases de la competencia (§11)
+docs/                      PDF oficial de las bases de la hackathon
 design_thinking/           fichas de cada etapa de la jornada: una vacía y otra rellenada con fuentes
 data/documentos/           catálogo y documento FICTICIO de ejemplo
 tests/preguntas_prueba.json  casos de evaluación (requieren API)
