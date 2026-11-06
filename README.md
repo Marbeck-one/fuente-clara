@@ -76,6 +76,12 @@ pytest -q                 # no usa la API ni necesita .env
 python scripts/smoke.py   # documento, citas, guardrail y configuración legal
 ```
 
+Prueba de integración real de los tres módulos (consume la API y requiere `.env`):
+
+```bash
+python scripts/probar_app.py
+```
+
 ## Calidad de las respuestas (votos)
 
 Bajo cada respuesta la persona vota 👍 o 👎. Los votos se guardan en `data/votos/votos.jsonl` (fuera del repo) con el modelo y la versión de las instrucciones. El enlace «Cómo nos va», al final de la app, abre el panel con los resultados. Para ver las respuestas que las personas autorizaron guardar, define `CLAVE_EQUIPO` en `.env`.
@@ -114,6 +120,7 @@ data/documentos/           catálogo y documento FICTICIO de ejemplo
 tests/preguntas_prueba.json  casos de evaluación (requieren API)
 tests/test_*.py              pruebas unitarias (sin API)
 scripts/evaluar.py           evaluación con la IA
+scripts/probar_app.py        prueba de integración real de los 3 módulos
 scripts/smoke.py             chequeo rápido sin IA
 scripts/verificar_entorno.py diagnóstico de .env, modelo y documento
 ```
