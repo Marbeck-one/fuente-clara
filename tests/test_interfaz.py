@@ -38,3 +38,28 @@ def test_camara_solo_se_monta_al_activarla():
     assert not at.exception
     assert len(at.get("camera_input")) == 0
     assert at.button(key="ver_activar_camara") is not None
+
+
+def _botones_faq(at):
+    return [b for b in at.button if (b.key or "").startswith("fc-faq-")]
+
+
+def test_dudas_comunes_se_ven_en_explicame_y_se_abren():
+    """El contenido existía y la pantalla no lo llamaba, y ninguna prueba lo notaba: esta sí."""
+    at = _app()
+    assert not at.exception
+    assert any("Las eligió el equipo" in c.value for c in at.caption)
+    botones = _botones_faq(at)
+    assert botones, "Explícame debe mostrar las dudas comunes de la Ley 21.801"
+
+    botones[0].click().run()
+    assert not at.exception
+    assert any("revisada por una persona del equipo" in c.value for c in at.caption)
+
+
+def test_documento_sin_dudas_revisadas_no_muestra_la_seccion(monkeypatch):
+    monkeypatch.setattr("modulos.faq.publicables", lambda doc: [])
+    at = _app()
+    assert not at.exception
+    assert not _botones_faq(at)
+    assert not any("Las eligió el equipo" in c.value for c in at.caption)

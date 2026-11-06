@@ -1,0 +1,73 @@
+# Dudas comunes. Las elige el equipo: la app no guarda lo que escribe la gente. Formato y reglas en ley_21801_celulares_en_colegios.yaml.
+
+- pregunta: "¿Qué busca esta ley?"
+  revisada: true
+  respuesta:
+    - frase: "Busca ordenar y coordinar las acciones de ciberseguridad de los organismos del Estado, y entre ellos y los particulares."
+      cita: "tiene por objeto establecer la institucionalidad, los principios y la normativa general que permitan estructurar, regular y coordinar las acciones de ciberseguridad de los organismos del Estado y entre éstos y los particulares"
+    - frase: "También fija requisitos mínimos para prevenir, contener, resolver y responder a incidentes de ciberseguridad."
+      cita: "establecer los requisitos mínimos para la prevención, contención, resolución y respuesta a incidentes de ciberseguridad"
+
+- pregunta: "¿A qué instituciones se aplica?"
+  revisada: true
+  respuesta:
+    - frase: "Se aplica a las instituciones que prestan servicios calificados como esenciales."
+      cita: "La presente ley se aplicará a las instituciones que presten servicios calificados como esenciales"
+    - frase: "También a las calificadas como operadores de importancia vital."
+      cita: "a aquellas que sean calificadas como operadores de importancia vital"
+    - frase: "Son esenciales, entre otros, los servicios de los organismos de la Administración del Estado y los prestados bajo concesión de servicio público."
+      cita: "Son servicios esenciales aquellos provistos por los organismos de la Administración del Estado y por el Coordinador Eléctrico Nacional; los prestados bajo concesión de servicio público"
+    - frase: "Entre las actividades de instituciones privadas están el agua potable, las telecomunicaciones y la infraestructura digital."
+      cita: "suministro de agua potable o saneamiento; telecomunicaciones; infraestructura digital; servicios digitales y servicios de tecnología de la información gestionados por terceros"
+
+- pregunta: "¿Qué es un incidente de ciberseguridad?"
+  revisada: true
+  respuesta:
+    - frase: "Es cualquier evento que perjudique o comprometa la confidencialidad o integridad de la información, o la disponibilidad o resiliencia de las redes y sistemas informáticos."
+      cita: "Incidente de ciberseguridad: todo evento que perjudique o comprometa la confidencialidad o integridad de la información, la disponibilidad o resiliencia de las redes y sistemas informáticos"
+
+- pregunta: "¿Qué plazos hay para reportar un ciberataque?"
+  revisada: true
+  respuesta:
+    - frase: "Las instituciones obligadas deben reportar al CSIRT Nacional los ciberataques e incidentes que puedan tener efectos significativos."
+      cita: "tendrán la obligación de reportar al CSIRT Nacional los ciberataques e incidentes de ciberseguridad que puedan tener efectos significativos"
+    - frase: "Primero, una alerta temprana en un máximo de tres horas desde que conocen el hecho."
+      cita: "Dentro del plazo máximo de tres horas contado desde que se tiene conocimiento de la ocurrencia del ciberataque o incidente de ciberseguridad"
+    - frase: "Después, una actualización en un máximo de 72 horas."
+      cita: "Dentro del plazo máximo de setenta y dos horas, una actualización de la información contemplada en la letra a)"
+    - frase: "Si un operador de importancia vital ve afectados sus servicios esenciales, esa actualización debe entregarla en un máximo de 24 horas."
+      cita: "deberá entregarse al CSIRT Nacional en el plazo máximo de veinticuatro horas contado desde que haya tenido conocimiento del incidente"
+    - frase: "Por último, un informe final en un máximo de 15 días corridos desde la alerta temprana."
+      cita: "Dentro del plazo máximo de quince días corridos contado desde el envío de la alerta temprana contemplada en la letra a), un informe final"
+
+- pregunta: "¿Qué es la Agencia Nacional de Ciberseguridad?"
+  revisada: true
+  respuesta:
+    - frase: "Es un servicio público descentralizado creado por esta ley."
+      cita: "Créase la Agencia Nacional de Ciberseguridad como un servicio público funcionalmente descentralizado, dotado de personalidad jurídica y patrimonio propio"
+    - frase: "Entre sus atribuciones está fiscalizar que se cumpla la ley."
+      cita: "Fiscalizar el cumplimiento de las disposiciones de esta ley y sus reglamentos"
+
+- pregunta: "¿Qué pasa con mi identidad si aviso de una vulnerabilidad a la Agencia?"
+  revisada: true
+  respuesta:
+    - frase: "La Agencia debe mantener en secreto el aviso, sus antecedentes y la identidad de quien lo hace."
+      cita: "La Agencia deberá mantener en secreto la notificación, sus antecedentes y la identidad de quien la realice."
+    - frase: "Tu identidad solo se puede revelar con tu consentimiento expreso."
+      cita: "La identidad de la persona que notifique vulnerabilidades sólo podrá ser revelada con su consentimiento expreso."
+
+- pregunta: "¿Qué multas contempla la ley?"
+  revisada: true
+  respuesta:
+    - frase: "Infracciones leves: hasta 5.000 UTM, o hasta 10.000 UTM si es un operador de importancia vital."
+      cita: "Las infracciones leves serán sancionadas con multa de hasta 5.000 unidades tributarias mensuales, o hasta 10.000 unidades tributarias mensuales si se trata de un operador de importancia vital."
+    - frase: "Infracciones graves: hasta 10.000 UTM, o hasta 20.000 UTM si es un operador de importancia vital."
+      cita: "Las infracciones graves serán sancionadas con multa de hasta 10.000 unidades tributarias mensuales, o hasta 20.000 unidades tributarias mensuales si se trata de un operador de importancia vital."
+    - frase: "Infracciones gravísimas: hasta 20.000 UTM, o hasta 40.000 UTM si es un operador de importancia vital."
+      cita: "Las infracciones gravísimas serán sancionadas con multa de hasta 20.000 unidades tributarias mensuales, o hasta 40.000 unidades tributarias mensuales si se trata de un operador de importancia vital."
+
+- pregunta: "¿Tengo derecho a proteger mi información con cifrado?"
+  revisada: true
+  respuesta:
+    - frase: "Sí. Según los principios de la ley, toda persona puede adoptar las medidas técnicas de seguridad informática que considere necesarias, incluido el cifrado."
+      cita: "toda persona tiene derecho a adoptar las medidas técnicas de seguridad informática que considere necesarias, incluyendo el cifrado"

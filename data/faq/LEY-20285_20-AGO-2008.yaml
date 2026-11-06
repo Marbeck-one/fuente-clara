@@ -2,13 +2,13 @@
 # OJO: esta versión de la ley tiene «Fin Vigencia: 30-NOV-2026». Revisar estas respuestas antes de esa fecha.
 
 - pregunta: "¿Quién puede pedir información al Estado?"
-  revisada: false
+  revisada: true
   respuesta:
     - frase: "Toda persona tiene derecho a pedir y recibir información de cualquier órgano de la Administración del Estado."
       cita: "Toda persona tiene derecho a solicitar y recibir información de cualquier órgano de la Administración del Estado"
 
 - pregunta: "¿Qué información es pública?"
-  revisada: false
+  revisada: true
   respuesta:
     - frase: "Los actos y resoluciones de los órganos de la Administración, sus fundamentos y los documentos que les sirven de sustento, salvo excepciones."
       cita: "los actos y resoluciones de los órganos de la Administración del Estado, sus fundamentos, los documentos que les sirvan de sustento o complemento directo y esencial"
@@ -16,7 +16,7 @@
       cita: "Asimismo, es pública la información elaborada con presupuesto público y toda otra información que obre en poder de los órganos de la Administración"
 
 - pregunta: "¿Qué debe decir mi solicitud?"
-  revisada: false
+  revisada: true
   respuesta:
     - frase: "Se hace por escrito o por sitios electrónicos."
       cita: "La solicitud de acceso a la información será formulada por escrito o por sitios electrónicos"
@@ -28,7 +28,7 @@
       cita: "Firma del solicitante estampada por cualquier medio habilitado."
 
 - pregunta: "¿Cuánto tienen para responderme?"
-  revisada: false
+  revisada: true
   respuesta:
     - frase: "Un máximo de 20 días hábiles desde que reciben una solicitud que cumpla los requisitos."
       cita: "en un plazo máximo de veinte días hábiles, contado desde la recepción de la solicitud"
@@ -36,13 +36,13 @@
       cita: "Este plazo podrá ser prorrogado excepcionalmente por otros diez días hábiles"
 
 - pregunta: "¿Me pueden cobrar por la información?"
-  revisada: false
+  revisada: true
   respuesta:
     - frase: "Solo los costos directos de reproducción y los demás valores que una ley autorice expresamente."
       cita: "Sólo se podrá exigir el pago de los costos directos de reproducción y de los demás valores que una ley expresamente autorice cobrar"
 
 - pregunta: "¿Qué hago si no me responden o me la niegan?"
-  revisada: false
+  revisada: true
   respuesta:
     - frase: "Puedes recurrir al Consejo que establece la ley, pidiendo amparo a tu derecho de acceso a la información."
       cita: "el requirente tendrá derecho a recurrir ante el Consejo establecido en el Título V, solicitando amparo a su derecho de acceso a la información"

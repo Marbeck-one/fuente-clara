@@ -7,7 +7,7 @@ from core import filtro, guardrail, prompts
 from core.citas import verificar
 from core.documento import para_prompt
 from core.llm import complete
-from modulos import voz
+from modulos import faq, voz
 from modulos.comun import PESTANAS, aviso_otro_tema, encabezado, ejecutar, mostrar_citas, valorar
 
 PERFILES = ["Estudiante", "Trabajador/a", "Adulto mayor"]  # por defecto; cada documento puede definir los suyos
@@ -111,8 +111,12 @@ def render(doc):
         st.session_state["exp"] = ejecutar(explicar, pregunta.strip(), perfil, doc, previo=st.session_state.get("exp"))
 
     r = st.session_state.get("exp")
-    if not r:
-        return
+    if r:
+        _respuesta(r, doc)
+    faq.render(doc)
+
+
+def _respuesta(r, doc):
     if r["categoria"] == filtro.OPINION:
         st.info(filtro.MENSAJE_FIJO, title="Fuente Clara no opina", icon=":material/balance:")
     elif r["categoria"] == filtro.OTRO_TEMA:

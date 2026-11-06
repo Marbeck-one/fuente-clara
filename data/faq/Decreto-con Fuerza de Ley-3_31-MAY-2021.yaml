@@ -2,7 +2,7 @@
 # OJO: esta versión de la ley tiene «Fin Vigencia: 30-NOV-2026». Revisar estas respuestas antes de esa fecha.
 
 - pregunta: "¿Qué es un consumidor y qué es un proveedor?"
-  revisada: false
+  revisada: true
   respuesta:
     - frase: "Consumidores son quienes adquieren, utilizan o disfrutan bienes o servicios como destinatarios finales."
       cita: "destinatarios finales, bienes o servicios. En ningún caso podrán ser considerados consumidores los que de acuerdo al número siguiente deban entenderse como proveedores"
@@ -10,7 +10,7 @@
       cita: "consumidores, por las que se cobre precio o tarifa"
 
 - pregunta: "¿Puedo arrepentirme de una compra por internet?"
-  revisada: false
+  revisada: true
   respuesta:
     - frase: "En los casos que señala la ley, puedes terminar el contrato sin dar una razón, en 10 días desde que recibes el producto o contratas el servicio."
       cita: "podrá poner término unilateralmente al contrato, sin expresión de causa, en el plazo de 10 días contados desde la recepción del producto o desde la contratación del servicio"
@@ -20,19 +20,20 @@
       cita: "No podrá ejercerse el derecho de retracto cuando el bien que haya sido objeto del contrato se haya deteriorado por un hecho imputable al consumidor"
 
 - pregunta: "¿Qué puedo pedir si un producto sale malo?"
-  revisada: false
+  revisada: true
   respuesta:
     - frase: "En los casos que señala la ley, puedes elegir entre la reparación gratuita, el cambio del producto o la devolución de lo pagado."
       cita: "el consumidor tiene el derecho irrenunciable a optar, a su arbitrio, entre la reparación gratuita del bien o, previa restitución, su reposición o la devolución de la cantidad pagada"
 
 - pregunta: "¿Cuánto tiempo tengo para reclamar por un producto?"
-  revisada: false
+  revisada: true
   respuesta:
     - frase: "Seis meses desde que recibiste el producto, siempre que no se haya deteriorado por un hecho imputable a ti."
       cita: "deberá hacerse efectivo ante el vendedor dentro de los seis meses siguientes a la fecha en que se haya recibido el producto"
     - frase: "Si el producto se vendió con una garantía más larga, vale ese plazo."
       cita: "Si el producto se hubiere vendido con determinada garantía, prevalecerá el plazo por el cual ésta se extendió, si fuere mayor."
 
+# Oculta: sus citas quedaron cortadas a media frase y no respaldan lo que dice. Corregirlas y revisarla de nuevo antes de publicarla.
 - pregunta: "¿Qué derechos básicos tengo como consumidor?"
   revisada: false
   respuesta:

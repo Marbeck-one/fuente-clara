@@ -187,7 +187,7 @@ core/citas.py              verificación literal de citas
 core/filtro.py             filtro de alcance y segunda revisión con IA
 core/jueza.py              IA «jueza» opcional: bloquea respuestas sin respaldo (LLM_JUEZA=1)
 core/cuentas.py            cuenta opcional: identificador seudónimo y conteos de uso (SQLite)
-modulos/                   explicame.py, verifica.py, transparencia.py, comun.py, voz.py (lectura en voz alta), cuenta.py (login y topes)
+modulos/                   explicame.py, verifica.py, transparencia.py, comun.py, voz.py (lectura en voz alta), cuenta.py (login y topes), faq.py (dudas comunes en Explícame)
 config/transparencia.yaml  ley, plazos, pasos, portal y plantilla (marcados VERIFICAR)
 .streamlit/config.toml     tokens de tema (colores, fuentes, radios); sin telemetría
 static/                    estilo.css, accesibilidad.js, voz.js, dictado.js, logo, favicon y fuentes autoalojadas

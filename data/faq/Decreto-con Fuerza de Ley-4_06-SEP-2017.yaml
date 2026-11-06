@@ -2,19 +2,19 @@
 # Ley sobre partidos políticos: solo dudas de procedimiento, sin nombrar ni comparar partidos.
 
 - pregunta: "¿Qué es un partido político según la ley?"
-  revisada: false
+  revisada: true
   respuesta:
     - frase: "Es una asociación autónoma y voluntaria, organizada democráticamente, con personalidad jurídica de derecho público."
       cita: "Los partidos políticos son asociaciones autónomas y voluntarias organizadas democráticamente, dotadas de personalidad jurídica de derecho público"
 
 - pregunta: "¿Quién puede afiliarse a un partido?"
-  revisada: false
+  revisada: true
   respuesta:
     - frase: "Ciudadanos con derecho a sufragio o extranjeros avecindados en Chile por más de cinco años."
       cita: "Para afiliarse a un partido político se requiere ser ciudadano con derecho a sufragio o extranjero avecindado en Chile por más de cinco años."
 
 - pregunta: "¿Quiénes no pueden afiliarse?"
-  revisada: false
+  revisada: true
   respuesta:
     - frase: "El personal de las Fuerzas Armadas y de Orden y Seguridad Pública, del Tribunal Calificador de Elecciones y del Servicio Electoral."
       cita: "no podrán afiliarse a partido político alguno el personal de las Fuerzas Armadas y el de Orden y Seguridad Pública, el del Tribunal Calificador de Elecciones y el del Servicio Electoral"
@@ -22,13 +22,13 @@
       cita: "Tampoco podrán hacerlo los jueces, secretarios y ministros de fe de los tribunales de justicia"
 
 - pregunta: "¿Puedo estar afiliado a dos partidos a la vez?"
-  revisada: false
+  revisada: true
   respuesta:
     - frase: "No. Para afiliarte a otro partido debes renunciar expresamente a la afiliación anterior, o la nueva será nula."
       cita: "Ningún ciudadano podrá estar afiliado a más de un partido. Para afiliarse a otro partido se deberá renunciar expresamente a la afiliación anterior, sin cuyo requisito la nueva será nula."
 
 - pregunta: "¿Cómo renuncio a un partido?"
-  revisada: false
+  revisada: true
   respuesta:
     - frase: "Puedes renunciar en cualquier momento y sin dar razones."
       cita: "él, en cualquier momento, sin expresión de causa"
