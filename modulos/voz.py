@@ -19,13 +19,6 @@ import streamlit as st
 
 JS = Path(__file__).resolve().parents[1] / "static" / "voz.js"
 
-_ICONO = {  # SVG simples y decorativos (el nombre accesible lo da el texto del botón)
-    "escuchar": '<path d="M3 10v4h4l5 4V6L7 10H3z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" '
-                'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
-    "pausar": '<path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/>',
-    "continuar": '<path d="M8 5v14l11-7z"/>',
-    "detener": '<path d="M6 6h12v12H6z"/>',
-}
 _BOTONES = [("escuchar", "Escuchar respuesta", "Escuchar la respuesta en voz alta"),
             ("pausar", "Pausar", "Pausar la lectura"),
             ("continuar", "Continuar", "Continuar la lectura"),
@@ -109,11 +102,9 @@ def texto_estado(r, cfg):
 
 def _html(texto, key):
     huella = hashlib.sha1(f"{key or ''}|{texto}".encode("utf-8")).hexdigest()[:12]
-    botones = "".join(
+    botones = "".join(  # el ícono de cada botón lo dibuja el CSS (st.html elimina los <svg>)
         f'<button type="button" data-fc-accion="{accion}" aria-label="{escape(descripcion)}"'
-        f'{"" if accion == "escuchar" else " hidden"}>'
-        f'<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">'
-        f'{_ICONO[accion]}</svg><span>{escape(etiqueta)}</span></button>'
+        f'{"" if accion == "escuchar" else " hidden"}><span>{escape(etiqueta)}</span></button>'
         for accion, etiqueta, descripcion in _BOTONES)
     return (f'<div class="fc-voz" role="group" aria-label="Lectura en voz alta" data-estado="inactivo" '
             f'data-fc-voz-id="{huella}" data-fc-texto="{escape(texto, quote=True)}">'

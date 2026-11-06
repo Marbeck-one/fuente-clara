@@ -103,7 +103,7 @@ def test_boton_usa_botones_html_con_nombres_accesibles_en_espanol():
         assert f'aria-label="{nombre}"' in html
     assert "Escuchar respuesta" in html
     assert 'role="group"' in html and 'role="status"' in html and 'aria-live="polite"' in html
-    assert 'aria-hidden="true"' in html            # los íconos son decorativos
+    assert "<svg" not in html                      # st.html elimina los SVG: los íconos los dibuja el CSS
     assert "onclick" not in html and "tabindex" not in html  # solo <button> nativos: Enter y Espacio funcionan solos
     assert html.count(" hidden>") == 3             # en reposo solo se ve «Escuchar respuesta»
 
@@ -130,6 +130,12 @@ def test_boton_escuchar_no_dibuja_nada_sin_texto(monkeypatch):
     assert dibujado == []
     voz.boton_escuchar("Hola")
     assert len(dibujado) == 1 and dibujado[0][1] == {"unsafe_allow_javascript": True}
+
+
+def test_el_css_dibuja_un_icono_para_cada_boton():
+    css = (RAIZ / "static" / "estilo.css").read_text(encoding="utf-8")
+    for accion in ("escuchar", "pausar", "continuar", "detener"):
+        assert re.search(rf'\.fc-voz button\[data-fc-accion="{accion}"\] \{{ --fc-icono: url\(', css), accion
 
 
 # ---------- privacidad ----------

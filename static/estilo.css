@@ -141,7 +141,12 @@
 .fc-voz button[data-fc-accion="escuchar"]:hover:not(:disabled) { background: var(--fc-tinta-hover); }
 .fc-voz button[hidden] { display: none; }
 .fc-voz button:disabled { opacity: .55; cursor: not-allowed; }
-.fc-voz svg { flex: none; }
+.fc-voz button::before { content: ""; flex: none; width: 1.25rem; height: 1.25rem; background-color: currentColor;
+  -webkit-mask: var(--fc-icono) center / contain no-repeat; mask: var(--fc-icono) center / contain no-repeat; }
+.fc-voz button[data-fc-accion="escuchar"] { --fc-icono: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M3 10v4h4l5 4V6L7 10H3z'/%3E%3Cpath d='M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); }
+.fc-voz button[data-fc-accion="pausar"] { --fc-icono: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 5h3.5v14H7zM13.5 5H17v14h-3.5z'/%3E%3C/svg%3E"); }
+.fc-voz button[data-fc-accion="continuar"] { --fc-icono: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E"); }
+.fc-voz button[data-fc-accion="detener"] { --fc-icono: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 6h12v12H6z'/%3E%3C/svg%3E"); }
 .fc-voz-estado { font-size: .875rem; color: var(--fc-texto-2); }
 .fc-voz-estado:empty { display: none; }
 .fc-voz[data-estado="leyendo"] .fc-voz-estado::before { content: ""; display: inline-block; width: .5rem; height: .5rem;
