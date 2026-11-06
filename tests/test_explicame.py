@@ -67,6 +67,14 @@ def test_fuera_del_documento_no_muestra_frases(monkeypatch, doc):
     assert explicame.explicar("¿Cuánto cuesta?", "ninguno", doc)["categoria"] == filtro.FUERA
 
 
+def test_citas_a_mostrar_sin_repetidas(monkeypatch, doc):
+    _simular(monkeypatch, {"en_documento": True, "frases": [
+        {"texto": "Primera.", "citas": [_cita(CITA_OK)]},
+        {"texto": "Segunda.", "citas": [_cita(CITA_OK)]}]})
+    r = explicame.explicar("¿Se puede usar el celular?", "ninguno", doc)
+    assert len(r["citas_mostrar"]) == 1 and r["citas_mostrar"][0]["verificada"] is True
+
+
 def test_guardrail_quita_enlaces_de_las_frases():
     r = {"respuesta": "Mira https://ejemplo.cl",
          "frases": [{"texto": "La ley [prohíbe](https://ejemplo.cl) el celular.", "citas": []}],
