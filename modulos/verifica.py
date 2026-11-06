@@ -7,7 +7,7 @@ from core import filtro, guardrail, prompts
 from core.citas import hay_verificada, verificar
 from core.documento import para_prompt
 from core.llm import complete
-from modulos.comun import encabezado, ejecutar, mostrar_citas, valorar
+from modulos.comun import aviso_otro_tema, encabezado, ejecutar, mostrar_citas, valorar
 
 # Etiquetas descriptivas fijadas por la app (la IA solo elige la clave).
 # Las tres comparten el mismo color: el color nunca da veredicto (DESIGN.md §4).
@@ -21,7 +21,7 @@ ETIQUETAS = {
 def comparar(texto, doc):
     """Pasa por el filtro y compara cada afirmación con el documento, verificando las citas."""
     categoria = filtro.clasificar(texto, doc, tipo="afirmación")
-    if categoria == filtro.OPINION:
+    if categoria in (filtro.OPINION, filtro.OTRO_TEMA):
         return {"categoria": categoria}
     datos = complete(prompts.VERIFICA, f"{para_prompt(doc)}\n\nAFIRMACIÓN A COMPARAR:\n{guardrail.delimitar(texto)}")
     comparaciones = []
@@ -70,6 +70,9 @@ def render(doc):
     if r["categoria"] == filtro.OPINION:
         st.info(filtro.MENSAJE_FIJO, title="Fuente Clara no opina", icon=":material/balance:")
         valorar(r, "Verifica esto")
+        return
+    if r["categoria"] == filtro.OTRO_TEMA:
+        aviso_otro_tema(doc)  # no tiene sentido comparar una afirmación sobre otro asunto
         return
     if not r["comparaciones"]:
         st.warning("No encontramos afirmaciones sobre el contenido del documento para comparar.", icon=":material/report:")

@@ -37,6 +37,18 @@ def _opcionales():
     return {"temperature": float(temperatura)} if temperatura else {}
 
 
+def _timeout():
+    """Segundos máximos de espera por llamada, o None para usar el valor del cliente."""
+    valor = os.getenv("LLM_TIMEOUT", "").strip()
+    return float(valor) if valor else None
+
+
+def _max_tokens():
+    """Máximo de tokens de salida. Acota el costo de cada respuesta."""
+    valor = os.getenv("LLM_MAX_TOKENS", "").strip()
+    return int(valor) if valor else 3000
+
+
 _ultima_llamada = [0.0]
 
 
@@ -57,28 +69,33 @@ def _llamar(system, user):
 def _llamar_proveedor(system, user):
     # El cliente se guarda en una variable: google-genai cierra su conexión si el cliente se descarta antes de la llamada.
     proveedor, modelo = configuracion()
+    timeout = _timeout()
+    max_tokens = _max_tokens()
     if proveedor == "anthropic":
         import anthropic
-        cliente = anthropic.Anthropic()
+        cliente = anthropic.Anthropic(timeout=timeout) if timeout else anthropic.Anthropic()
         r = cliente.messages.create(
-            model=modelo, max_tokens=3000, system=system,
+            model=modelo, max_tokens=max_tokens, system=system,
             messages=[{"role": "user", "content": user}], **_opcionales())
         return "".join(b.text for b in r.content if b.type == "text")
     if proveedor == "openai":
         from openai import OpenAI
-        cliente = OpenAI()
+        cliente = OpenAI(timeout=timeout) if timeout else OpenAI()
         r = cliente.chat.completions.create(
-            model=modelo, response_format={"type": "json_object"},
+            model=modelo, max_tokens=max_tokens, response_format={"type": "json_object"},
             messages=[{"role": "system", "content": system}, {"role": "user", "content": user}],
             **_opcionales())
         return r.choices[0].message.content or ""
     from google import genai
     from google.genai import types
     cliente = genai.Client()
+    # En google-genai el timeout de HttpOptions se expresa en milisegundos.
+    http_options = types.HttpOptions(timeout=int(timeout * 1000)) if timeout else None
     r = cliente.models.generate_content(
         model=modelo, contents=user,
         config=types.GenerateContentConfig(
-            system_instruction=system, response_mime_type="application/json", **_opcionales()))
+            system_instruction=system, response_mime_type="application/json",
+            max_output_tokens=max_tokens, http_options=http_options, **_opcionales()))
     return r.text or ""
 
 

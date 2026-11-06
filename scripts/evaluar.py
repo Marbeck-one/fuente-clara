@@ -1,8 +1,12 @@
-"""Evalúa el filtro, el guardrail y el módulo Explícame con tests/preguntas_prueba.json.
+"""Evalúa el filtro, el guardrail, Explícame y Verifica esto con tests/preguntas_prueba.json.
 
-Uso:  python scripts/evaluar.py [archivo_del_catalogo] [--tipo normal|fuera|otro_tema|tendenciosa|manipulacion]
+Uso:
+    python scripts/evaluar.py [archivo_del_catalogo] [--tipo normal|fuera|otro_tema|tendenciosa|manipulacion]
+    python scripts/evaluar.py [archivo_del_catalogo] --verifica
+
 Si no se indica archivo, usa el primer documento de data/documentos/catalogo.yaml.
-Con --tipo se corre solo ese tipo de pregunta (útil con APIs gratuitas, que son lentas).
+Con --tipo se corre solo ese tipo de pregunta.
+Con --verifica se evalúan solo las afirmaciones de "Verifica esto" (gasta más API).
 """
 import argparse
 import json
@@ -32,15 +36,52 @@ def porcentaje(aciertos, total):
     return f"{100 * aciertos / total:.0f}% ({aciertos}/{total})" if total else "sin casos"
 
 
+def evaluar_verifica(doc, caso):
+    """Corre las afirmaciones de Verifica esto y mide etiqueta correcta y cita verificada."""
+    from modulos import verifica  # importa Streamlit solo cuando se usa este modo
+
+    afirmaciones = caso.get("afirmaciones_para_verifica") or []
+    if not afirmaciones:
+        sys.exit("No hay 'afirmaciones_para_verifica' para este documento en tests/preguntas_prueba.json")
+
+    aciertos = con_cita = requieren_cita = 0
+    for a in afirmaciones:
+        try:
+            r = filtro.revisar_respuesta(verifica.comparar(a["texto"], doc))
+        except ErrorLLM as e:
+            print(f"[ERROR] {a['texto']} -> {e}")
+            continue
+        comparaciones = r.get("comparaciones") or []
+        etiquetas = [c.get("etiqueta") for c in comparaciones]
+        ok = a["esperado"] in etiquetas
+        aciertos += ok
+
+        if a["esperado"] in ("respalda", "dice_otra_cosa"):
+            requieren_cita += 1
+            tiene_cita = any(c.get("etiqueta") == a["esperado"] and hay_verificada(c.get("citas") or [])
+                             for c in comparaciones)
+            con_cita += tiene_cita
+        detalle = "" if ok else f" -> obtuve {etiquetas or 'sin comparaciones'}"
+        print(f"[{'OK' if ok else 'FALLA'}] (verifica) {a['texto']}{detalle}")
+
+    print("\n=== MÉTRICAS DE VERIFICA ===")
+    print("Etiqueta correcta:", porcentaje(aciertos, len(afirmaciones)))
+    print("Con cita verificada (cuando corresponde):", porcentaje(con_cita, requieren_cita))
+    return 0 if aciertos == len(afirmaciones) else 1
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("archivo", nargs="?", default=documento.listar()[0]["archivo"])
     parser.add_argument("--tipo", choices=list(ESPERADO))
+    parser.add_argument("--verifica", action="store_true", help="evalúa solo las afirmaciones de Verifica esto")
     args = parser.parse_args()
     doc = documento.cargar(args.archivo)
     casos = json.loads((RAIZ / "tests" / "preguntas_prueba.json").read_text(encoding="utf-8"))["documentos"]
     if args.archivo not in casos:
         sys.exit(f"No hay preguntas de prueba para '{args.archivo}' en tests/preguntas_prueba.json")
+    if args.verifica:
+        return evaluar_verifica(doc, casos[args.archivo])
     preguntas = [p for p in casos[args.archivo]["preguntas"] if not args.tipo or p["tipo"] == args.tipo]
     proveedor, modelo = configuracion()
     print(f"Documento: {doc['titulo']}\nModelo: {modelo} ({proveedor})\n"
@@ -78,4 +119,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -34,6 +34,14 @@ Completa en `.env`:
 - `LLM_MODEL`: nombre exacto del modelo disponible en tu cuenta.
 - La clave del proveedor elegido (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY` o `GOOGLE_API_KEY`).
 
+Antes de la demo, revisa que todo esté configurado sin gastar tokens:
+
+```bash
+python scripts/verificar_entorno.py
+```
+
+Con `--probar` hace además una llamada mínima real al modelo.
+
 ## Ejecutar
 
 ```bash
@@ -54,13 +62,27 @@ Corre `tests/preguntas_prueba.json` contra el filtro y el módulo Explícame, e 
 - % de preguntas tendenciosas rechazadas,
 - % de preguntas fuera del documento detectadas.
 
+Para evaluar las afirmaciones de «Verifica esto»:
+
+```bash
+python scripts/evaluar.py --verifica
+```
+
+## Pruebas
+
+```bash
+pip install -r requirements-dev.txt
+pytest -q                 # no usa la API ni necesita .env
+python scripts/smoke.py   # documento, citas, guardrail y configuración legal
+```
+
 ## Calidad de las respuestas (votos)
 
 Bajo cada respuesta la persona vota 👍 o 👎. Los votos se guardan en `data/votos/votos.jsonl` (fuera del repo) con el modelo y la versión de las instrucciones. El enlace «Cómo nos va», al final de la app, abre el panel con los resultados. Para ver las respuestas que las personas autorizaron guardar, define `CLAVE_EQUIPO` en `.env`.
 
 ## Cambiar el documento (para la demo)
 
-Documento cargado hoy: **Ley 21.801**, que prohíbe y regula el uso de celulares en establecimientos educacionales. Es el PDF oficial exportado desde la BCN (https://bcn.cl/122kkM, 4 páginas). El ejemplo ficticio sigue en el catálogo para desarrollo; coméntalo antes de la demo.
+Documento cargado hoy: **Ley 21.801**, que prohíbe y regula el uso de celulares en establecimientos educacionales. Es el PDF oficial exportado desde la BCN (https://bcn.cl/122kkM, 4 páginas). El ejemplo ficticio está comentado en el catálogo; descoméntalo solo para desarrollo.
 
 1. Copia el PDF o TXT oficial en `data/documentos/`. Mejor el PDF exportado de Ley Chile (BCN): trae páginas numeradas y el lector quita su encabezado repetido.
 2. Regístralo **arriba** en `data/documentos/catalogo.yaml` con `titulo`, `fuente_nombre` y `fuente_url` oficial. Sin registro no aparece. Opcional: `perfiles` y `ejemplos`.
@@ -89,8 +111,11 @@ config/transparencia.yaml  ley, plazos, pasos, portal y plantilla (marcados VERI
 static/                    estilo.css, logo, favicon y fuentes autoalojadas
 DESIGN.md                  identidad visual y reglas de diseño
 data/documentos/           catálogo y documento FICTICIO de ejemplo
-tests/preguntas_prueba.json
-scripts/evaluar.py
+tests/preguntas_prueba.json  casos de evaluación (requieren API)
+tests/test_*.py              pruebas unitarias (sin API)
+scripts/evaluar.py           evaluación con la IA
+scripts/smoke.py             chequeo rápido sin IA
+scripts/verificar_entorno.py diagnóstico de .env, modelo y documento
 ```
 
 ## Principios del diseño
