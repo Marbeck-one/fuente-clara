@@ -1,0 +1,48 @@
+# Dudas comunes. Las elige el equipo: la app no guarda lo que escribe la gente. Formato y reglas en ley_21801_celulares_en_colegios.yaml.
+# OJO: esta versión de la ley tiene «Fin Vigencia: 30-NOV-2026». Revisar estas respuestas antes de esa fecha.
+
+- pregunta: "¿Qué es un dato personal?"
+  revisada: false
+  respuesta:
+    - frase: "Es cualquier información sobre una persona natural identificada o que se pueda identificar."
+      cita: "Datos de carácter personal o datos personales, los relativos a cualquier información concerniente a personas naturales, identificadas o identificables."
+
+- pregunta: "¿Qué son los datos sensibles y se pueden usar?"
+  revisada: false
+  respuesta:
+    - frase: "Son datos sobre características físicas o morales, o sobre la vida privada o intimidad de una persona."
+      cita: "aquellos datos personales que se refieren a las características físicas o morales de las personas o a hechos o circunstancias de su vida privada o intimidad"
+    - frase: "Solo se pueden tratar si la ley lo autoriza, si la persona consiente o si son necesarios para beneficios de salud."
+      cita: "No pueden ser objeto de tratamiento los datos sensibles, salvo cuando la ley lo autorice, exista consentimiento del titular o sean datos necesarios para la determinación u otorgamiento de beneficios de salud"
+
+- pregunta: "¿Pueden usar mis datos sin mi autorización?"
+  revisada: false
+  respuesta:
+    - frase: "Por regla general, solo si una ley lo autoriza o si la persona consiente expresamente."
+      cita: "sólo puede efectuarse cuando esta ley u otras disposiciones legales lo autoricen o el titular consienta expresamente en ello"
+    - frase: "La autorización debe constar por escrito."
+      cita: "su posible comunicación al público. La autorización debe constar por escrito."
+    - frase: "La ley también señala casos que no requieren autorización, como ciertos datos de fuentes accesibles al público."
+      cita: "No requiere autorización el tratamiento de datos personales que provengan o que se recolecten de fuentes accesibles al público"
+
+- pregunta: "¿Qué puedo exigir sobre mis datos?"
+  revisada: false
+  respuesta:
+    - frase: "Puedes pedir información sobre tus datos, su procedencia, su destinatario y el propósito por el que se guardan."
+      cita: "información sobre los datos relativos a su persona, su procedencia y destinatario, el propósito del almacenamiento"
+    - frase: "Si son erróneos, inexactos, equívocos o incompletos, y se acredita, tienes derecho a que se modifiquen."
+      cita: "En caso de que los datos personales sean erróneos, inexactos, equívocos o incompletos, y así se acredite, tendrá derecho a que se modifiquen."
+    - frase: "Puedes exigir que se eliminen si no tienen fundamento legal o están caducos, salvo las excepciones legales."
+      cita: "podrá, además, exigir que se eliminen, en caso de que su almacenamiento carezca de fundamento legal o cuando estuvieren caducos"
+
+- pregunta: "¿Tiene costo pedir que modifiquen o eliminen mis datos?"
+  revisada: false
+  respuesta:
+    - frase: "No. La información, la modificación y la eliminación son gratuitas."
+      cita: "la información, modificación o eliminación de los datos serán absolutamente gratuitas"
+
+- pregunta: "¿Qué hago si no responden mi solicitud?"
+  revisada: false
+  respuesta:
+    - frase: "Si no se pronuncian en dos días hábiles, o la rechazan por una causa distinta de la seguridad de la Nación o el interés nacional, puedes recurrir al juez de letras en lo civil."
+      cita: "dentro de dos días hábiles, o la denegare por una causa distinta de la seguridad de la Nación o el interés nacional, el titular de los datos tendrá derecho a recurrir al juez de letras en lo civil"

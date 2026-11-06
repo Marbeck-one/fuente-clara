@@ -28,6 +28,8 @@ documentos:
     fuente_url: "https://bcn.cl/3a0ih"
     ficticio: false
     trata_de: "la protección de la vida privada y de los datos personales"
+    ejemplos:
+      pregunta: "¿Puedo pedir que eliminen mis datos?"
 
   - archivo: LEY-19880_29-MAY-2003.pdf
     titulo: "Ley 19.880 · Bases de los procedimientos administrativos de los órganos del Estado"
@@ -35,6 +37,8 @@ documentos:
     fuente_url: "https://bcn.cl/pYxskj"
     ficticio: false
     trata_de: "los procedimientos administrativos de los órganos de la Administración del Estado"
+    ejemplos:
+      pregunta: "¿Cuánto puede durar un trámite administrativo?"
 
   - archivo: LEY-20285_20-AGO-2008.pdf
     titulo: "Ley 20.285 · Sobre acceso a la información pública"
@@ -42,6 +46,8 @@ documentos:
     fuente_url: "https://bcn.cl/gPKjtt"
     ficticio: false
     trata_de: "la transparencia de la función pública y el acceso a la información del Estado"
+    ejemplos:
+      pregunta: "¿Cuánto tiempo tienen para responder mi solicitud?"
 
   - archivo: Ley-20720_09-ENE-2014.pdf
     titulo: "Ley 20.720 · Reorganización y liquidación de empresas y personas"
@@ -49,6 +55,8 @@ documentos:
     fuente_url: "https://bcn.cl/3l2cz"
     ficticio: false
     trata_de: "la reorganización y liquidación de empresas y personas"
+    ejemplos:
+      pregunta: "¿Quién puede pedir la renegociación de sus deudas?"
 
   - archivo: Ley-21643_15-ENE-2024.pdf
     titulo: "Ley 21.643 · Ley Karin: acoso laboral, sexual y violencia en el trabajo"
@@ -56,6 +64,8 @@ documentos:
     fuente_url: "https://bcn.cl/yRoHSk"
     ficticio: false
     trata_de: "la prevención, investigación y sanción del acoso laboral, sexual o de violencia en el trabajo"
+    ejemplos:
+      pregunta: "¿Qué pasa si presento una denuncia en mi trabajo?"
 
   - archivo: Ley-21663_08-ABR-2024.pdf
     titulo: "Ley 21.663 · Ley marco de ciberseguridad"
@@ -70,6 +80,8 @@ documentos:
     fuente_url: "https://bcn.cl/sG7L2q"
     ficticio: false
     trata_de: "la protección de los derechos de los consumidores"
+    ejemplos:
+      pregunta: "¿Puedo arrepentirme de una compra por internet?"
 
   # Ley sobre cómo funciona el sistema de partidos, no sobre un partido en particular.
   - archivo: Decreto-con Fuerza de Ley-4_06-SEP-2017.pdf
@@ -78,6 +90,8 @@ documentos:
     fuente_url: "https://bcn.cl/3ldan"
     ficticio: false
     trata_de: "la constitución, organización y funcionamiento de los partidos políticos"
+    ejemplos:
+      pregunta: "¿Quién puede afiliarse a un partido?"
 
   # Documento inventado, solo para desarrollo. Coméntalo para que no aparezca en la demo.
   - archivo: EJEMPLO_FICTICIO_tarjeta_muevete.txt

@@ -9,11 +9,15 @@ from pypdf import PdfReader
 from core.citas import normalizar
 
 CARPETA = Path(__file__).resolve().parents[1] / "data" / "documentos"
-# "Artículo 1.-", "Artículo 2°.-", "ARTÍCULO ÚNICO.", "Artículo primero transitorio.-", '"Artículo 10 bis.-'
-# Exige puntuación después del número para no confundir con referencias ("el artículo 5 de la ley...").
+# "Artículo 1.-", "Artículo 2°.-", "ARTÍCULO ÚNICO.", "Artículo primero transitorio.-", '"Artículo 10 bis.-',
+# "Artículo 211-A.-", "Artículo 273 A.-", "Artículo 3° bis.-".
+# Para no confundir con referencias ("el artículo 5 de la ley...", "artículo precedente."), exige mayúscula inicial,
+# puntuación después del número y, si no hay número, un ordinal.
+_ORDINAL = (r"(?i:[úu]nico|transitorio|(?:(?:d[ée]cimo|vig[ée]simo|trig[ée]simo)\s*)?(?:primero|segundo|tercero|cuarto|"
+            r"quinto|sexto|s[ée]ptimo|octavo|noveno)|d[ée]cimo|und[ée]cimo|duod[ée]cimo|vig[ée]simo|trig[ée]simo)")
 RE_ARTICULO = re.compile(
-    r"(?im)^[ \t]*[\"“«]?[ \t]*(art[íi]culo\s+(?:\d+|[a-záéíóúñ]+)"
-    r"(?:\s+(?:bis|ter|qu[áa]ter|quinquies|sexies|transitorio))?)\s*[°º]?\s*(?:\.-|\.|:|-|–)")
+    r"(?m)^[ \t]*[\"“«]?[ \t]*((?:Art[íi]culo|ART[ÍI]CULO)\s+(?:\d+(?:\s*-?\s*[A-ZÑ]\b)?|" + _ORDINAL + r")\s*[°º]?"
+    r"(?:\s+(?i:bis|ter|qu[áa]ter|quinquies|sexies|transitorio))?)\s*[°º]?\s*(?:\.-|\.|:|-|–)")
 # Numerales de una ley que modifica otra: "4. Reemplázase…", "2. En el artículo 10:".
 RE_NUMERAL = re.compile(
     r"(?m)^[ \t]*(\d+)\.[ \t]+(?:Agr[ée]g|Reempl[áa]z|Sustit[úu]y|Incorp[óo]r|Introd[úu]c|Interc[áa]l|"
@@ -46,7 +50,9 @@ def _paginas(ruta):
 
 
 def _etiqueta(texto):
-    return " ".join(["Artículo"] + [p.lower() for p in texto.split()[1:]])
+    """"ARTÍCULO ÚNICO" -> "Artículo único"; "Artículo 3° bis" -> "Artículo 3 bis". Conserva la letra de "211-A" y "273 A"."""
+    partes = re.sub(r"\s*[°º]", "", texto).split()[1:]
+    return " ".join(["Artículo"] + [p if re.search(r"\d|^[A-ZÑ]$", p) else p.lower() for p in partes])
 
 
 def _fragmentos(paginas):
