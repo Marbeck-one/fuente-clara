@@ -4,7 +4,7 @@ from html import escape
 import streamlit as st
 
 from core import filtro, guardrail, prompts
-from core.citas import hay_verificada, verificar
+from core.citas import verificar
 from core.documento import para_prompt
 from core.llm import complete
 from modulos import voz
@@ -22,27 +22,52 @@ def perfiles(doc):
 MAX_EXCEPCIONES = 3
 
 
-def _excepciones(valor):
-    """Lista de frases cortas. Si el modelo devuelve otra cosa, se ignora: nunca se muestra algo a medias."""
-    if not isinstance(valor, list):
-        return []
-    frases = [" ".join(x.split()) for x in valor if isinstance(x, str) and x.strip()]
-    return [f[:300] for f in frases[:MAX_EXCEPCIONES]]
+def _frases(items, doc):
+    """Solo las frases con al menos una cita verificada. Las demás no se muestran.
+
+    Devuelve (frases a mostrar, cantidad descartada, todas las citas revisadas).
+    """
+    mostrar, descartadas, revisadas = [], 0, []
+    for item in items if isinstance(items, list) else []:
+        if not isinstance(item, dict):
+            descartadas += 1
+            continue
+        citas = verificar(item.get("citas") or [], doc)
+        revisadas += citas
+        validas = [c for c in citas if c["verificada"]]
+        texto = str(item.get("texto", "")).strip()
+        if texto and validas:
+            mostrar.append({"texto": texto, "citas": validas})
+        else:
+            descartadas += 1
+    return mostrar, descartadas, revisadas
 
 
 def explicar(pregunta, perfil, doc):
-    """Pasa por el filtro y, si corresponde, pide la explicación y verifica sus citas."""
+    """Pasa por el filtro y, si corresponde, pide la explicación y verifica cada frase con sus citas."""
     categoria = filtro.clasificar(pregunta, doc)
     if categoria != filtro.DENTRO:
         return {"categoria": categoria}  # FUERA, OTRO_TEMA u OPINION: no se llama al modelo de respuesta
     perfil_txt = perfil if perfil in perfiles(doc) else "ninguno"
     datos = complete(prompts.EXPLICAME, f"{para_prompt(doc)}\n\nPERFIL: {perfil_txt}\nPREGUNTA:\n{guardrail.delimitar(pregunta)}")
     en_documento = str(datos.get("en_documento")).lower() == "true"
+    frases, sin_cita, revisadas = _frases(datos.get("frases"), doc)
+    que_cambia, _, revisadas_perfil = _frases(datos.get("que_cambia_para_ti"), doc)
+    lista = datos.get("excepciones")
+    excepciones, _, revisadas_exc = _frases(lista[:MAX_EXCEPCIONES] if isinstance(lista, list) else [], doc)
+    mostrar = {}
+    for f in frases + que_cambia + excepciones:
+        for c in f["citas"]:
+            mostrar.setdefault((c["articulo"], c["pagina"], c["texto_literal"]), c)
     return {"categoria": filtro.DENTRO if en_documento else filtro.FUERA, "perfil": perfil_txt,
-            "respuesta": str(datos.get("respuesta", "")),
-            "que_cambia": str(datos.get("que_cambia_para_ti", "")).strip(),
-            "excepciones": _excepciones(datos.get("excepciones")),
-            "citas": verificar(datos.get("citas"), doc)}
+            "respuesta": " ".join(f["texto"] for f in frases),
+            "que_cambia": " ".join(f["texto"] for f in que_cambia),
+            "frases": frases, "que_cambia_frases": que_cambia,
+            "excepciones": [e["texto"][:300] for e in excepciones],
+            "frases_total": len(frases) + sin_cita,
+            "frases_sin_cita": sin_cita,
+            "citas": revisadas + revisadas_perfil + revisadas_exc,
+            "citas_mostrar": list(mostrar.values())}
 
 
 def _pasar_a_estado(duda):
@@ -86,7 +111,7 @@ def render(doc):
                 title="El documento no responde esta pregunta", icon=":material/search_off:")
         st.button("Pregúntale al Estado", type="primary", icon=":material/arrow_forward:", icon_position="right",
                   width="stretch", on_click=_pasar_a_estado, args=(st.session_state["exp_pregunta"],))
-    elif not hay_verificada(r["citas"]):
+    elif not r["frases"]:
         st.warning("No encontramos en el documento el texto que respalda esta respuesta, así que no la mostramos. "
                    "Intenta preguntar de otra manera.", title="No pudimos comprobar esta respuesta", icon=":material/report:")
     else:
@@ -95,10 +120,13 @@ def render(doc):
             voz.boton_escuchar(voz.texto_explicame(r), key="explicame")
             st.markdown(r["respuesta"])
             bloque_excepciones(r.get("excepciones"))
-            if r["que_cambia"] and r["perfil"] != "ninguno":
+            if r["perfil"] != "ninguno":
                 with st.container(key="fc-para-ti"):
                     st.html(f'<p class="fc-antetitulo">Qué cambia para ti · {escape(r["perfil"])}</p>')
-                    st.markdown(r["que_cambia"])
+                    if r["que_cambia"]:
+                        st.markdown(r["que_cambia"])
+                    else:
+                        st.caption("El documento no establece nada específico para este perfil.")
             st.html('<p class="fc-antetitulo">De dónde sale</p>')
-            mostrar_citas(r["citas"], doc)
+            mostrar_citas(r["citas_mostrar"], doc)
     valorar(r, "Explícame")

@@ -36,7 +36,7 @@ def test_limpiar_tolera_vacios():
 
 def _explicame(**extra):
     r = {"respuesta": "La ley **prohíbe** el celular.", "perfil": "Estudiante", "que_cambia": "Tu colegio cambia su reglamento.",
-         "citas": [CITA_OK, CITA_NO]}
+         "citas_mostrar": [CITA_OK], "citas": [CITA_OK, CITA_NO]}
     r.update(extra)
     return r
 
@@ -53,6 +53,11 @@ def test_explicame_lee_respuesta_perfil_y_solo_citas_verificadas():
 
 def test_explicame_sin_perfil_no_lee_que_cambia():
     assert "Qué cambia" not in voz.texto_explicame(_explicame(perfil="ninguno"))
+
+
+def test_explicame_lee_que_cambia_vacio_como_en_pantalla():
+    texto = voz.texto_explicame(_explicame(que_cambia=""))
+    assert "El documento no establece nada específico para este perfil." in texto
 
 
 # ---------- Verifica ----------

@@ -195,7 +195,8 @@ def _llamar_proveedor(system, user, imagen=None, eslabon=None, reintentos=True):
         r = cliente.messages.create(
             model=modelo, max_tokens=max_tokens, system=system,
             messages=[{"role": "user", "content": _contenido_anthropic(user, imagen)}],
-            **_opcionales(modelo))
+            # Sin razonamiento: Haiku 5.5 lo activa por defecto y se come los tokens de salida, y el JSON llega cortado.
+            thinking={"type": "disabled"}, **_opcionales(modelo))
         return "".join(b.text for b in r.content if b.type == "text")
     if proveedor == "google":
         from google import genai

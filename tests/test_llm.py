@@ -132,6 +132,7 @@ def test_anthropic_envia_la_imagen_en_el_mensaje(monkeypatch):
     monkeypatch.setenv("LLM_TEMPERATURE", "0")
     assert llm.complete("sistema", "usuario", Image.new("RGB", (120, 80))) == {"texto": "hola"}
     assert vista["model"] == "claude-haiku-5-5"
+    assert vista["thinking"] == {"type": "disabled"}
     assert "temperature" not in vista
     bloques = vista["messages"][0]["content"]
     assert bloques[0]["type"] == "image" and bloques[1]["text"] == "usuario"

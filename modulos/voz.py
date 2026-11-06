@@ -72,13 +72,17 @@ def _citas(citas):
 
 
 def texto_explicame(r):
+    """Lee lo mismo que se muestra: la respuesta, lo que cambia para el perfil y sus citas verificadas."""
     partes = [_termina(limpiar(r.get("respuesta")))]
     excepciones = [_termina(limpiar(e)) for e in r.get("excepciones") or [] if limpiar(e)]
     if excepciones:
         partes.append("Hay excepciones. " + " ".join(excepciones))
-    if r.get("que_cambia") and r.get("perfil") != "ninguno":
-        partes.append(f"Qué cambia para ti, {limpiar(r.get('perfil'))}. {_termina(limpiar(r['que_cambia']))}")
-    citas = _citas(r.get("citas"))
+    if r.get("perfil") not in (None, "ninguno"):
+        if r.get("que_cambia"):
+            partes.append(f"Qué cambia para ti, {limpiar(r['perfil'])}. {_termina(limpiar(r['que_cambia']))}")
+        else:
+            partes.append("El documento no establece nada específico para este perfil.")
+    citas = _citas(r.get("citas_mostrar"))
     if citas:
         partes.append("De dónde sale.")
         partes += citas

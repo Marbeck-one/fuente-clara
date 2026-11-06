@@ -13,28 +13,54 @@ RAIZ = Path(__file__).resolve().parents[1]
 
 # ---------- lo que devuelve el modelo ----------
 
-@pytest.mark.parametrize("entrada,esperado", [
-    (["Una.", "  Dos   con espacios  "], ["Una.", "Dos con espacios"]),
-    ([], []),
-    (None, []),
-    ("Una sola frase suelta", []),                       # el modelo respondió un texto en vez de una lista
-    ({"a": 1}, []),
-    ([1, None, "", "   ", "Válida."], ["Válida."]),      # solo cuentan los textos con contenido
-    (["a", "b", "c", "d", "e"], ["a", "b", "c"]),        # como máximo tres
-])
-def test_excepciones_se_leen_con_cuidado(entrada, esperado):
-    assert explicame._excepciones(entrada) == esperado
+@pytest.fixture
+def explicar_con(monkeypatch):
+    """Corre explicar() con la respuesta que se le indique, sin red: el filtro dice «dentro del documento»."""
+    from core import documento, filtro
+
+    doc = documento.cargar("ley_21801_celulares_en_colegios.pdf")
+    monkeypatch.setattr(filtro, "clasificar", lambda *a, **k: filtro.DENTRO)
+
+    def correr(excepciones):
+        cita = [{"articulo": "Artículo 10 bis", "pagina": 1, "texto_literal": ia_simulada.CITA_1}]
+        datos = {"en_documento": "true", "frases": [{"texto": "Está prohibido.", "citas": cita}], "que_cambia_para_ti": [],
+                 "excepciones": excepciones}
+        monkeypatch.setattr(explicame, "complete", lambda *a, **k: datos)
+        return explicame.explicar("¿Puedo usar el celular?", "Estudiante", doc)
+
+    return correr
 
 
-def test_una_excepcion_muy_larga_se_recorta():
-    assert len(explicame._excepciones(["x" * 1000])[0]) == 300
+CITA_OK = [{"articulo": "Artículo 10 bis", "pagina": 1, "texto_literal": ia_simulada.CITA_1}]
+CITA_FALSA = [{"articulo": "Artículo 99", "pagina": 9, "texto_literal": "Esto no aparece en el documento y nunca fue escrito por nadie allí."}]
+
+
+def test_solo_se_muestran_excepciones_con_cita_verificada(explicar_con):
+    r = explicar_con([{"texto": "Con permiso del director.", "citas": CITA_OK}, {"texto": "Inventada.", "citas": CITA_FALSA},
+                      {"texto": "Sin cita.", "citas": []}])
+    assert r["excepciones"] == ["Con permiso del director."]
+    assert any(c["texto_literal"] == ia_simulada.CITA_1 for c in r["citas_mostrar"])   # su cita aparece en «De dónde sale»
+
+
+@pytest.mark.parametrize("valor", [None, [], "Una frase suelta", {"a": 1}, 5, ["texto suelto"], [None, 3, "x"]])
+def test_si_el_modelo_devuelve_otra_cosa_no_hay_excepciones_ni_errores(explicar_con, valor):
+    assert explicar_con(valor)["excepciones"] == []
+
+
+def test_como_maximo_tres_excepciones(explicar_con):
+    items = [{"texto": f"Excepción {i}.", "citas": CITA_OK} for i in range(6)]
+    assert explicar_con(items)["excepciones"] == ["Excepción 0.", "Excepción 1.", "Excepción 2."]
+
+
+def test_una_excepcion_muy_larga_se_recorta(explicar_con):
+    assert len(explicar_con([{"texto": "x" * 1000, "citas": CITA_OK}])["excepciones"][0]) == 300
 
 
 def test_el_prompt_pide_excepciones_solo_si_el_documento_las_establece():
     assert '"excepciones"' in prompts.EXPLICAME
-    assert "solo las que el DOCUMENTO establece" in prompts.EXPLICAME or "Incluye solo las que el DOCUMENTO establece" in prompts.EXPLICAME
+    assert "Incluye solo las que el DOCUMENTO establece" in prompts.EXPLICAME
     assert "deja []" in prompts.EXPLICAME
-    assert "respaldada por una cita" in prompts.EXPLICAME
+    assert "misma forma (texto y cita)" in prompts.EXPLICAME     # cada excepción lleva su cita literal, como las frases
 
 
 # ---------- guardrail capa 3 ----------
@@ -71,7 +97,7 @@ def test_sin_excepciones_no_se_dibuja_nada(monkeypatch):
 def test_la_voz_lee_las_excepciones_entre_la_respuesta_y_las_citas():
     r = {"respuesta": "Está prohibido.", "perfil": "ninguno", "que_cambia": "",
          "excepciones": ["Si hay una emergencia, se puede usar.", "En media, lo decide el colegio."],
-         "citas": [{"articulo": "Artículo 1", "pagina": 1, "verificada": True, "texto_literal": "Prohíbese el uso."}]}
+         "citas_mostrar": [{"articulo": "Artículo 1", "pagina": 1, "verificada": True, "texto_literal": "Prohíbese el uso."}]}
     texto = voz.texto_explicame(r)
     assert "Hay excepciones. Si hay una emergencia, se puede usar. En media, lo decide el colegio." in texto
     assert texto.index("Está prohibido") < texto.index("Hay excepciones") < texto.index("De dónde sale")
