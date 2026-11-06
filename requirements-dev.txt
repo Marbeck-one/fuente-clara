@@ -1,0 +1,4 @@
+-r requirements.txt
+
+# Solo para desarrollo y CI
+pytest>=9.0

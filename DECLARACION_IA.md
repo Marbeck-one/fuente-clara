@@ -49,6 +49,11 @@ Política de retención de datos del proveedor elegido: ___
 - Antes de guardar se ocultan RUT, correos y teléfonos. El archivo (`data/votos/`) está fuera del repositorio y solo el equipo lo lee, con una clave (`CLAVE_EQUIPO`).
 - Retención de las respuestas guardadas: **90 días** desde que la persona autoriza el guardado; después se eliminan.
 
+## 5c. Voz: escuchar y dictar
+
+- **Escuchar la respuesta:** usa la voz del propio navegador (`speechSynthesis`). Fuente Clara no envía el texto a ningún servicio de voz ni a la IA, y no guarda audio. Según el dispositivo, la voz del sistema puede ser de red; eso lo decide el navegador.
+- **Dictar la pregunta:** usa el reconocimiento de voz del navegador (`SpeechRecognition`). **El audio sale del dispositivo**: en Chrome lo procesa el servicio de voz de Google (en otros navegadores, el de su fabricante). Fuente Clara no recibe ni guarda el audio; solo recibe el texto transcrito, que la persona revisa antes de enviar, y desde ahí sigue el mismo camino que un texto escrito (sección 5). El botón nunca escucha solo y la pantalla avisa de este envío.
+
 ## 6. IA usada para construir el prototipo
 
 - Asistente de código: Claude Code (Anthropic), usado para generar la estructura inicial del proyecto. El equipo revisó y ajustó: ___
@@ -57,5 +62,10 @@ Política de retención de datos del proveedor elegido: ___
 ## 7. Limitaciones conocidas
 
 - La verificación comprueba que el texto citado existe en el documento, no que la explicación sea correcta. Por eso la cita siempre se muestra para que la persona la lea.
-- El filtro puede equivocarse con preguntas ambiguas. Resultado medido con `scripts/evaluar.py`: ___
+- El filtro puede equivocarse con preguntas ambiguas. Resultado medido con `scripts/evaluar.py` el 06-11-2026 (Ley 21.801, `claude-sonnet-5-5`, instrucciones `v-5a9f5c8`):
+  - **Explícame:** acertó en los 37 casos. Las 6 preguntas normales tuvieron cita verificada; detectó las 5 del tema sin el dato y las 3 de otro tema; rechazó las 3 tendenciosas y los 20 intentos de manipulación.
+  - **Verifica esto:** 5 de 5 afirmaciones con la etiqueta esperada.
+  - **Pregúntale al Estado:** 5 de 5 borradores, con un organismo razonable según la revisión del equipo.
+  - **Tiempo:** una respuesta completa de Explícame tarda 10,8 s en promedio (máximo 13,7 s); Verifica esto, 9,6 s; Pregúntale al Estado, 8,0 s.
+  - **Alcance:** es un set chico y una sola corrida, así que no asegura que acierte con otras preguntas. Los 20 intentos de manipulación los frenaron las reglas fijas antes de llegar a la IA: no miden qué hace la IA con un intento que esquive esas reglas.
 - La extracción de texto de algunos PDF (escaneados o con columnas) puede fallar. Documento usado en la demo: ___

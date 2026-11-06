@@ -1,0 +1,39 @@
+# Dudas comunes. Las elige el equipo: la app no guarda lo que escribe la gente. Formato y reglas en ley_21801_celulares_en_colegios.yaml.
+
+- pregunta: "¿Qué es el acoso sexual según esta ley?"
+  revisada: false
+  respuesta:
+    - frase: "Requerimientos de carácter sexual, indebidos y no consentidos, que amenacen o perjudiquen la situación laboral o las oportunidades en el empleo de quien los recibe."
+      cita: "realice, en forma indebida, por cualquier medio, requerimientos de carácter sexual, no consentidos por quien los recibe y que amenacen o perjudiquen su situación laboral o sus oportunidades en el empleo"
+
+- pregunta: "¿Qué es el acoso laboral y puede ser una sola vez?"
+  revisada: false
+  respuesta:
+    - frase: "Es una conducta de agresión u hostigamiento del empleador o de trabajadores contra otros trabajadores."
+      cita: "toda conducta que constituya agresión u hostigamiento ejercida por el empleador o por uno o más trabajadores, en contra de otro u otros trabajadores"
+    - frase: "Puede manifestarse una sola vez o de manera reiterada."
+      cita: "ya sea que se manifieste una sola vez o de manera reiterada"
+
+- pregunta: "¿Cuenta la violencia de clientes o proveedores?"
+  revisada: false
+  respuesta:
+    - frase: "Sí. La ley incluye la violencia de terceros ajenos a la relación laboral, como clientes, proveedores o usuarios."
+      cita: "con ocasión de la prestación de servicios, por parte de clientes, proveedores o usuarios, entre otros"
+
+- pregunta: "¿Qué debe hacer mi empleador para prevenirlo?"
+  revisada: false
+  respuesta:
+    - frase: "Adoptar medidas para prevenir, investigar y sancionar estas conductas."
+      cita: "tienen derecho a que el empleador adopte e implemente las medidas destinadas a prevenir, investigar y sancionar las conductas de acoso sexual, laboral y la violencia en el lugar de trabajo"
+    - frase: "Elaborar un protocolo de prevención y ponerlo a disposición de los trabajadores."
+      cita: "Los empleadores deberán elaborar y poner a disposición de las trabajadoras y de los trabajadores un protocolo de prevención"
+
+- pregunta: "¿Qué pasa si presento una denuncia en mi trabajo?"
+  revisada: false
+  respuesta:
+    - frase: "El empleador hace una investigación interna o, en un plazo de tres días, envía los antecedentes a la Inspección del Trabajo."
+      cita: "el empleador dispondrá la realización de una investigación interna de los hechos o, en el plazo de tres días, remitirá los antecedentes a la Inspección del Trabajo respectiva"
+    - frase: "En cualquier caso, la investigación debe terminar en un plazo de treinta días."
+      cita: "En cualquier caso, la investigación deberá concluirse en el plazo de treinta días."
+    - frase: "Debe seguir los principios de confidencialidad, imparcialidad, celeridad y perspectiva de género."
+      cita: "deberán sujetarse a los principios de confidencialidad, imparcialidad, celeridad y perspectiva de género"

@@ -1,0 +1,37 @@
+# Dudas comunes. Las elige el equipo: la app no guarda lo que escribe la gente. Formato y reglas en ley_21801_celulares_en_colegios.yaml.
+
+- pregunta: "¿De qué trata esta ley?"
+  revisada: false
+  respuesta:
+    - frase: "Establece los procedimientos concursales para reorganizar o liquidar a una Empresa Deudora, y para repactar deudas o liquidar bienes de una Persona Deudora."
+      cita: "destinados a reorganizar y/o liquidar los pasivos y activos de una Empresa Deudora, y a repactar los pasivos y/o liquidar los activos de una Persona Deudora"
+
+- pregunta: "¿Soy Persona Deudora o Empresa Deudora?"
+  revisada: false
+  respuesta:
+    - frase: "Empresa Deudora es toda persona jurídica de derecho privado y toda persona natural que, en los 24 meses previos, haya sido contribuyente de primera categoría."
+      cita: "toda persona jurídica de derecho privado, con o sin fines de lucro, y toda persona natural que, dentro de los veinticuatro meses anteriores al inicio del Procedimiento Concursal correspondiente, haya sido contribuyente de primera categoría"
+    - frase: "Persona Deudora es toda persona natural que no entra en esa definición."
+      cita: "Persona Deudora: Toda persona natural no comprendida en la definición de Empresa Deudora."
+
+- pregunta: "¿Quién puede pedir la renegociación de sus deudas?"
+  revisada: false
+  respuesta:
+    - frase: "Solo la Persona Deudora."
+      cita: "El Procedimiento Concursal de Renegociación será aplicable sólo a la Persona Deudora"
+    - frase: "Debe tener dos o más obligaciones vencidas por más de 90 días, de origen diverso, por un total superior a 80 UF."
+      cita: "obligaciones vencidas por más de 90 días corridos, actualmente exigibles, provenientes de obligaciones diversas, cuyo monto total sea superior a 80 unidades de fomento"
+
+- pregunta: "¿Dónde se pide la renegociación?"
+  revisada: false
+  respuesta:
+    - frase: "La inicia la propia Persona Deudora ante la Superintendencia, con una solicitud cuyo formato está en su sitio web y en sus oficinas."
+      cita: "ante la Superintendencia a través de la presentación de una solicitud cuyo formato estará disponible en su sitio web y en sus dependencias"
+
+- pregunta: "¿Qué pasa con mis deudas cuando admiten la solicitud?"
+  revisada: false
+  respuesta:
+    - frase: "Mientras dure el procedimiento, no se puede pedir tu liquidación ni iniciar en tu contra juicios ejecutivos o ejecuciones de cualquier clase."
+      cita: "No podrá solicitarse la Liquidación Forzosa ni Voluntaria de la Persona Deudora, ni iniciarse en su contra juicios ejecutivos o ejecuciones de cualquier clase"
+    - frase: "Se suspenden los plazos de prescripción extintiva de las obligaciones."
+      cita: "Se suspenderán los plazos de prescripción extintiva de las obligaciones del Deudor."

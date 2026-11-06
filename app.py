@@ -9,8 +9,8 @@ from html import escape
 import streamlit as st
 
 from core import documento
-from core.llm import ErrorLLM, configuracion
-from modulos import explicame, panel, transparencia, verifica
+from core.llm import ErrorLLM, cadena
+from modulos import accesibilidad, explicame, panel, transparencia, verifica
 from modulos.comun import PESTANAS, STATIC, enlace_fuente, estilos, logo
 
 st.set_page_config(page_title="Fuente Clara", page_icon=str(STATIC / "favicon.svg"), layout="centered")
@@ -31,7 +31,8 @@ def inicio():
     elegido = st.selectbox("Documento", list(titulos)) if len(titulos) > 1 else next(iter(titulos))
     archivo = titulos[elegido]
     if st.session_state.get("doc_actual") != archivo:  # al cambiar de documento se borran los resultados
-        for clave in ("exp", "ver", "est"):
+        for clave in ("exp", "ver", "est", "faq_abierta", "ver_texto", "ver_recortado", "ver_archivo",
+                      "ver_camara", "ver_camara_activa"):
             st.session_state.pop(clave, None)
         st.session_state["doc_actual"] = archivo
     doc = cargar_documento(archivo)
@@ -39,12 +40,18 @@ def inicio():
     # El documento es el protagonista: nombre y fuente oficial siempre arriba.
     pills = ['<span class="fc-pill fc-pill--aviso">Ejemplo ficticio · no es un documento oficial</span>'] if doc.get("ficticio") else []
     try:
-        proveedor, modelo = configuracion()
-        pills.append(f'<span class="fc-pill" title="Detalle en DECLARACION_IA.md">IA: {escape(modelo)}</span>')
+        modelos = [m for _, m in cadena()]
+        respaldo = f" (+{len(modelos) - 1} de respaldo)" if len(modelos) > 1 else ""
+        detalle = escape(" → ".join(modelos) + " · Detalle en DECLARACION_IA.md")
+        pills.append(f'<span class="fc-pill" title="{detalle}">IA: {escape(modelos[0])}{respaldo}</span>')
     except ErrorLLM as e:
         st.error(str(e))
     st.html(f'<section class="fc-doc"><p class="fc-antetitulo">Estás leyendo</p><h1>{escape(doc["titulo"])}</h1>'
             f'<p class="fc-fuente">{enlace_fuente(doc)}</p><div class="fc-pills">{"".join(pills)}</div></section>')
+
+    st.info("**Esta herramienta usa inteligencia artificial.** Puede equivocarse. No reemplaza tu criterio: "
+            "revisa siempre el texto oficial y decide tú.",
+            icon=":material/smart_toy:")
 
     tab1, tab2, tab3 = st.tabs(PESTANAS, key="pestana", on_change="rerun")
     with tab1:
@@ -60,6 +67,7 @@ PAGINA_CALIDAD = st.Page(panel.render, title="Calidad de las respuestas · Fuent
 
 st.html(f'<header class="fc-marca">{logo()}<div><p class="fc-logotipo"><b>Fuente</b><span>Clara</span></p>'
         '<p class="fc-lema">Lo que dice el documento, dicho claro.</p></div></header>')
+accesibilidad.render_interruptor()
 pagina = st.navigation([PAGINA_INICIO, PAGINA_CALIDAD], position="hidden")
 pagina.run()
 if pagina.url_path == PAGINA_CALIDAD.url_path:

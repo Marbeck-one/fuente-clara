@@ -7,6 +7,7 @@ from core import filtro, guardrail, prompts
 from core.citas import hay_verificada, verificar
 from core.documento import para_prompt
 from core.llm import complete
+from modulos import voz
 from modulos.comun import PESTANAS, aviso_otro_tema, encabezado, ejecutar, mostrar_citas, valorar
 
 PERFILES = ["Estudiante", "Trabajador/a", "Adulto mayor"]  # por defecto; cada documento puede definir los suyos
@@ -42,12 +43,13 @@ def render(doc):
     with st.form("form_explicame"):
         ejemplo = (doc.get("ejemplos") or {}).get("pregunta", "¿A quién se aplica?")
         pregunta = st.text_area("Tu pregunta", max_chars=500, placeholder=f"Ej: {ejemplo}")
+        voz.boton_dictar("Tu pregunta")
         perfil = st.pills("¿Quieres saber qué cambia para ti? (opcional)", perfiles(doc),
                           format_func=lambda p: f"{ICONOS.get(p, ':material/person:')} {p}")
         enviar = st.form_submit_button("Explícame", type="primary", icon=":material/auto_stories:", width="stretch")
     if enviar and pregunta.strip():
         st.session_state["exp_pregunta"] = pregunta.strip()
-        st.session_state["exp"] = ejecutar(explicar, pregunta.strip(), perfil, doc)
+        st.session_state["exp"] = ejecutar(explicar, pregunta.strip(), perfil, doc, previo=st.session_state.get("exp"))
 
     r = st.session_state.get("exp")
     if not r:
@@ -67,6 +69,7 @@ def render(doc):
     else:
         with st.container(border=True, key="fc-tarjeta-respuesta"):
             st.html('<p class="fc-antetitulo">Respuesta</p>')
+            voz.boton_escuchar(voz.texto_explicame(r), key="explicame")
             st.markdown(r["respuesta"])
             if r["que_cambia"] and r["perfil"] != "ninguno":
                 with st.container(key="fc-para-ti"):

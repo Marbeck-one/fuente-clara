@@ -1,0 +1,74 @@
+# Dudas comunes de la Ley 21.801. Las elige el equipo: la app no guarda lo que escribe la gente.
+#
+# Cada frase lleva su cita, copiada tal cual del documento (8 a 40 palabras, sin cruzar de página o artículo).
+# Una duda aparece en la app solo si tiene `revisada: true` y todas sus citas se encuentran en el documento.
+# `revisada: true` significa que una persona del equipo la leyó contra la ley. No lo marques sin hacerlo.
+# Después de editar: python -m pytest tests/test_faq.py
+
+- pregunta: "¿Qué prohíbe la ley y en qué colegios?"
+  revisada: true
+  respuesta:
+    - frase: "Prohíbe usar dispositivos móviles de comunicación personal en los establecimientos de educación parvularia, básica y media."
+      cita: 'Prohíbese el uso de dispositivos móviles electrónicos de comunicación personal, en adelante "dispositivos móviles", en los establecimientos educacionales que imparten niveles de educación parvularia, básica o media.'
+    - frase: "La prohibición se aplica especialmente durante las actividades curriculares dentro de la sala de clases."
+      cita: "se aplicará, especialmente, durante el desarrollo de actividades curriculares dentro de la sala de clases"
+
+- pregunta: "¿Desde cuándo rige?"
+  revisada: true
+  respuesta:
+    - frase: "La prohibición rige desde el inicio del año escolar 2026."
+      cita: "Lo dispuesto en el artículo 10 bis entrará en vigencia al inicio del año escolar 2026."
+    - frase: "Los colegios tuvieron plazo hasta el 30 de junio de 2026 para actualizar sus reglamentos internos."
+      cita: "tendrán plazo hasta el 30 de junio de 2026 para la actualización de sus reglamentos internos"
+
+- pregunta: "¿Puedo usar el celular en el recreo si estoy en la media?"
+  revisada: true
+  respuesta:
+    - frase: "Depende de tu colegio. En la media, su reglamento puede definir espacios, horarios o actividades en que sí se autoriza usarlo."
+      cita: "en el nivel de educación media, los reglamentos de los establecimientos educacionales podrán disponer espacios, horarios o actividades específicas en que la utilización de dispositivos móviles esté autorizada"
+
+- pregunta: "¿En qué casos se permite usarlo?"
+  revisada: true
+  respuesta:
+    - frase: "Si el estudiante tiene necesidades educativas especiales y el dispositivo es una ayuda técnica para aprender."
+      cita: "Si el estudiante presenta necesidades educativas especiales respecto de las cuales el uso adecuado de estos dispositivos móviles se considera como una ayuda técnica al servicio de sus aprendizajes"
+    - frase: "Si hay una emergencia, un desastre o una catástrofe."
+      cita: "Si existe una situación de emergencia, desastre o catástrofe"
+    - frase: "Si el estudiante tiene una enfermedad o condición de salud, diagnosticada por un médico, que requiere monitoreo con el dispositivo."
+      cita: "Si el estudiante presenta una enfermedad o condición de salud, diagnosticada por un médico, que requiera monitoreo periódico a través de dispositivos móviles"
+    - frase: "Si sirve para enseñar en una actividad curricular o extracurricular, en básica o media."
+      cita: "Si la utilización de estos dispositivos móviles es útil para la enseñanza en función de la naturaleza de la actividad curricular o extracurricular en los establecimientos educacionales que imparten educación básica o media"
+    - frase: "Si el apoderado lo pide con fundamentos y por un tiempo, solo por seguridad personal o familiar del estudiante."
+      cita: "Si el padre, madre o apoderado lo solicita fundadamente y de forma temporal, solo por razones de seguridad personal o familiar del estudiante"
+    - frase: "El director debe autorizar expresamente todos estos casos, menos la emergencia y las actividades extracurriculares."
+      cita: "Las excepciones indicadas en los literales a); c); d), en lo que respecta a las actividades curriculares; y e) deberán ser autorizadas expresamente por el director"
+
+- pregunta: "¿Los profesores también tienen prohibido usarlo?"
+  revisada: true
+  respuesta:
+    - frase: "La ley no menciona a los profesores. Sí dice que la prohibición se extiende a todos los integrantes de la comunidad educativa, salvo en los casos de excepción."
+      cita: "se extenderá a todos los integrantes de la comunidad educativa, salvo en los casos excepcionales que contempla este artículo"
+
+- pregunta: "¿Qué pasa si no cumplo la prohibición?"
+  revisada: true
+  respuesta:
+    - frase: "Cada colegio debe disponer medidas y considerar mecanismos, condiciones y consecuencias para el uso de estos dispositivos."
+      cita: "los establecimientos educacionales deberán disponer medidas para materializar tanto la prohibición establecida en el inciso primero, y considerar mecanismos, condiciones y consecuencias aplicables al uso de dispositivos móviles"
+    - frase: "En la media, el reglamento también debe establecer las consecuencias de no cumplir."
+      cita: "Dichos reglamentos deberán establecer procedimientos, acciones y medidas para regular el uso adecuado de los dispositivos móviles, así como las consecuencias de su incumplimiento"
+
+- pregunta: "¿Qué les toca hacer a los apoderados?"
+  revisada: true
+  respuesta:
+    - frase: "Si el estudiante tiene necesidades educativas especiales, el apoderado debe acreditarlo con el certificado de un profesional competente."
+      cita: "Esta circunstancia deberá ser acreditada por el padre, madre o apoderado del estudiante a través de un certificado emitido por un profesional competente"
+    - frase: "Si el estudiante tiene una condición de salud que requiere monitoreo, el apoderado debe acreditarla con un certificado médico."
+      cita: "Esta circunstancia deberá ser acreditada por el padre, madre o apoderado del estudiante a través de un certificado médico"
+    - frase: "El apoderado puede pedir el uso del dispositivo de forma temporal y con fundamentos, solo por seguridad personal o familiar del estudiante."
+      cita: "Si el padre, madre o apoderado lo solicita fundadamente y de forma temporal, solo por razones de seguridad personal o familiar del estudiante"
+
+- pregunta: "¿Qué cuenta como dispositivo móvil?"
+  revisada: true
+  respuesta:
+    - frase: "Los medios tecnológicos que permiten telecomunicarse, entrar a internet para esa comunicación y consultar contenidos o plataformas digitales."
+      cita: "aquellos medios tecnológicos que permiten efectuar telecomunicación, acceder a la red de internet para mantener interacción de telecomunicación y consultar contenidos o plataformas digitales"

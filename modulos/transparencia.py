@@ -12,6 +12,7 @@ from core import filtro, guardrail, prompts
 from core.citas import verificar
 from core.documento import para_prompt
 from core.llm import complete
+from modulos import voz
 from modulos.comun import aviso_otro_tema, encabezado, ejecutar, mostrar_citas, valorar
 
 CONFIG = Path(__file__).resolve().parents[1] / "config" / "transparencia.yaml"
@@ -48,9 +49,10 @@ def render(doc):
     with st.container(border=True, key="fc-tarjeta-duda"):
         ejemplo = (doc.get("ejemplos") or {}).get("duda", "¿Cuántas personas se verán beneficiadas?")
         duda = st.text_area("Tu duda", key="duda_estado", max_chars=500, placeholder=f"Ej: {ejemplo}")
+        voz.boton_dictar("Tu duda")
         st.caption("No escribas tu nombre ni otros datos personales aquí.")
         if st.button("Preparar borrador", type="primary", icon=":material/edit_note:", width="stretch") and duda.strip():
-            st.session_state["est"] = ejecutar(preparar_solicitud, duda.strip(), doc)
+            st.session_state["est"] = ejecutar(preparar_solicitud, duda.strip(), doc, previo=st.session_state.get("est"))
 
     r = st.session_state.get("est")
     if not r:
@@ -67,6 +69,7 @@ def render(doc):
         st.info("Puede que el documento ya responda esto. Prueba también en «Explícame».", icon=":material/menu_book:")
 
     with st.container(border=True, key="fc-tarjeta-solicitud"):
+        voz.boton_escuchar(voz.texto_estado(r, cfg), key="estado")
         st.html(f'<p class="fc-antetitulo">Organismo sugerido</p><h3 class="fc-h3">{escape(r["organismo"])}</h3>'
                 f'<p class="fc-texto-2">{escape(r["justificacion"])}</p>'
                 f'<div class="fc-pills"><span class="fc-pill">Sugerencia de la IA · confírmalo en el portal</span></div>')

@@ -1,5 +1,6 @@
 """Piezas de interfaz compartidas. Estilos en static/estilo.css; criterios en DESIGN.md."""
 import sys
+import time
 import uuid
 from html import escape
 from pathlib import Path
@@ -28,17 +29,51 @@ def encabezado(antetitulo, titulo, bajada):
             f'<h2>{escape(titulo)}</h2><p class="fc-bajada">{escape(bajada)}</p></div>')
 
 
-def ejecutar(funcion, *args):
+def permitir_consulta():
+    """Comprueba el límite de uso. Muestra el aviso y devuelve False si no se permite."""
+    tope = limites.permitir(st.session_state.setdefault("consultas", []))
+    if not tope:
+        return True
+    st.warning("Hiciste muchas consultas seguidas. Espera unos minutos y vuelve a intentarlo." if tope == limites.SESION
+               else "Hay muchas personas usando Fuente Clara en este momento. Intenta de nuevo en un minuto.",
+               title="Un momento", icon=":material/hourglass_top:")
+    return False
+
+
+def repetido(firma, segundos=10):
+    """True si la misma acción se pidió hace menos de `segundos` en esta sesión.
+
+    Evita gastar dos consultas si alguien presiona dos veces el mismo botón. Solo se
+    recuerda la última acción; no guarda el texto ni ningún dato de la persona.
+    """
+    ahora = time.monotonic()
+    ultima = st.session_state.get("_ultima_accion") or (None, 0.0)
+    if ultima[0] == firma and ahora - ultima[1] < segundos:
+        return True
+    st.session_state["_ultima_accion"] = (firma, ahora)
+    return False
+
+
+def _firma(funcion, args):
+    """Identifica una consulta por función y por sus argumentos simples (texto, números)."""
+    partes = [getattr(funcion, "__name__", str(funcion))]
+    partes += [str(a) for a in args if isinstance(a, (str, int, float))]
+    partes += [a["archivo"] for a in args if isinstance(a, dict) and a.get("archivo")]  # el documento también cuenta
+    return "|".join(partes)
+
+
+def ejecutar(funcion, *args, previo=None):
     """Llama a la IA con un indicador de espera. Si falla, avisa y devuelve None.
 
     El primer argumento de `funcion` es siempre el texto de la persona. Al resultado se le agrega
     lo necesario para votarlo: un id, ese texto (queda solo en la sesión) y con qué se generó.
+    Si la consulta es un duplicado, devuelve `previo` (la respuesta que ya estaba en pantalla) para no borrarla.
     """
-    tope = limites.permitir(st.session_state.setdefault("consultas", []))
-    if tope:
-        st.warning("Hiciste muchas consultas seguidas. Espera unos minutos y vuelve a intentarlo." if tope == limites.SESION
-                   else "Hay muchas personas usando Fuente Clara en este momento. Intenta de nuevo en un minuto.",
-                   title="Un momento", icon=":material/hourglass_top:")
+    if repetido(_firma(funcion, args)):
+        st.toast("Ya hicimos esta consulta. Espera unos segundos antes de repetirla.",
+                 icon=":material/hourglass_top:")
+        return previo
+    if not permitir_consulta():
         return None
     try:
         with st.spinner("Leyendo el documento…"):
