@@ -1,0 +1,36 @@
+# Dudas comunes. Las elige el equipo: la app no guarda lo que escribe la gente. Formato y reglas en ley_21801_celulares_en_colegios.yaml.
+# Ley sobre partidos políticos: solo dudas de procedimiento, sin nombrar ni comparar partidos.
+
+- pregunta: "¿Qué es un partido político según la ley?"
+  revisada: false
+  respuesta:
+    - frase: "Es una asociación autónoma y voluntaria, organizada democráticamente, con personalidad jurídica de derecho público."
+      cita: "Los partidos políticos son asociaciones autónomas y voluntarias organizadas democráticamente, dotadas de personalidad jurídica de derecho público"
+
+- pregunta: "¿Quién puede afiliarse a un partido?"
+  revisada: false
+  respuesta:
+    - frase: "Ciudadanos con derecho a sufragio o extranjeros avecindados en Chile por más de cinco años."
+      cita: "Para afiliarse a un partido político se requiere ser ciudadano con derecho a sufragio o extranjero avecindado en Chile por más de cinco años."
+
+- pregunta: "¿Quiénes no pueden afiliarse?"
+  revisada: false
+  respuesta:
+    - frase: "El personal de las Fuerzas Armadas y de Orden y Seguridad Pública, del Tribunal Calificador de Elecciones y del Servicio Electoral."
+      cita: "no podrán afiliarse a partido político alguno el personal de las Fuerzas Armadas y el de Orden y Seguridad Pública, el del Tribunal Calificador de Elecciones y el del Servicio Electoral"
+    - frase: "Tampoco jueces y otros cargos de los tribunales, fiscales del Ministerio Público, defensores, contralores, notarios y conservadores, entre otros que la ley detalla."
+      cita: "Tampoco podrán hacerlo los jueces, secretarios y ministros de fe de los tribunales de justicia"
+
+- pregunta: "¿Puedo estar afiliado a dos partidos a la vez?"
+  revisada: false
+  respuesta:
+    - frase: "No. Para afiliarte a otro partido debes renunciar expresamente a la afiliación anterior, o la nueva será nula."
+      cita: "Ningún ciudadano podrá estar afiliado a más de un partido. Para afiliarse a otro partido se deberá renunciar expresamente a la afiliación anterior, sin cuyo requisito la nueva será nula."
+
+- pregunta: "¿Cómo renuncio a un partido?"
+  revisada: false
+  respuesta:
+    - frase: "Puedes renunciar en cualquier momento y sin dar razones."
+      cita: "él, en cualquier momento, sin expresión de causa"
+    - frase: "Basta presentar la renuncia al presidente del partido o al Servicio Electoral."
+      cita: "renuncia producirá la desafiliación por el solo hecho de ser presentada al presidente del partido o al Servicio Electoral."

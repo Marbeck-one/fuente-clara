@@ -1,0 +1,41 @@
+# Dudas comunes. Las elige el equipo: la app no guarda lo que escribe la gente. Formato y reglas en ley_21801_celulares_en_colegios.yaml.
+
+- pregunta: "¿De qué trata esta ley?"
+  revisada: false
+  respuesta:
+    - frase: "Establece y regula las bases del procedimiento administrativo de los actos de la Administración del Estado."
+      cita: "La presente ley establece y regula las bases del procedimiento administrativo de los actos de la Administración del Estado."
+
+- pregunta: "¿Cuánto puede durar un trámite administrativo?"
+  revisada: false
+  respuesta:
+    - frase: "No puede superar los 6 meses desde su inicio hasta la decisión final, salvo caso fortuito o fuerza mayor."
+      cita: "Salvo caso fortuito o fuerza mayor, el procedimiento administrativo no podrá exceder de 6 meses"
+
+- pregunta: "¿Qué derechos tengo frente a un servicio público?"
+  revisada: false
+  respuesta:
+    - frase: "Conocer en cualquier momento el estado de los procedimientos en los que eres interesado u interesada."
+      cita: "Conocer, en cualquier momento, el estado de la tramitación de los procedimientos en los que tengan la condición de interesados"
+    - frase: "Ser tratado con respeto y deferencia por las autoridades y funcionarios."
+      cita: "Ser tratados con respeto y deferencia por las autoridades y funcionarios"
+
+- pregunta: "¿Cómo reclamo por una decisión de un servicio público?"
+  revisada: false
+  respuesta:
+    - frase: "Con un recurso de reposición, dentro de cinco días, ante el mismo órgano que dictó el acto."
+      cita: "El recurso de reposición se interpondrá dentro del plazo de cinco días ante el mismo órgano que dictó el acto que se impugna"
+    - frase: "Si no presentas reposición, el recurso jerárquico va ante el superior de quien dictó el acto, dentro de 5 días desde la notificación."
+      cita: "el recurso jerárquico se interpondrá para ante el superior jerárquico de quien hubiere dictado el acto impugnado, dentro de los 5 días siguientes a su notificación"
+    - frase: "La autoridad tiene un plazo no superior a 30 días para resolver."
+      cita: "La autoridad llamada a pronunciarse sobre los recursos a que se refieren los incisos anteriores tendrá un plazo no superior a 30 días para resolverlos"
+
+- pregunta: "¿Qué pasa si no responden mi solicitud dentro del plazo?"
+  revisada: false
+  respuesta:
+    - frase: "Puedes denunciar el incumplimiento ante la autoridad que debía resolver y pedirle una decisión."
+      cita: "el interesado podrá denunciar el incumplimiento de dicho plazo ante la autoridad que debía resolver el asunto, requiriéndole una decisión acerca de su solicitud"
+    - frase: "Si esa autoridad no se pronuncia en cinco días desde que recibió la denuncia, la solicitud se entiende aceptada."
+      cita: "no se pronuncia en el plazo de cinco días contados desde la recepción de la denuncia, la solicitud del interesado se entenderá aceptada"
+    - frase: "Pero se entiende rechazada si afecta el patrimonio fiscal, entre otros casos que señala la ley."
+      cita: "Se entenderá rechazada una solicitud que no sea resuelta dentro del plazo legal cuando ella afecte el patrimonio fiscal."
