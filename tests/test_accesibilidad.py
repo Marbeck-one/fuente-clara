@@ -106,6 +106,7 @@ def test_el_control_de_tamano_va_de_80_a_200_de_10_en_10_y_el_de_contraste_activ
     assert "min: 80, max: 200, paso: 10, inicial: 100" in JS
     assert 'id="fc-slider-contraste" class="fc-acc-deslizador" min="0" max="100" step="1"' in JS
     assert "v >= 100" in JS and 'setAttribute("data-fc-contraste", "alto")' in JS
+    assert "IMAN_CONTRASTE = 96" in JS and 'addEventListener("pointerup"' in JS      # solo al soltar el puntero, no con el teclado
     assert "style.filter" not in JS and "zoom" not in JS and "transform" not in JS
 
 

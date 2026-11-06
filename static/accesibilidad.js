@@ -15,6 +15,7 @@
   var LLAVE = "fc_preferencias_accesibilidad_v3";
   var TAMANO = { min: 80, max: 200, paso: 10, inicial: 100 };
   var ID_LECTOR = "__LECTOR__";
+  var IMAN_CONTRASTE = 96;   // al soltar el control con puntero en 96–99 %, se completa el 100 %
   var raiz = document.documentElement;
 
   var ICONO = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="4" r="2.2"/>' +
@@ -47,10 +48,10 @@
 
       '<div class="fc-acc-bloque">' +
         '<div class="fc-acc-fila"><label for="fc-slider-contraste" class="fc-acc-nombre">Alto contraste</label>' +
-        '<span id="fc-valor-contraste" class="fc-acc-valor">0%</span></div>' +
+        '<span id="fc-valor-contraste" class="fc-acc-valor">0% · se activa en 100%</span></div>' +
         '<input type="range" id="fc-slider-contraste" class="fc-acc-deslizador" min="0" max="100" step="1" value="0" aria-valuetext="0 por ciento, colores originales" aria-describedby="fc-ayuda-contraste">' +
         '<div class="fc-acc-marcas" aria-hidden="true"><span>Original</span><span>Alto contraste</span></div>' +
-        '<p id="fc-ayuda-contraste" class="fc-acc-ayuda" role="status" aria-live="polite">Lleva el control hasta el 100% (tecla Fin) para activar el alto contraste.</p>' +
+        '<p id="fc-ayuda-contraste" class="fc-acc-ayuda" role="status" aria-live="polite">El alto contraste se activa al llegar al 100%: arrastra el control hasta el final (o usa la tecla Fin).</p>' +
       "</div>" +
 
       '<div class="fc-acc-bloque" role="group" aria-labelledby="fc-nombre-voz">' +
@@ -109,15 +110,21 @@
   function aplicarContraste(v) {
     v = Math.round(acotar(v, 0, 100, 0));
     sContraste.value = v;
-    vContraste.textContent = v + "%";
-    var alto = v >= 100;                    // solo en 100 % cambia la paleta; de 0 a 99 % solo avanza el control
+    var alto = v >= 100;
+    vContraste.textContent = alto ? "100% · activado" : v + "% · se activa en 100%";                    // solo en 100 % cambia la paleta; de 0 a 99 % solo avanza el control
     if (alto) raiz.setAttribute("data-fc-contraste", "alto"); else raiz.removeAttribute("data-fc-contraste");
     sContraste.setAttribute("aria-valuetext", alto ? "100 por ciento, alto contraste activado" : v + " por ciento, colores originales");
-    ayudaContraste.textContent = alto ? "Alto contraste activado." : "Lleva el control hasta el 100% (tecla Fin) para activar el alto contraste.";
+    ayudaContraste.textContent = alto ? "Alto contraste activado. Bájalo de 100% para volver a los colores originales."
+      : "El alto contraste se activa al llegar al 100%: arrastra el control hasta el final (o usa la tecla Fin).";
   }
 
   sTamano.addEventListener("input", function () { aplicarTamano(sTamano.value); guardar(); });
   sContraste.addEventListener("input", function () { aplicarContraste(sContraste.value); guardar(); });
+  // Al soltar con el dedo o el mouse muy cerca del final, el control se pega al 100 %: en una pantalla táctil es difícil
+  // detenerse exactamente en el último punto. Con el teclado y con las flechas, 99 % sigue siendo 99 %.
+  sContraste.addEventListener("pointerup", function () {
+    if (Number(sContraste.value) >= IMAN_CONTRASTE && Number(sContraste.value) < 100) { aplicarContraste(100); guardar(); }
+  });
   reset.addEventListener("click", function () {
     aplicarTamano(TAMANO.inicial); aplicarContraste(0); guardar();
     ayudaContraste.textContent = "Preferencias restablecidas: tamaño y colores originales.";

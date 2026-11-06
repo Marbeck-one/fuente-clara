@@ -222,6 +222,40 @@ def main():
             verificar("Contraste: con teclado (tecla Inicio) vuelve a lo original", fondo_pagina(page) == original)
             cerrar_panel(page)
 
+            # con el mouse o el dedo: arrastrar hasta el final activa el alto contraste, y soltar cerca del final lo completa
+            fijar(page, "fc-slider-contraste", 0)
+            abrir_panel(page)
+            c = page.locator("#fc-slider-contraste").bounding_box()
+            y = c["y"] + c["height"] / 2
+            page.mouse.move(c["x"] + 8, y)
+            page.mouse.down()
+            page.mouse.move(c["x"] + c["width"] * 0.5, y)
+            page.mouse.up()
+            medio = page.evaluate("() => [window.__fcAcc.contraste(), document.documentElement.getAttribute('data-fc-contraste')]")
+            verificar("Contraste con mouse: soltar a la mitad deja el valor ahí y los colores originales", 35 <= medio[0] <= 65 and medio[1] is None, str(medio))
+            page.mouse.move(c["x"] + c["width"] * 0.5, y)
+            page.mouse.down()
+            page.mouse.move(c["x"] + c["width"] * 1.2, y)   # arrastrar más allá del final
+            page.mouse.up()
+            verificar("Contraste con mouse: arrastrar hasta el final activa el alto contraste", fondo_pagina(page) == "rgb(4, 19, 25)")
+            page.locator("#fc-slider-contraste").focus()
+            page.keyboard.press("ArrowLeft")
+            verificar("Contraste con teclado: de 100 % a 99 % vuelve la paleta original (el imán solo actúa al soltar el puntero)",
+                      page.evaluate("() => window.__fcAcc.contraste()") == 99 and fondo_pagina(page) == original)
+            fijar(page, "fc-slider-contraste", 0)
+            page.mouse.move(c["x"] + 8, y)
+            page.mouse.down()
+            page.mouse.move(c["x"] + c["width"] * 0.972, y)  # ~97-98 %: el dedo no llegó al último punto
+            page.mouse.up()
+            verificar("Contraste con mouse o dedo: soltar a 96–99 % completa el 100 % (en pantallas táctiles es difícil frenar justo al final)",
+                      page.evaluate("() => window.__fcAcc.contraste()") == 100 and fondo_pagina(page) == "rgb(4, 19, 25)")
+            verificar("Contraste: el panel dice cuánto falta y cuándo está activado",
+                      "activado" in page.locator("#fc-valor-contraste").inner_text())
+            fijar(page, "fc-slider-contraste", 40)
+            verificar("Contraste: por debajo de 100 % el panel avisa que se activa en 100 %",
+                      "se activa en 100%" in page.locator("#fc-valor-contraste").inner_text())
+            cerrar_panel(page)
+
             # relaciones de contraste WCAG 2.2 en ambas paletas
             for nombre_paleta, valor in (("original", 0), ("alto contraste", 100)):
                 fijar(page, "fc-slider-contraste", valor)
