@@ -30,7 +30,7 @@ cp .env.example .env      # en Windows: copy .env.example .env
 
 Completa en `.env`:
 
-- `LLM_PROVIDER`: `anthropic`, `openai` o `google`.
+- `LLM_PROVIDER`: `anthropic`, `openai` o `google`. Para leer capturas en «Verifica esto» usa `anthropic` (recomendado: `claude-haiku-5-5`) o `google`.
 - `LLM_MODEL`: nombre exacto del modelo disponible en tu cuenta.
 - La clave del proveedor elegido (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY` o `GOOGLE_API_KEY`).
 
