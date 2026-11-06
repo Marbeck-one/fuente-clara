@@ -30,9 +30,29 @@ cp .env.example .env      # en Windows: copy .env.example .env
 
 Completa en `.env`:
 
-- `LLM_PROVIDER`: `anthropic`, `openai` o `google`.
+- `LLM_PROVIDER`: `anthropic`, `openai` o `google`. Para leer capturas en «Verifica esto» usa `anthropic` (recomendado: `claude-haiku-5-5`) o `google`.
 - `LLM_MODEL`: nombre exacto del modelo disponible en tu cuenta.
 - La clave del proveedor elegido (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY` o `GOOGLE_API_KEY`).
+
+### Modelos de respaldo (opcional)
+
+Para que la demo no dependa de un solo modelo, define una cadena en `LLM_CADENA` (reemplaza a `LLM_PROVIDER` y `LLM_MODEL`):
+
+```bash
+LLM_CADENA=anthropic:claude-sonnet-5-5,anthropic:claude-haiku-5-5,groq:openai/gpt-oss-120b
+GROQ_API_KEY=...
+```
+
+Se prueban en orden. Si uno falla o se satura, responde el siguiente: un modelo saturado (429) se salta 45 s y uno con clave o nombre inválido (401, 403, 404), 10 min. Los modelos sin clave se saltan. Es el mismo criterio de los prototipos de referencia del Desafío 3. Bajo cada respuesta y en los votos queda el modelo que respondió de verdad, y el encabezado muestra cuántos respaldos hay. Proveedores: `anthropic`, `openai`, `google`, `groq`, `mistral`, `openrouter`, `cerebras`, `together` y `deepseek` (clave en `<PROVEEDOR>_API_KEY`). Las capturas de «Verifica esto» solo las leen los modelos de Google de la cadena.
+
+### Modelo por tarea y segunda revisión (opcional)
+
+Dos ajustes independientes de la cadena principal, apagados por defecto:
+
+- `LLM_CADENA_FILTRO`: cadena propia para clasificar el alcance de la pregunta, por ejemplo un modelo más barato y rápido.
+- `LLM_JUEZA=1`: activa una segunda revisión con IA de cada respuesta antes de mostrarla. Puede usar su propia cadena con `LLM_CADENA_JUEZA`; si no se define, usa la principal. Si la jueza opina, recomienda, toma partido o afirma algo sin respaldo en las citas, la respuesta no se muestra. Si la jueza falla, la respuesta se muestra igual: ya pasó por el filtro, las citas verificadas y el guardrail.
+
+La jueza suma una llamada por consulta. Lo que bloquea se cuenta en el panel «Cómo nos va» y en `scripts/evaluar.py`.
 
 Antes de la demo, revisa que todo esté configurado sin gastar tokens:
 
@@ -40,7 +60,7 @@ Antes de la demo, revisa que todo esté configurado sin gastar tokens:
 python scripts/verificar_entorno.py
 ```
 
-Con `--probar` hace además una llamada mínima real al modelo.
+Con `--probar` hace además una llamada mínima real al modelo y, si hay cadena, prueba cada respaldo por separado.
 
 ## Ejecutar
 
@@ -63,6 +83,7 @@ Corre `tests/preguntas_prueba.json` contra los tres módulos, igual que la app (
 - **Pregúntale al Estado:** el organismo sugerido para cada pregunta sin el dato. Una persona marca si es razonable.
 - **Tiempo promedio de respuesta** por módulo, sin contar la espera de `LLM_INTERVALO_MIN`.
 - **Votos 👍/👎** de la app con ese documento y ese modelo.
+- **Segunda revisión con IA:** si `LLM_JUEZA=1`, cuántas respuestas bloqueó, por qué motivo y cuántos fueron falsos rechazos (casos que debían mostrarse).
 
 Con APIs gratuitas, que son lentas, se puede correr por partes: `--modulo explicame|verifica|estado` o `--tipo normal|fuera|otro_tema|tendenciosa|manipulacion` (solo Explícame).
 
@@ -98,7 +119,7 @@ antes de comparar. No subas capturas con nombres, teléfonos, RUT u otros datos 
 
 ## Calidad de las respuestas (votos)
 
-Bajo cada respuesta la persona vota 👍 o 👎. Los votos se guardan en `data/votos/votos.jsonl` (fuera del repo) con el modelo y la versión de las instrucciones. El enlace «Cómo nos va», al final de la app, abre el panel con los resultados. Para ver las respuestas que las personas autorizaron guardar, define `CLAVE_EQUIPO` en `.env`.
+Bajo cada respuesta la persona vota 👍 o 👎. Los votos se guardan en `data/votos/votos.jsonl` (fuera del repo) con el modelo y la versión de las instrucciones. El enlace «Cómo nos va», al final de la app, abre el panel con los resultados. Para ver las respuestas que las personas autorizaron guardar, define `CLAVE_EQUIPO` en `.env`. Si `LLM_JUEZA=1`, el panel también muestra la segunda revisión con IA: cuántas respuestas bloqueó y por qué motivo, sin guardar el texto.
 
 ## Cuenta opcional
 
@@ -125,6 +146,18 @@ Cada respuesta válida de los tres módulos tiene un botón **Escuchar respuesta
   - El navegador exige un toque para empezar a hablar: nunca se lee solo.
   - **Dictado:** solo funciona en navegadores con `SpeechRecognition` (Chrome y Edge; no Firefox) y **en una conexión segura**: `localhost` o HTTPS. Abierta por `http://IP-del-computador:8501` desde el celular, el navegador bloquea el micrófono y la app lo explica; para probarlo en el celular hace falta un túnel HTTPS. Necesita conexión a internet y permiso de micrófono.
 
+## Accesibilidad: tamaño de letra, alto contraste y lectura de la página (issues #3 y #19)
+
+El botón flotante con la figura de la persona (borde derecho) abre el panel. Lo crea `static/accesibilidad.js` directamente en la página (no usa iframe) y lo monta `modulos/accesibilidad.py`.
+
+- **Tamaño de letra (80–200 %, de 10 en 10):** cambia solo la variable `--fc-escala-texto`, que `static/estilo.css` usa en los `font-size` de los textos. No hay `zoom`, `transform` ni cambios al ancho de la página, las tarjetas, las imágenes ni los íconos; las tarjetas crecen hacia abajo si el texto lo necesita. Los títulos crecen menos que el texto (`--fc-escala-titulo`) para no perder la jerarquía. En 100 % se vuelve exactamente al original.
+- **Alto contraste:** el control va de 0 a 100 %. De 0 a 99 % la página es idéntica a la original (el control solo muestra su avance); al llegar a **100 %** se activa `html[data-fc-contraste="alto"]`, que redefine los mismos tokens de color con una versión oscura del petróleo institucional (`#083344`). No hay interruptor aparte ni `filter`. El panel muestra cuánto falta («45% · se activa en 100%») y confirma cuando está activado. Con el teclado: tecla Fin = 100 %, Inicio = 0 %. Con mouse o dedo, soltar el control entre 96 y 99 % lo completa a 100 % (en una pantalla táctil es difícil frenar justo en el último punto); con las flechas, 99 % sigue siendo 99 %.
+- **Lectura por voz de la página:** «Leer página completa» (más Pausar, Continuar y Detener) lee, en el orden de la pantalla, el título, las explicaciones, las respuestas, las citas verificadas y los avisos de la pestaña visible. No lee botones, formularios, lo que escribió la persona, el pie ni pestañas ocultas. Comparte controlador con «Escuchar respuesta» (`static/voz.js`): nunca suenan dos a la vez, y cambiar de pestaña corta la lectura. `voz.lector_pagina(key="lector_global")` instala el controlador.
+- **Se guarda** (`localStorage`) solo el tamaño y el contraste. Nunca audio ni textos, y la lectura jamás empieza sola.
+- **Colores:** las relaciones de contraste de ambas paletas se comprueban en `tests/test_accesibilidad.py` (texto normal ≥ 4,5:1; foco e indicadores ≥ 3:1) y, ya renderizadas, en `scripts/probar_accesibilidad.py`.
+- **Pruebas:** `python -m pytest tests/test_accesibilidad.py` (paletas, CSS, controles) y `python scripts/probar_accesibilidad.py` (65 comprobaciones en Chromium con IA y voz simuladas: 80/100/150/200 %, 360 px, 0/50/99/100 % de contraste, lectura de la página, pausa, cambio de pestaña, sin soporte). No reemplazan la prueba a mano en Chrome de Android.
+- **Limitaciones:** el Espaciado de lectura de la primera versión del panel se quitó (el panel quedó con lo pedido). En alto contraste, la tabla del panel «Cómo nos va» (`st.dataframe`) conserva los colores de Streamlit. Una opción larga del selector de documentos se recorta con puntos suspensivos cuando la letra es muy grande (el título completo se ve en la tarjeta de abajo). Un `<script>` dentro de `st.html` se pierde si su texto parece contener etiquetas HTML (Streamlit lo limpia con DOMPurify): por eso `voz.incrustar_js` escribe esos `<` como `\u003C`.
+
 ## Cambiar el documento (para la demo)
 
 Documento cargado hoy: **Ley 21.801**, que prohíbe y regula el uso de celulares en establecimientos educacionales. Es el PDF oficial exportado desde la BCN (https://bcn.cl/122kkM, 4 páginas). El ejemplo ficticio está comentado en el catálogo; descoméntalo solo para desarrollo.
@@ -147,17 +180,19 @@ En los TXT, una línea `--- Página N ---` marca el inicio de una página nueva.
 
 ```
 app.py                     interfaz (3 pestañas, encabezado con fuente, pie fijo)
-core/llm.py                capa LLM intercambiable: complete(system, user, imagen=None) -> dict
+core/llm.py                capa LLM intercambiable con cadena de respaldo: complete(system, user, imagen=None, tarea=None) -> dict
 core/documento.py          carga PDF/TXT y segmenta por artículo con número de página
-core/prompts.py            prompts del filtro y de los 3 módulos
+core/prompts.py            prompts del filtro, de los 3 módulos y de la jueza
 core/citas.py              verificación literal de citas
-core/filtro.py             filtro de alcance
+core/filtro.py             filtro de alcance y segunda revisión con IA
+core/jueza.py              IA «jueza» opcional: bloquea respuestas sin respaldo (LLM_JUEZA=1)
 core/cuentas.py            cuenta opcional: identificador seudónimo y conteos de uso (SQLite)
 modulos/                   explicame.py, verifica.py, transparencia.py, comun.py, voz.py (lectura en voz alta), cuenta.py (login y topes)
 config/transparencia.yaml  ley, plazos, pasos, portal y plantilla (marcados VERIFICAR)
 .streamlit/config.toml     tokens de tema (colores, fuentes, radios); sin telemetría
-static/                    estilo.css, voz.js, dictado.js, logo, favicon y fuentes autoalojadas
-DESIGN.md                  identidad visual y reglas de diseño
+static/                    estilo.css, accesibilidad.js, voz.js, dictado.js, logo, favicon y fuentes autoalojadas
+DESIGN.md                  identidad visual, reglas de diseño y bases de la competencia (§11)
+docs/                      PDF oficial de las bases de la hackathon
 design_thinking/           fichas de cada etapa de la jornada: una vacía y otra rellenada con fuentes
 data/documentos/           catálogo y documento FICTICIO de ejemplo
 tests/preguntas_prueba.json  casos de evaluación (requieren API)
@@ -166,6 +201,7 @@ scripts/evaluar.py           evaluación con la IA
 scripts/probar_app.py        prueba de integración real de los 3 módulos
 scripts/probar_imagen.py     prueba real de lectura de capturas
 scripts/probar_voz.py        prueba en Chromium de la lectura en voz alta (IA y voz simuladas)
+scripts/probar_accesibilidad.py  prueba en Chromium del panel: tamaño de letra, contraste y lectura de la página
 scripts/smoke.py             chequeo rápido sin IA
 scripts/verificar_entorno.py diagnóstico de .env, modelo y documento
 ```

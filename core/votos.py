@@ -13,7 +13,7 @@ from pathlib import Path
 
 from core import filtro, prompts
 from core.citas import hay_verificada
-from core.llm import configuracion
+from core.llm import ultimo_modelo
 
 ARCHIVO = Path(os.getenv("VOTOS_ARCHIVO") or Path(__file__).resolve().parents[1] / "data" / "votos" / "votos.jsonl")
 MOTIVOS = ["No responde lo que pregunté", "Difícil de entender", "La cita no respalda la respuesta", "Suena a opinión"]
@@ -28,7 +28,7 @@ _DATOS_PERSONALES = [
 
 def traza():
     """Con qué se generó una respuesta."""
-    proveedor, modelo = configuracion()
+    proveedor, modelo = ultimo_modelo()  # el que respondió, que en una cadena puede ser un respaldo
     return {"proveedor": proveedor, "modelo": modelo, "version": prompts.VERSION}
 
 
@@ -56,6 +56,8 @@ def resumen(r):
     if r["categoria"] == filtro.FUERA:
         return "(El documento no responde esta pregunta.)"
     texto = r.get("respuesta", "")
+    if r.get("excepciones"):
+        texto += "\n\nExcepciones: " + " · ".join(r["excepciones"])
     if r.get("que_cambia") and r.get("perfil") not in (None, "ninguno"):
         texto += f"\n\nQué cambia para ti ({r['perfil']}): {r['que_cambia']}"
     if not hay_verificada(r.get("citas") or []):

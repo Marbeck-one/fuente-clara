@@ -14,7 +14,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-from core import cuentas, documento, filtro, votos
+from core import cuentas, documento, filtro, votos, jueza
 from modulos import cuenta
 from modulos.comun import encabezado
 
@@ -171,6 +171,20 @@ def _privado(registros, titulos):
                       f'perfil {escape(v["perfil"])} · {escape(titulos.get(v.get("documento"), str(v.get("documento"))))}</p>')
 
 
+def _jueza():
+    """Respuestas que la segunda revisión con IA (issue #29) no dejó mostrar. Solo motivo y modelo: nunca el texto."""
+    bloqueos = jueza.leer()
+    if not (bloqueos or jueza.activa()):
+        return
+    st.subheader("Segunda revisión con IA")
+    st.caption("Otra IA lee cada respuesta antes de mostrarla y la bloquea si opina, recomienda, toma partido o afirma algo "
+               "que las citas no respaldan." + ("" if jueza.activa() else " Ahora está apagada (LLM_JUEZA en .env)."))
+    st.metric("Respuestas bloqueadas antes de mostrarse", len(bloqueos))
+    if bloqueos:
+        conteo = pd.DataFrame(bloqueos)["motivo"].map(lambda m: jueza.MOTIVOS.get(m, m)).value_counts()
+        st.dataframe(conteo.rename_axis("Motivo").reset_index(name="Respuestas"), hide_index=True, width="stretch")
+
+
 def render():
     encabezado("Transparencia", "Calidad de las respuestas",
                "Así evalúan las personas las respuestas de Fuente Clara. Sirve para saber si un cambio en el "
@@ -188,6 +202,7 @@ def render():
     else:
         st.info("Todavía no hay votos. Aparecerán aquí cuando las personas evalúen las respuestas.",
                 icon=":material/hourglass_empty:")
+    _jueza()
     if cuenta.modo():
         _uso()
     _privado(registros, titulos)

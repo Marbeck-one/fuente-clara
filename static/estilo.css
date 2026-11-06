@@ -21,23 +21,19 @@
   --fc-sombra: 0 1px 3px rgb(15 23 42 / 0.08);
   --fc-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
 
-  /* Escalas adaptativas de accesibilidad */
-  --fc-font-scale: 1;
-  --fc-line-height-scale: 1;
-  --fc-letter-spacing: normal;
+  /* Tamaño de letra ajustable (panel de accesibilidad, 80–200 %). Solo cambia la tipografía: nunca los contenedores.
+     Los títulos crecen menos que el texto para conservar la jerarquía. */
+  --fc-escala-texto: 1;
+  --fc-escala-titulo: calc(1 + (var(--fc-escala-texto) - 1) * .7);
 }
 
 /* Base de tipografía y espaciado proporcional */
-html {
-  font-size: calc(17px * var(--fc-font-scale, 1)) !important;
-  letter-spacing: var(--fc-letter-spacing, normal) !important;
-  transition: background-color 0.2s ease, color 0.2s ease;
-}
+html { transition: background-color 0.2s ease, color 0.2s ease; }
 
 body, [data-testid="stAppViewContainer"], .stApp {
   background-color: var(--fc-fondo) !important;
   color: var(--fc-texto) !important;
-  line-height: calc(1.5 * var(--fc-line-height-scale, 1)) !important;
+  line-height: 1.5 !important;
 }
 
 /* Marco general */
@@ -56,19 +52,19 @@ body, [data-testid="stAppViewContainer"], .stApp {
 .fc-marca svg { flex: none; }
 .fc-logotipo {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: calc(1.25rem * var(--fc-escala-titulo));
   line-height: 1.1;
   letter-spacing: -0.02em;
   color: var(--fc-tinta) !important;
 }
 .fc-logotipo b { font-weight: 800; }
 .fc-logotipo span { font-weight: 400; }
-.fc-lema { margin: 0; font-size: .875rem; color: var(--fc-texto-2) !important; }
+.fc-lema { margin: 0; font-size: calc(.875rem * var(--fc-escala-texto)); color: var(--fc-texto-2) !important; }
 
 /* Antetítulo institucional */
 .fc-antetitulo {
   margin: 0 0 .25rem;
-  font-size: .8125rem;
+  font-size: calc(.8125rem * var(--fc-escala-texto));
   font-weight: 700;
   letter-spacing: .08em;
   text-transform: uppercase;
@@ -87,13 +83,13 @@ body, [data-testid="stAppViewContainer"], .stApp {
 .fc-doc h1 {
   margin: .125rem 0 .5rem;
   padding: 0;
-  font-size: 1.5rem;
+  font-size: calc(1.5rem * var(--fc-escala-titulo));
   font-weight: 800;
   line-height: 1.25;
   letter-spacing: -0.01em;
   color: var(--fc-tinta) !important;
 }
-.fc-fuente { margin: 0; font-size: .9375rem; color: var(--fc-texto-2) !important; }
+.fc-fuente { margin: 0; font-size: calc(.9375rem * var(--fc-escala-texto)); color: var(--fc-texto-2) !important; }
 .fc-fuente a, .fc-cita-meta a, .fc-legal a {
   color: var(--fc-accion) !important;
   font-weight: 700;
@@ -112,7 +108,7 @@ body, [data-testid="stAppViewContainer"], .stApp {
   border: 1px solid var(--fc-borde) !important;
   background-color: var(--fc-campo) !important;
   color: var(--fc-texto-2) !important;
-  font-size: .8125rem;
+  font-size: calc(.8125rem * var(--fc-escala-texto));
   font-weight: 600;
   line-height: 1.4;
 }
@@ -124,13 +120,13 @@ body, [data-testid="stAppViewContainer"], .stApp {
 .fc-pill--etiqueta {
   background-color: var(--fc-campo) !important;
   color: var(--fc-tinta) !important;
-  font-size: .9375rem;
+  font-size: calc(.9375rem * var(--fc-escala-texto));
   padding: .375rem .875rem;
 }
 .fc-antetitulo .fc-pill {
   margin-left: .375rem;
   padding: 0 .5rem;
-  font-size: .75rem;
+  font-size: calc(.75rem * var(--fc-escala-texto));
   letter-spacing: 0;
   text-transform: none;
   vertical-align: 1px;
@@ -143,7 +139,7 @@ body, [data-testid="stAppViewContainer"], .stApp {
   color: var(--fc-texto) !important;
   border-radius: .75rem;
   padding: 1rem 1.125rem;
-  font-size: .9375rem;
+  font-size: calc(.9375rem * var(--fc-escala-texto));
   line-height: 1.6;
 }
 
@@ -152,13 +148,13 @@ body, [data-testid="stAppViewContainer"], .stApp {
 .fc-seccion h2 {
   margin: 0;
   padding: 0;
-  font-size: 1.5rem;
+  font-size: calc(1.5rem * var(--fc-escala-titulo));
   font-weight: 800;
   letter-spacing: -0.01em;
   color: var(--fc-tinta) !important;
 }
 .fc-bajada { margin: .375rem 0 0; color: var(--fc-texto-2) !important; }
-.fc-h3 { margin: 0 0 .25rem; padding: 0; font-size: 1.125rem; font-weight: 700; color: var(--fc-texto) !important; }
+.fc-h3 { margin: 0 0 .25rem; padding: 0; font-size: calc(1.125rem * var(--fc-escala-titulo)); font-weight: 700; color: var(--fc-texto) !important; }
 .fc-texto-2 { margin: 0; color: var(--fc-texto-2) !important; }
 
 /* Pestañas de navegación */
@@ -177,7 +173,7 @@ body, [data-testid="stAppViewContainer"], .stApp {
   gap: .125rem;
   white-space: normal;
   text-align: center;
-  font-size: .875rem;
+  font-size: calc(.875rem * var(--fc-escala-texto));
   line-height: 1.2;
   font-weight: 700;
   color: var(--fc-texto-2) !important;
@@ -251,8 +247,8 @@ body, [data-testid="stAppViewContainer"], .stApp {
   padding: .125rem 0 .125rem .875rem;
   border-left: 4px solid var(--fc-tinta) !important;
   font-family: var(--fc-serif);
-  font-size: 1.0625rem;
-  line-height: calc(1.65 * var(--fc-line-height-scale, 1)) !important;
+  font-size: calc(1.0625rem * var(--fc-escala-texto));
+  line-height: 1.65 !important;
   color: var(--fc-texto) !important;
 }
 .fc-cita mark {
@@ -269,7 +265,7 @@ body, [data-testid="stAppViewContainer"], .stApp {
   color: var(--fc-texto-3) !important;
   text-decoration: line-through;
 }
-.fc-cita-meta { margin: .625rem 0 0; font-size: .875rem; color: var(--fc-texto-2) !important; }
+.fc-cita-meta { margin: .625rem 0 0; font-size: calc(.875rem * var(--fc-escala-texto)); color: var(--fc-texto-2) !important; }
 
 /* Módulo 2: Verifica (lado a lado o columna única en móviles) */
 .fc-comparacion { display: grid; gap: .75rem; }
@@ -293,8 +289,8 @@ body, [data-testid="stAppViewContainer"], .stApp {
 .fc-pasos { margin: .25rem 0 0; padding-left: 1.25rem; }
 .fc-pasos li { margin: 0 0 .5rem; padding-left: .25rem; }
 .fc-pasos li::marker { color: var(--fc-tinta) !important; font-weight: 800; }
-.fc-pasos .fc-pill, .fc-legal .fc-pill { margin-left: .25rem; padding: 0 .5rem; font-size: .75rem; }
-.fc-legal { margin: .5rem 0 0; font-size: .875rem; color: var(--fc-texto-2) !important; }
+.fc-pasos .fc-pill, .fc-legal .fc-pill { margin-left: .25rem; padding: 0 .5rem; font-size: calc(.75rem * var(--fc-escala-texto)); }
+.fc-legal { margin: .5rem 0 0; font-size: calc(.875rem * var(--fc-escala-texto)); color: var(--fc-texto-2) !important; }
 
 /* Pie fijo */
 .fc-pie {
@@ -310,30 +306,11 @@ body, [data-testid="stAppViewContainer"], .stApp {
   padding: .625rem 1rem calc(.625rem + env(safe-area-inset-bottom));
   background-color: var(--fc-superficie) !important;
   border-top: 1px solid var(--fc-borde) !important;
-  font-size: .8125rem;
+  font-size: calc(.8125rem * var(--fc-escala-texto));
   line-height: 1.35;
   color: var(--fc-texto-2) !important;
 }
 .fc-pie svg { flex: none; }
-
-/* Modo Oscuro / Alto Contraste visual para tarjetas y bordes */
-.fc-modo-oscuro-contraste .fc-doc,
-.fc-modo-oscuro-contraste [data-testid="stForm"],
-.fc-modo-oscuro-contraste [class*="st-key-fc-tarjeta"],
-.fc-modo-oscuro-contraste .fc-lado--oficial {
-  border-width: 2px !important;
-  border-color: var(--fc-borde) !important;
-}
-.fc-modo-oscuro-contraste [data-testid="stBaseButton-primary"] {
-  background-color: var(--fc-accion) !important;
-  border-color: var(--fc-accion) !important;
-  color: #041319 !important;
-  font-weight: 800 !important;
-}
-.fc-modo-oscuro-contraste .st-key-pestana .react-aria-SelectionIndicator {
-  background-color: var(--fc-accion) !important;
-  height: 4px;
-}
 
 /* Cuidar fotos y documentos: NO aplicar filtros destructivos */
 img, svg, picture {
@@ -364,10 +341,10 @@ img, svg, picture {
     padding-right: .75rem !important;
     padding-top: .875rem !important;
   }
-  .fc-doc h1 { font-size: 1.25rem !important; line-height: 1.25 !important; }
-  .fc-seccion h2 { font-size: 1.25rem !important; line-height: 1.25 !important; }
+  .fc-doc h1 { font-size: calc(1.25rem * var(--fc-escala-titulo)) !important; line-height: 1.25 !important; }
+  .fc-seccion h2 { font-size: calc(1.25rem * var(--fc-escala-titulo)) !important; line-height: 1.25 !important; }
   .st-key-pestana [data-testid="stTab"] { min-height: 52px !important; padding: .25rem .125rem !important; }
-  .st-key-pestana [data-testid="stTab"] p { font-size: .75rem !important; }
+  .st-key-pestana [data-testid="stTab"] p { font-size: calc(.75rem * var(--fc-escala-texto)) !important; }
   .st-key-pestana [data-testid="stTab"] p span[role="img"] { font-size: 1.125rem !important; }
   .fc-pills { gap: .375rem !important; }
 }
@@ -389,7 +366,7 @@ img, svg, picture {
 .fc-voz button[data-fc-accion="pausar"] { --fc-icono: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 5h3.5v14H7zM13.5 5H17v14h-3.5z'/%3E%3C/svg%3E"); }
 .fc-voz button[data-fc-accion="continuar"] { --fc-icono: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E"); }
 .fc-voz button[data-fc-accion="detener"] { --fc-icono: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 6h12v12H6z'/%3E%3C/svg%3E"); }
-.fc-voz-estado { font-size: .875rem; color: var(--fc-texto-2); }
+.fc-voz-estado { font-size: calc(.875rem * var(--fc-escala-texto)); color: var(--fc-texto-2); }
 .fc-voz-estado:empty { display: none; }
 .fc-voz[data-estado="leyendo"] .fc-voz-estado::before { content: ""; display: inline-block; width: .5rem; height: .5rem;
   margin-right: .5rem; border-radius: 50%; background: var(--fc-accion); animation: fc-latido 1s ease-in-out infinite; }
@@ -409,8 +386,152 @@ img, svg, picture {
   -webkit-mask: var(--fc-icono) center / contain no-repeat; mask: var(--fc-icono) center / contain no-repeat; }
 .fc-dictado button[data-fc-accion="dictar"] { --fc-icono: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z'/%3E%3C/svg%3E"); }
 .fc-dictado button[data-fc-accion="parar"] { --fc-icono: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 6h12v12H6z'/%3E%3C/svg%3E"); }
-.fc-dictado-estado { font-size: .875rem; color: var(--fc-texto-2); }
+.fc-dictado-estado { font-size: calc(.875rem * var(--fc-escala-texto)); color: var(--fc-texto-2); }
 .fc-dictado-estado:empty { display: none; }
 .fc-dictado[data-estado="escuchando"] .fc-dictado-estado::before { content: ""; display: inline-block; width: .5rem; height: .5rem;
   margin-right: .5rem; border-radius: 50%; background: var(--fc-accion); animation: fc-latido 1s ease-in-out infinite; }
 @media (max-width: 480px) { .fc-dictado-botones, .fc-dictado button { width: 100%; } }
+
+/* ==========================================================================
+   Tamaño de letra ajustable (panel de accesibilidad). Solo cambia font-size de los textos:
+   ancho de página, tarjetas, márgenes, imágenes e íconos no se tocan. Si el texto necesita más espacio,
+   las tarjetas crecen hacia abajo. Los valores base son los de Streamlit (tema: 1rem = 17 px).
+   ========================================================================== */
+[data-testid="stMarkdownContainer"] :is(p, li),
+[data-testid="stWidgetLabel"] :is(p, label),
+[data-testid="stCaptionContainer"],
+[data-testid="stCaptionContainer"] p,
+.stTextInput input, .stTextArea textarea,
+[data-testid^="stBaseButton"] p, [data-testid^="stBaseLinkButton"] p,
+[data-testid="stTab"] p,
+[data-testid="stPills"] button,
+[data-testid="stSelectbox"] input, [data-testid="stSelectboxVirtualDropdown"] *, [role="listbox"] [role="option"],
+[data-testid^="stBaseButton-pills"] p, [data-testid^="stBaseButton-pills"],
+[data-testid="stExpander"] summary p,
+[data-testid="stToast"] p { font-size: calc(.875rem * var(--fc-escala-texto)) !important; }
+[data-testid="stAlert"] p, [data-testid="stExpander"] summary,
+[data-testid="stFileUploader"] :is(span, small, p) { font-size: calc(1rem * var(--fc-escala-texto)) !important; }
+[data-testid="stMarkdownContainer"] :is(h1, h2) { font-size: calc(1.5rem * var(--fc-escala-titulo)) !important; }
+[data-testid="stMarkdownContainer"] h3 { font-size: calc(1.125rem * var(--fc-escala-titulo)) !important; }
+/* Que una palabra larga no empuje la página hacia los lados cuando el texto crece */
+/* Texto suelto de los bloques st.html: tamaño base 1rem (:where no suma especificidad, así que las clases .fc-* mandan) */
+.fc-bajada, .fc-texto-2, .fc-lado p, .fc-pasos li { font-size: calc(1rem * var(--fc-escala-texto)); }
+[data-testid="stSelectbox"] input { text-overflow: ellipsis; }
+/* El pie es fijo: su texto crece hasta 150 % para no tapar el contenido */
+.fc-pie { font-size: calc(.8125rem * min(var(--fc-escala-texto), 1.5)) !important; }
+/* Las pestañas crecen hacia abajo cuando el texto es más grande (nunca se cortan) */
+.st-key-pestana :is([role="tablist"], [data-testid="stTab"]) { height: auto !important; }
+.st-key-pestana [data-testid="stTab"] { padding-bottom: .75rem; }
+.block-container :is(p, li, h1, h2, h3, summary, label, blockquote, .fc-lado) { overflow-wrap: anywhere; }
+.block-container [data-testid="stCode"] pre { white-space: pre-wrap !important; overflow-wrap: anywhere; }
+
+/* ==========================================================================
+   Alto contraste: se activa solo cuando el control del panel llega a 100 % (html[data-fc-contraste="alto"]).
+   Mismos tokens que la paleta original, con los colores institucionales (petróleo #083344) en versión oscura:
+   no se usa filter ni se interpola, así que en 0–99 % la página es idéntica a la original.
+   ========================================================================== */
+html[data-fc-contraste="alto"] {
+  --fc-tinta: #F8FAFC;          /* en oscuro, la «tinta» institucional pasa a ser clara */
+  --fc-tinta-hover: #E2E8F0;
+  --fc-accion: #38BDF8;
+  --fc-resaltador: #FACC15;
+  --fc-resaltador-texto: #041319;
+  --fc-fondo: #041319;          /* petróleo institucional, oscurecido */
+  --fc-superficie: #08202A;
+  --fc-campo: #0E2E3C;
+  --fc-borde: #38BDF8;
+  --fc-texto: #FFFFFF;
+  --fc-texto-2: #E2E8F0;
+  --fc-texto-3: #CBD5E1;
+  --fc-aviso-fondo: #2B1706;
+  --fc-aviso-texto: #FDBA74;
+  --fc-aviso-borde: #FB923C;
+  --fc-sombra: none;
+  color-scheme: dark;
+}
+html[data-fc-contraste="alto"] :is(.fc-doc, [data-testid="stForm"], [class*="st-key-fc-tarjeta"], .fc-lado--oficial) { border-width: 2px !important; }
+/* Componentes de Streamlit que no leen nuestras variables */
+html[data-fc-contraste="alto"] :is([data-testid="stMarkdownContainer"], [data-testid="stCaptionContainer"], [data-testid="stWidgetLabel"]) :is(p, li, label, span, h1, h2, h3) { color: var(--fc-texto); }
+html[data-fc-contraste="alto"] [data-testid="stCaptionContainer"] { color: var(--fc-texto-2); }
+html[data-fc-contraste="alto"] :is(.stTextArea textarea, .stTextInput input, [data-baseweb="textarea"], [data-baseweb="base-input"],
+  [data-testid="stSelectbox"] .react-aria-ComboBox > [role="group"], [data-testid="stSelectbox"] input) {
+  background-color: var(--fc-campo) !important; color: var(--fc-texto) !important; border-color: var(--fc-borde) !important; }
+html[data-fc-contraste="alto"] [data-testid="stSelectbox"] :is(button, svg) { color: var(--fc-texto) !important; fill: var(--fc-texto) !important; background: transparent !important; }
+html[data-fc-contraste="alto"] :is(textarea, input)::placeholder { color: var(--fc-texto-3) !important; opacity: 1; }
+html[data-fc-contraste="alto"] [data-testid="stAlert"], html[data-fc-contraste="alto"] [data-testid="stAlertContainer"] {
+  background-color: var(--fc-campo) !important; border: 1px solid var(--fc-borde) !important; color: var(--fc-texto) !important; }
+html[data-fc-contraste="alto"] [data-testid="stAlert"] :is(p, span, div, li) { color: var(--fc-texto) !important; }
+html[data-fc-contraste="alto"] [data-testid="stExpander"] :is(summary, summary *) { color: var(--fc-texto) !important; }
+html[data-fc-contraste="alto"] [data-testid="stBaseButton-secondary"], html[data-fc-contraste="alto"] [data-testid="stBaseButton-secondaryFormSubmit"] { color: var(--fc-texto) !important; }
+html[data-fc-contraste="alto"] button[data-variant="pills"] { background-color: var(--fc-campo) !important; border: 1px solid var(--fc-borde) !important; }
+html[data-fc-contraste="alto"] button[data-variant="pills"] :is(p, span, svg) { color: var(--fc-texto) !important; fill: var(--fc-texto) !important; }
+html[data-fc-contraste="alto"] button[data-variant="pills"][aria-checked="true"] { background-color: var(--fc-tinta) !important; border: 2px solid var(--fc-accion) !important; }
+html[data-fc-contraste="alto"] button[data-variant="pills"][aria-checked="true"] :is(p, span, svg) { color: var(--fc-superficie) !important; fill: var(--fc-superficie) !important; }
+/* Botones principales: la tinta es clara en alto contraste, así que su texto va oscuro */
+html[data-fc-contraste="alto"] :is([data-testid^="stBaseButton-primary"], [data-testid^="stBaseLinkButton-primary"]) :is(p, span, svg) { color: var(--fc-superficie) !important; fill: var(--fc-superficie) !important; }
+html[data-fc-contraste="alto"] [data-testid="stTab"] p { color: var(--fc-texto-2) !important; }
+html[data-fc-contraste="alto"] [data-testid="stTab"][aria-selected="true"] p { color: var(--fc-tinta) !important; }
+html[data-fc-contraste="alto"] [data-testid="stHeader"], html[data-fc-contraste="alto"] [data-testid="stBottom"] { background: transparent !important; }
+html[data-fc-contraste="alto"] [data-testid="stFeedback"] :is(svg, button) { color: var(--fc-texto) !important; fill: var(--fc-texto) !important; }
+html[data-fc-contraste="alto"] [data-testid="stToast"] { background-color: var(--fc-superficie) !important; color: var(--fc-texto) !important; border: 1px solid var(--fc-borde); }
+html[data-fc-contraste="alto"] [data-baseweb="popover"] :is(ul, li, div) { background-color: var(--fc-superficie) !important; color: var(--fc-texto) !important; }
+html[data-fc-contraste="alto"] [data-testid="stCode"] pre, html[data-fc-contraste="alto"] [data-testid="stCode"] code { background-color: var(--fc-superficie) !important; color: var(--fc-texto) !important; }
+html[data-fc-contraste="alto"] [data-testid="stExpander"] summary { background-color: var(--fc-campo) !important; }
+html[data-fc-contraste="alto"] a { color: var(--fc-accion); }
+html[data-fc-contraste="alto"] .fc-pie { border-top-width: 2px; }
+
+/* ==========================================================================
+   Panel de accesibilidad (static/accesibilidad.js): botón flotante + diálogo
+   ========================================================================== */
+.fc-acc-flotante { position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 999999; width: 52px; height: 56px;
+  display: flex; align-items: center; justify-content: center; padding: 0 0 0 6px; border-radius: 28px 0 0 28px; cursor: pointer;
+  background: var(--fc-tinta); color: var(--fc-superficie); border: 2px solid var(--fc-superficie); border-right: 0;
+  box-shadow: -3px 4px 16px rgb(8 51 68 / .3); }
+.fc-acc-flotante svg { width: 28px; height: 28px; fill: currentColor; }
+.fc-acc-flotante:hover { background: var(--fc-tinta-hover); }
+.fc-acc-flotante:focus-visible, .fc-acc-panel button:focus-visible, .fc-acc-panel input:focus-visible { outline: 3px solid var(--fc-accion); outline-offset: 2px; }
+.fc-acc-fondo { position: fixed; inset: 0; z-index: 1000000; background: rgb(15 23 42 / .18); opacity: 0; pointer-events: none; transition: opacity .2s ease; }
+.fc-acc-fondo.fc-visible { opacity: 1; pointer-events: auto; }
+.fc-acc-panel { position: fixed; right: .75rem; top: 50%; transform: translateY(-50%) scale(.97); z-index: 1000001; width: 360px;
+  max-width: calc(100vw - 1.5rem); max-height: calc(100vh - 1.5rem); overflow-y: auto; box-sizing: border-box; padding: 1.25rem;
+  background: var(--fc-superficie); color: var(--fc-texto); border: 2px solid var(--fc-borde); border-radius: 1rem;
+  box-shadow: 0 20px 40px rgb(15 23 42 / .25); opacity: 0; pointer-events: none; visibility: hidden;
+  transition: opacity .2s ease, transform .2s ease, visibility .2s; line-height: 1.4;
+  font-family: "Atkinson Hyperlegible Next", system-ui, sans-serif; }
+.fc-acc-panel.fc-visible { opacity: 1; pointer-events: auto; visibility: visible; transform: translateY(-50%) scale(1); }
+.fc-acc-panel * { box-sizing: border-box; }
+.fc-acc-cabecera { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding-bottom: .75rem; margin-bottom: 1rem; border-bottom: 1px solid var(--fc-borde); }
+.fc-acc-titulo { display: flex; align-items: center; gap: .5rem; margin: 0; font-size: 1.125rem; font-weight: 800; color: var(--fc-tinta); }
+.fc-acc-titulo svg { width: 22px; height: 22px; fill: currentColor; }
+.fc-acc-cerrar { min-width: 44px; min-height: 44px; border: 0; border-radius: .5rem; background: transparent; color: var(--fc-texto); font-size: 1.25rem; cursor: pointer; }
+.fc-acc-cerrar:hover { background: var(--fc-campo); }
+.fc-acc-bloque { margin: 0 0 1.25rem; padding: 0; border: 0; }
+.fc-acc-fila { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .375rem; }
+.fc-acc-nombre { font-size: .8125rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--fc-accion); }
+.fc-acc-valor { font-size: .8125rem; font-weight: 700; padding: .125rem .625rem; text-align: right; border-radius: 999px; border: 1px solid var(--fc-borde); background: var(--fc-campo); color: var(--fc-texto); }
+.fc-acc-deslizador { width: 100%; height: 32px; margin: .25rem 0; cursor: pointer; accent-color: var(--fc-tinta); }
+.fc-acc-marcas { display: flex; justify-content: space-between; font-size: .75rem; font-weight: 600; color: var(--fc-texto-2); }
+.fc-acc-ayuda { margin: .375rem 0 0; font-size: .8125rem; color: var(--fc-texto-2); }
+.fc-acc-panel .fc-voz { margin: .25rem 0 0; }
+.fc-acc-panel .fc-voz button { font-size: .9375rem; }
+.fc-acc-restablecer { width: 100%; min-height: 44px; border-radius: .5rem; border: 1px solid var(--fc-borde); background: var(--fc-campo); color: var(--fc-texto); font: inherit; font-weight: 700; cursor: pointer; }
+.fc-acc-restablecer:hover { background: var(--fc-borde); color: var(--fc-superficie); }
+/* Los instaladores de scripts no ocupan lugar en la página */
+[data-testid="stElementContainer"]:has(> [data-testid="stHtml"] .fc-instalador) { display: none; }
+.fc-dictado-aviso { flex-basis: 100%; margin: 0; font-size: calc(.8125rem * var(--fc-escala-texto)); color: var(--fc-texto-2); }
+
+/* Excepciones de la respuesta (modulos/explicame.py): amarillo, el mismo del texto oficial resaltado */
+.fc-excepciones { margin: 1rem 0; padding: .875rem 1rem 1rem; border: 1px solid #EAB308; border-left: 6px solid #EAB308; border-radius: .75rem;
+  background-color: var(--fc-excepcion-fondo, #FEF9C3); color: var(--fc-excepcion-texto, #422006); }
+.fc-excepciones-titulo { display: flex; align-items: center; gap: .5rem; margin: 0 0 .5rem; font-size: calc(1rem * var(--fc-escala-texto)); font-weight: 800;
+  letter-spacing: .01em; color: var(--fc-excepcion-titulo, #713F12) !important; }
+.fc-excepciones-titulo::before { content: ""; flex: none; width: 1.375rem; height: 1.375rem; background-color: currentColor;
+  -webkit-mask: var(--fc-icono-excepcion) center / contain no-repeat; mask: var(--fc-icono-excepcion) center / contain no-repeat;
+  --fc-icono-excepcion: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2 1 21h22L12 2zm1 14h-2v-2h2v2zm0-4h-2V8h2v4z'/%3E%3C/svg%3E"); }
+.fc-excepciones-lista { margin: 0; padding-left: 1.25rem; }
+.fc-excepciones-lista li { margin: 0 0 .375rem; padding-left: .25rem; font-size: calc(1rem * var(--fc-escala-texto)); line-height: 1.5; color: var(--fc-excepcion-texto, #422006); }
+.fc-excepciones-lista li:last-child { margin-bottom: 0; }
+.fc-excepciones-lista li::marker { color: var(--fc-excepcion-titulo, #713F12); font-weight: 800; }
+.fc-excepciones-nota { margin: .625rem 0 0; font-size: calc(.8125rem * var(--fc-escala-texto)); color: var(--fc-excepcion-titulo, #713F12); }
+html[data-fc-contraste="alto"] .fc-excepciones { background-color: var(--fc-resaltador); border-color: #FFFFFF; --fc-excepcion-texto: #041319; --fc-excepcion-titulo: #041319; }
+html[data-fc-contraste="alto"] .fc-excepciones-titulo, html[data-fc-contraste="alto"] .fc-excepciones-nota { color: #041319 !important; }

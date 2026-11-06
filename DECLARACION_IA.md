@@ -6,9 +6,11 @@
 
 | Uso en la app | Proveedor | Modelo | Dónde se configura |
 |---|---|---|---|
-| Filtro de alcance, Explícame, Verifica esto y Pregúntale al Estado | ___ (anthropic / openai / google) | ___ | `LLM_PROVIDER` y `LLM_MODEL` en `.env` |
+| Filtro de alcance, Explícame, Verifica esto y Pregúntale al Estado | Anthropic | `claude-sonnet-5-5`; si falla o se satura, responde `claude-haiku-5-5` | `LLM_PROVIDER`, `LLM_MODEL` y `LLM_CADENA` en `.env` |
+| Filtro de alcance y segunda revisión de cada respuesta (opcional) | Anthropic | La cadena de `LLM_CADENA_FILTRO` o `LLM_CADENA_JUEZA` si están definidas; si no, el modelo principal | `LLM_CADENA_FILTRO`, `LLM_JUEZA` y `LLM_CADENA_JUEZA` en `.env` |
+| Lectura de capturas en Verifica esto | Mismo proveedor activo | Mismo modelo | La captura viaja solo al proveedor activo; no se guarda |
 
-Se usa un solo modelo para las cuatro tareas. La app muestra en pantalla qué modelo está activo.
+Se usa el mismo modelo para las cuatro tareas, salvo que se definan cadenas por tarea: `LLM_CADENA_FILTRO` para clasificar y `LLM_CADENA_JUEZA` para la segunda revisión. La jueza está apagada por defecto y se activa con `LLM_JUEZA=1`. La app muestra en pantalla qué modelo está activo, y bajo cada respuesta, el modelo que la generó.
 
 ## 2. Para qué usamos IA
 
@@ -33,6 +35,7 @@ Se usa un solo modelo para las cuatro tareas. La app muestra en pantalla qué mo
 - **Respuestas sin cita verificada no se muestran** como válidas.
 - **Etiquetas fijas** del verificador definidas en `modulos/verifica.py`.
 - **Guardrail** (`core/guardrail.py`): antes de la IA se rechazan los intentos típicos de manipulación y las entradas demasiado largas; el texto de la persona va entre marcas y las reglas dicen que es dato, no instrucción; después de la IA, una respuesta que opina, da un veredicto ("verdadero", "falso") o muestra las instrucciones internas no se muestra, y se le quitan enlaces e imágenes.
+- **Segunda revisión con IA (opcional, `core/jueza.py`):** con `LLM_JUEZA=1`, otra IA lee la respuesta y las citas verificadas antes de mostrarla. Si opina, recomienda, toma partido o afirma algo que las citas no respaldan, la respuesta se oculta. El bloqueo se cuenta solo con el motivo, el modelo, la versión y la fecha, nunca con el texto. Si la jueza falla, la respuesta se muestra igual: ya pasó por las otras capas.
 - **Borrador armado con plantilla** (`config/transparencia.yaml`) con marcadores `[TU NOMBRE]` y `[TU DIRECCIÓN]`.
 - **Nada exige una cuenta.** La cuenta es opcional y por defecto está desactivada (ver sección 5d). Lo que escribe la persona no se guarda, salvo que lo autorice al votar 👎 una respuesta (ver sección 5b).
 - **Trazabilidad** (`core/votos.py`): cada voto guarda el modelo y la versión de las instrucciones (`prompts.VERSION`, cambia sola al editar un prompt), para saber si un cambio mejoró o empeoró las respuestas. Panel público en la página «Calidad de las respuestas».
@@ -40,7 +43,11 @@ Se usa un solo modelo para las cuatro tareas. La app muestra en pantalla qué mo
 ## 5. Datos que se envían al proveedor de IA
 
 En cada consulta se envía el documento público completo y el texto que escribió la persona. No se envían datos de identificación porque la app no los pide.
-Política de retención de datos del proveedor elegido: ___
+Si `LLM_JUEZA=1`, se hace una segunda llamada con la respuesta que se iba a mostrar y las citas verificadas; no se envía de nuevo la pregunta. El bloqueo se registra sin el texto.
+Política de retención de datos del proveedor elegido (Anthropic, API comercial):
+- Borra automáticamente las entradas y salidas de la API dentro de 30 días. Las guarda más tiempo solo si su sistema las marca por infringir su política de uso (hasta 2 años) o si la ley lo exige. Fuente: «How long do you store my organization's data?», https://privacy.claude.com/en/articles/7996866-how-long-do-you-store-my-organization-s-data (actualizada el 01-07-2026).
+- No usa las entradas ni las salidas de la API para entrenar sus modelos. Fuentes: https://privacy.claude.com/en/articles/7996868-is-my-data-used-for-model-training y Commercial Terms, sección B (https://www.anthropic.com/legal/commercial-terms).
+- Los votos 👍/👎 de Fuente Clara se guardan en el servidor del equipo y no se envían a Anthropic.
 
 ## 5b. Votos sobre las respuestas
 
@@ -75,4 +82,5 @@ Política de retención de datos del proveedor elegido: ___
   - **Pregúntale al Estado:** 5 de 5 borradores, con un organismo razonable según la revisión del equipo.
   - **Tiempo:** una respuesta completa de Explícame tarda 10,8 s en promedio (máximo 13,7 s); Verifica esto, 9,6 s; Pregúntale al Estado, 8,0 s.
   - **Alcance:** es un set chico y una sola corrida, así que no asegura que acierte con otras preguntas. Los 20 intentos de manipulación los frenaron las reglas fijas antes de llegar a la IA: no miden qué hace la IA con un intento que esquive esas reglas.
-- La extracción de texto de algunos PDF (escaneados o con columnas) puede fallar. Documento usado en la demo: ___
+- La extracción de texto de algunos PDF (escaneados o con columnas) puede fallar. Documento usado en la demo: Ley 21.801, PDF oficial de la BCN (https://bcn.cl/122kkM), con texto digital (no escaneado) y 4 páginas.
+- La segunda revisión con IA está apagada por defecto porque suma una llamada por consulta. Cuando está activa, puede bloquear de más: los falsos rechazos se miden con `scripts/evaluar.py` y se ven en el panel «Calidad de las respuestas».

@@ -105,9 +105,9 @@ Ficha de Definición: problema, objetivo, criterio de éxito y alcance (incluye 
 
 **Borrador, falta acordarlo en equipo.** Con el formato «[Actor] necesita [necesidad] porque [razón]»:
 
-> **Estudiantes, apoderados y docentes** necesitan **saber qué les prohíbe, qué les permite y qué les pide la Ley 21.801, y en qué artículo lo dice**, porque **la prohibición del celular rige desde el año escolar 2026, tiene cinco excepciones (cuatro las autoriza el director) y el texto modifica la Ley General de Educación, así que no se entiende leyéndolo solo.**
+> **Diego, estudiante de 17 años de 3° medio,** necesita **saber qué le prohíbe, qué le permite y qué le pide la Ley 21.801, y en qué artículo lo dice**, porque **la prohibición del celular rige desde el año escolar 2026, tiene cinco excepciones (cuatro las autoriza el director) y el texto modifica la Ley General de Educación, así que no se entiende leyéndolo solo.**
 
-Fuentes: actores, perfiles de `catalogo.yaml`. Razón, Ley, arts. 10 bis, único y 12 transitorio (detalle en la etapa 1). Si el #18 define un único usuario concreto, el actor se reemplaza por ese usuario.
+Fuentes: usuario concreto definido en `USUARIO_FINAL.md` (#18); perfiles de `catalogo.yaml`. Razón, Ley, arts. 10 bis, único y 12 transitorio (detalle en la etapa 1). La app mantiene los perfiles Estudiante, Apoderado/a y Docente.
 
 ### Objetivo
 
@@ -191,7 +191,7 @@ Según las etiquetas de los issues ("para hoy" = cabe antes del congelamiento). 
 
 **Borrador.** Con el formato Lean:
 
-> Creemos que **Fuente Clara, que responde en lenguaje claro con la cita literal del artículo y la fuente oficial y sin opinar,** logrará **que se entienda qué dice la Ley 21.801 y de dónde sale, en menos de un minuto,** para **estudiantes, apoderados y docentes**. Lo sabremos si **___ de 3 a 5 personas de la comunidad escolar entienden la respuesta y encuentran la cita en menos de un minuto (#18), y si el 100 % de las respuestas normales trae al menos una cita verificada (#1).**
+> Creemos que **Fuente Clara, que responde en lenguaje claro con la cita literal del artículo y la fuente oficial y sin opinar,** logrará **que se entienda qué dice la Ley 21.801 y de dónde sale, en menos de un minuto,** para **Diego y, por extensión, estudiantes, apoderados y docentes**. Lo sabremos si **___ de 3 a 5 personas de la comunidad escolar entienden la respuesta y encuentran la cita en menos de un minuto (#18), y si el 100 % de las respuestas normales trae al menos una cita verificada (#1).**
 
 ## Lista de verificación
 

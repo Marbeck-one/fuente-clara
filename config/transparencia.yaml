@@ -1,43 +1,45 @@
 # Datos jurídicos del módulo "Pregúntale al Estado".
 # La IA NO genera estos datos: la app los muestra tal como están aquí.
 #
-# Cada dato tiene "estado: VERIFICAR" hasta que el equipo lo confirme en la fuente oficial
-# (BCN / Ley Chile, Consejo para la Transparencia, Portal de Transparencia).
-# Cuando lo confirmen, cambien a "estado: VERIFICADO". Mientras diga VERIFICAR,
-# la app muestra el aviso "pendiente de verificar" junto al dato.
-# Los valores precargados son un punto de partida, NO están confirmados.
+# Verificados el 06-11-2026 contra fuentes oficiales:
+# - Ley 20.285, PDF oficial de la BCN en data/documentos/LEY-20285_20-AGO-2008.pdf (versión del 11-jul-2025).
+# - Consejo para la Transparencia (CPLT): página "Solicitar información pública"
+#   (https://www.consejotransparencia.cl/inicio/solicitud-informacionpublica/) e Instrucción General N° 10
+#   sobre el Procedimiento de Acceso a la Información.
+# Si cambian un dato, vuelvan a "estado: VERIFICAR" hasta confirmarlo: la app muestra "Por verificar" junto a él.
 
 ley:
   texto: "Ley N° 20.285, sobre Acceso a la Información Pública"
-  url: "https://www.bcn.cl/leychile/navegar?idNorma=276363"
-  estado: VERIFICAR
+  url: "https://bcn.cl/gPKjtt"  # enlace oficial impreso en el PDF de la BCN
+  estado: VERIFICADO
 
 portal:
-  texto: "Portal de Transparencia del Estado"
-  url: "https://www.portaltransparencia.cl"
-  estado: VERIFICAR
+  texto: "Portal de Transparencia"
+  url: "https://www.portaltransparencia.cl"  # el CPLT envía ahí las solicitudes de información
+  estado: VERIFICADO
 
 pasos:
   - texto: "Revisa el borrador y ajústalo si hace falta. Fuente Clara no envía nada."
   - texto: "Entra al Portal de Transparencia y elige el organismo al que vas a preguntar."
-    estado: VERIFICAR
+    estado: VERIFICADO  # Ley 20.285, art. 12 d): la solicitud indica el órgano al que se dirige
   - texto: "Completa tus datos de identificación directamente en el portal, no en esta app."
-    estado: VERIFICAR
+    estado: VERIFICADO  # Ley 20.285, art. 12 a): nombre, apellidos y dirección del solicitante
   - texto: "Pega el texto de tu solicitud, envíala y guarda el número de ingreso que te entreguen."
-    estado: VERIFICAR
+    estado: VERIFICADO  # Instrucción General N° 10 del CPLT, punto 1.4: recibo con fecha, número de ingreso y contenido
 
 plazos:
   - texto: "El organismo tiene un plazo máximo de 20 días hábiles para responder."
-    estado: VERIFICAR
+    estado: VERIFICADO  # Ley 20.285, art. 14
   - texto: "Ese plazo puede extenderse de forma excepcional por 10 días hábiles más, y deben avisarte."
-    estado: VERIFICAR
-  - texto: "Si no responden o niegan la información, puedes reclamar ante el Consejo para la Transparencia dentro de 15 días."
-    estado: VERIFICAR
+    estado: VERIFICADO  # Ley 20.285, art. 14: deben comunicar la prórroga y sus fundamentos antes de que venza el plazo
+  - texto: "Si no responden a tiempo o niegan la información, puedes reclamar ante el Consejo para la Transparencia dentro de 15 días desde que vence el plazo o desde que te notifican la negativa."
+    estado: VERIFICADO  # Ley 20.285, art. 24
 
 # Plantilla del borrador. {organismo} y {solicitud} los completa la IA; {ley} sale de este archivo.
 # [TU NOMBRE] y [TU DIRECCIÓN] quedan como marcadores: la app nunca pide ni guarda esos datos.
+# Cubre lo que exige el art. 12 de la Ley 20.285: órgano, nombre y dirección, información pedida y firma.
 plantilla:
-  estado: VERIFICAR
+  estado: VERIFICADO
   texto: |
     A: {organismo}
 

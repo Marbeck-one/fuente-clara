@@ -24,14 +24,17 @@ def _pregunta(user):
     return user.split("<entrada_usuario>")[-1].split("</entrada_usuario>")[0].strip()[:40]
 
 
-def falsa(system, user, imagen=None):
+def falsa(system, user, imagen=None, tarea=None):
     if system == prompts.FILTRO:
         return {"categoria": "dentro_del_documento"}
     if system == prompts.EXPLICAME:
-        return {"en_documento": "true", "respuesta": f"**Respuesta simulada** sobre «{_pregunta(user)}». "
-                "La ley [prohíbe](https://ejemplo.cl) el uso de celulares en los colegios.",
-                "que_cambia_para_ti": "Tu colegio debe actualizar su reglamento interno.",
-                "citas": [{"articulo": "Artículo 10 bis", "pagina": 1, "texto_literal": CITA_1}]}
+        cita = [{"articulo": "Artículo 10 bis", "pagina": 1, "texto_literal": CITA_1}]
+        return {"en_documento": "true",
+                "frases": [{"texto": f"La ley [prohíbe](https://ejemplo.cl) el uso de celulares sobre «{_pregunta(user)}».",
+                            "citas": cita}],
+                "que_cambia_para_ti": [{"texto": "Tu colegio debe actualizar su reglamento interno.", "citas": cita}],
+                "excepciones": [{"texto": "Si el estudiante tiene necesidades educativas especiales, puede usar el celular como ayuda para aprender.", "citas": cita},
+                                {"texto": "En la enseñanza media, el reglamento del colegio puede permitirlo en ciertos horarios o actividades.", "citas": cita}]}
     if system == prompts.VERIFICA:
         return {"comparaciones": [{"afirmacion": _pregunta(user), "etiqueta": "respalda",
                                    "texto_oficial": "La ley prohíbe los dispositivos móviles en los colegios.",

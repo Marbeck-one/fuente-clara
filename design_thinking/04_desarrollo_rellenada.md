@@ -11,6 +11,8 @@
 
 > Foto del avance al **06-11-2026, 15:09**. Completada solo con lo que está en el repositorio de GitHub (`main`, las ramas del equipo, la CI y los issues), en la copia local de Becker y en las fichas anteriores. Cada dato lleva su fuente entre paréntesis; "#N" es el issue N. Lo que no sale tal cual de una fuente está marcado como **borrador** y falta acordarlo en equipo. Lo que no tenemos queda en blanco (`___`).
 
+> **Actualización al cierre (06-11-2026):** esta ficha conserva la foto de las 15:09. Después se integraron la voz (#5), `madev` (#3 y #19), el modelo por tarea (#30) y la jueza (#29) en `main` (b21057c). La suite pasó a 293 pruebas y #29/#30 ya no son trabajo futuro; ver la fila «Segunda revisión IA y modelo por tarea» y `PITCH_CONTINUIDAD.md`.
+
 ## Datos del equipo
 
 | | |
@@ -83,8 +85,6 @@ La hipótesis de la etapa 2 se prueba con Explícame y sus citas verificadas, y 
 | Filtro por tema entre documentos | #2 |
 | Dictar la pregunta por micrófono | #6 |
 | Analítica por perfil | #27 |
-| Segunda revisión con una IA «jueza» | #29 |
-| Elegir el modelo según la tarea | #30 |
 | Análisis de contratos · unificador de programas · contrasta tu programa · Clave Única (chocan con lo que la app promete) | #7, #9, #10, #11 |
 | Dudas comunes de las otras siete leyes (0 de 37 revisadas) | #8 |
 | Renovar las leyes 19.628, 20.285 y 19.496, que vencen el 30-11-2026 | #15 |
@@ -123,8 +123,9 @@ Componentes principales funcionando de forma individual y avance guardado en un 
 
 | Componente | Responsable | Estado | Evidencia |
 |---|---|---|---|
-| Interfaz, lógica y conexión con la IA (`app.py`, `core/`) | Becker | **Listo** | 133 pruebas pasan; CI en verde (9f63230) |
-| Modelo de la demo | Becker | **En curso** | `.env` con `anthropic` / `claude-sonnet-5-5` y sin intervalo, como pedía el #30. Falta una corrida de `evaluar.py` con ese modelo |
+| Interfaz, lógica y conexión con la IA (`app.py`, `core/`) | Becker | **Listo** | 293 pruebas pasan; CI en verde (b21057c) |
+| Modelo de la demo | Becker | **Listo** | `.env` con `anthropic` / `claude-sonnet-5-5` y sin intervalo, como pedía el #30; corrida de `evaluar.py` del 06-11 anotada en `DECLARACION_IA.md` §7 |
+| Segunda revisión IA y modelo por tarea | Becker | **Listo** | `core/jueza.py`, `LLM_JUEZA` / `LLM_CADENA_FILTRO` / `LLM_CADENA_JUEZA` en `core/llm.py`; `tests/test_jueza.py`; 293 pruebas en verde (b21057c) |
 | Guardrail contra la manipulación | Max (casos), Becker (reglas) | **Listo** | 20 de 20 intentos rechazados (#16). Las preguntas legítimas con palabras parecidas pasan, con pruebas fijas (9f63230). El #17 sigue abierto |
 | Filtro: preguntas sobre quién presentó o votó una ley, o de qué partido es alguien | Becker | **En curso** | Con el modelo gratuito no se detectaban (#17, 14:12). Se agregaron al prompt del filtro (`core/prompts.py`); falta medirlo con el modelo de la demo |
 | Explícame | Juan | **Listo** | En `main`. La mejora "solo lo que dice la fuente" sigue abierta (#1) |
@@ -175,7 +176,7 @@ Ya resuelto: el ejemplo ficticio está comentado en el catálogo, como pedía el
 - [x] Repositorio compartido activo (GitHub, con ramas por persona y CI que corre las pruebas en cada envío)
 - [x] Cada componente tiene un responsable (etiqueta por área en los issues)
 - [ ] Hicimos los 2 puntos de control (sin registro)
-- [ ] Avance guardado antes de cerrar (la voz está sin commitear y la accesibilidad sin unir)
+- [x] Avance guardado antes de cerrar (voz y accesibilidad integradas; 293 pruebas en verde)
 
 *Consejo: roten roles entre los 5: tiempo, registro, voz ante el mentor, apoyo técnico y control de calidad.*
 

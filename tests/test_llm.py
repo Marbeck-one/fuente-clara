@@ -1,4 +1,10 @@
+import base64
+import io
+import sys
+import types
+
 import pytest
+from PIL import Image
 
 from core import llm
 
@@ -35,12 +41,12 @@ def test_parsear_falla_sin_json_o_si_no_es_objeto():
 
 def test_complete_reintenta_una_vez_si_la_primera_respuesta_no_es_json(monkeypatch):
     respuestas = iter(["no es json", '{"ok": true}'])
-    monkeypatch.setattr(llm, "_llamar", lambda system, user, imagen=None: next(respuestas))
+    monkeypatch.setattr(llm, "_llamar", lambda system, user, imagen=None, *a, **k: next(respuestas))
     assert llm.complete("sistema", "usuario") == {"ok": True}
 
 
 def test_complete_falla_si_no_hay_json_valido(monkeypatch):
-    monkeypatch.setattr(llm, "_llamar", lambda system, user, imagen=None: "no es json")
+    monkeypatch.setattr(llm, "_llamar", lambda system, user, imagen=None, *a, **k: "no es json")
     with pytest.raises(llm.ErrorLLM):
         llm.complete("sistema", "usuario")
 
@@ -54,7 +60,7 @@ def test_contenido_google_pone_la_imagen_primero():
 def test_complete_reenvia_la_imagen(monkeypatch):
     vista = {}
 
-    def falso_llamar(system, user, imagen=None):
+    def falso_llamar(system, user, imagen=None, *a, **k):
         vista["imagen"] = imagen
         return '{"ok": true}'
 
@@ -64,7 +70,7 @@ def test_complete_reenvia_la_imagen(monkeypatch):
     assert vista["imagen"] is imagen
 
 
-def test_imagen_rechazada_si_el_proveedor_no_es_google(monkeypatch):
+def test_imagen_rechazada_si_el_proveedor_no_acepta_imagenes(monkeypatch):
     monkeypatch.setenv("LLM_PROVIDER", "openai")
     with pytest.raises(llm.ErrorLLM):
         llm._llamar_proveedor("sistema", "usuario", imagen=object())
@@ -86,3 +92,91 @@ def test_timeout_y_max_tokens(monkeypatch):
     monkeypatch.setenv("LLM_MAX_TOKENS", "500")
     assert llm._timeout() == 12.5
     assert llm._max_tokens() == 500
+
+
+def test_soporta_imagenes_solo_en_anthropic_y_google(monkeypatch):
+    for proveedor, esperado in [("anthropic", True), ("google", True), ("openai", False)]:
+        monkeypatch.setenv("LLM_PROVIDER", proveedor)
+        assert llm.soporta_imagenes() is esperado
+
+
+def test_contenido_anthropic_pone_la_imagen_antes_del_texto():
+    contenido = llm._contenido_anthropic("texto", Image.new("RGB", (120, 80), "white"))
+    assert contenido[0]["type"] == "image"
+    assert contenido[0]["source"]["media_type"] == "image/jpeg"
+    assert base64.standard_b64decode(contenido[0]["source"]["data"])[:2] == b"\xff\xd8"
+    assert contenido[1] == {"type": "text", "text": "texto"}
+    assert llm._contenido_anthropic("texto", None) == "texto"
+
+
+def test_haiku_no_recibe_temperatura(monkeypatch):
+    monkeypatch.setenv("LLM_TEMPERATURE", "0")
+    assert llm._opcionales("claude-haiku-5-5") == {}
+    assert llm._opcionales("gemini-2.5-flash") == {"temperature": 0.0}
+
+
+def test_si_el_modelo_pide_between_tools_se_reintenta_y_se_recuerda(monkeypatch):
+    """Sonnet 5.5 rechaza thinking=disabled (el error pide between_tools): sin este ajuste siempre caía al modelo de respaldo."""
+    llamadas = []
+
+    class Cliente:
+        def __init__(self, **k):
+            self.messages = self
+
+        def create(self, **k):
+            llamadas.append(k["thinking"]["type"])
+            if k["thinking"]["type"] == "disabled":
+                raise RuntimeError('To turn thinking off on this model, send "thinking": {"type": "between_tools"} instead')
+            return types.SimpleNamespace(content=[types.SimpleNamespace(type="text", text='{"texto": "hola"}')])
+
+    monkeypatch.setitem(sys.modules, "anthropic", types.SimpleNamespace(Anthropic=Cliente))
+    monkeypatch.setattr(llm, "_APAGAR_RAZONAMIENTO", {})
+    monkeypatch.setenv("LLM_PROVIDER", "anthropic")
+    monkeypatch.setenv("LLM_MODEL", "claude-sonnet-5-5")
+    assert llm.complete("sistema", "usuario") == {"texto": "hola"}
+    assert llamadas == ["disabled", "between_tools"]
+    assert llm.complete("sistema", "usuario") == {"texto": "hola"}
+    assert llamadas == ["disabled", "between_tools", "between_tools"]      # ya no vuelve a probar con disabled
+
+
+def test_otros_errores_de_anthropic_no_se_reintentan_con_otra_forma(monkeypatch):
+    llamadas = []
+
+    class Cliente:
+        def __init__(self, **k):
+            self.messages = self
+
+        def create(self, **k):
+            llamadas.append(k["thinking"]["type"])
+            raise RuntimeError("overloaded")
+
+    monkeypatch.setitem(sys.modules, "anthropic", types.SimpleNamespace(Anthropic=Cliente))
+    monkeypatch.setattr(llm, "_APAGAR_RAZONAMIENTO", {})
+    monkeypatch.setenv("LLM_PROVIDER", "anthropic")
+    monkeypatch.setenv("LLM_MODEL", "claude-sonnet-5-5")
+    with pytest.raises(llm.ErrorLLM):
+        llm.complete("sistema", "usuario")
+    assert set(llamadas) == {"disabled"}
+
+
+def test_anthropic_envia_la_imagen_en_el_mensaje(monkeypatch):
+    vista = {}
+
+    class Cliente:
+        def __init__(self, **k):
+            self.messages = self
+
+        def create(self, **k):
+            vista.update(k)
+            return types.SimpleNamespace(content=[types.SimpleNamespace(type="text", text='{"texto": "hola"}')])
+
+    monkeypatch.setitem(sys.modules, "anthropic", types.SimpleNamespace(Anthropic=Cliente))
+    monkeypatch.setenv("LLM_PROVIDER", "anthropic")
+    monkeypatch.setenv("LLM_MODEL", "claude-haiku-5-5")
+    monkeypatch.setenv("LLM_TEMPERATURE", "0")
+    assert llm.complete("sistema", "usuario", Image.new("RGB", (120, 80))) == {"texto": "hola"}
+    assert vista["model"] == "claude-haiku-5-5"
+    assert vista["thinking"] == {"type": "disabled"}
+    assert "temperature" not in vista
+    bloques = vista["messages"][0]["content"]
+    assert bloques[0]["type"] == "image" and bloques[1]["text"] == "usuario"

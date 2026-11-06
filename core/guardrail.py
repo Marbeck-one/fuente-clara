@@ -100,7 +100,13 @@ def salida_segura(r):
         if campo in r:
             r[campo] = _sin_enlaces(r[campo])
             revisar.append(r[campo])
+    if isinstance(r.get("excepciones"), list):
+        r["excepciones"] = [_sin_enlaces(e) for e in r["excepciones"]]
+        revisar += r["excepciones"]
     for c in r.get("comparaciones") or []:
         c["afirmacion"], c["texto_oficial"] = _sin_enlaces(c["afirmacion"]), _sin_enlaces(c["texto_oficial"])
         revisar.append(c["texto_oficial"])
+    for frase in (r.get("frases") or []) + (r.get("que_cambia_frases") or []):
+        frase["texto"] = _sin_enlaces(frase["texto"])
+        revisar.append(frase["texto"])
     return not any(p.search(normalizar(t)) for t in revisar for p in _SALIDA_PROHIBIDA)

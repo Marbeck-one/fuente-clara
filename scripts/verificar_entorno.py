@@ -18,13 +18,8 @@ sys.stdout.reconfigure(encoding="utf-8")
 import yaml  # noqa: E402
 
 from core import documento, prompts  # noqa: E402
-from core.llm import ErrorLLM, complete, configuracion  # noqa: E402
-
-CLAVES = {
-    "anthropic": ("ANTHROPIC_API_KEY",),
-    "openai": ("OPENAI_API_KEY",),
-    "google": ("GOOGLE_API_KEY", "GEMINI_API_KEY"),
-}
+from core import llm  # noqa: E402
+from core.llm import CLAVES, ErrorLLM, cadena, complete, tiene_clave, ultimo_modelo  # noqa: E402
 
 
 def _si_no(condicion, mensaje, fallos):
@@ -41,17 +36,22 @@ def main():
 
     fallos = []
     try:
-        proveedor, modelo = configuracion()
+        eslabones = cadena()
     except ErrorLLM as e:
         print(f"[FALLA] configuración: {e}")
         return 1
 
-    print(f"Proveedor: {proveedor}\nModelo: {modelo}\nInstrucciones: {prompts.VERSION}\n")
+    proveedor, modelo = eslabones[0]
+    print(f"Proveedor: {proveedor}\nModelo: {modelo}\nInstrucciones: {prompts.VERSION}")
+    if len(eslabones) > 1:
+        print("Respaldo, en orden: " + " → ".join(f"{p}:{m}" for p, m in eslabones[1:]))
+    print()
 
-    variables = CLAVES.get(proveedor, ())
-    definida = any(os.getenv(v, "").strip() for v in variables)
-    _si_no(definida, f"clave de API definida ({' o '.join(variables)})", fallos)
-    if proveedor == "openai" and os.getenv("OPENAI_BASE_URL", "").strip():
+    _si_no(tiene_clave(proveedor), f"clave de API definida ({' o '.join(CLAVES[proveedor])})", fallos)
+    for p, m in eslabones[1:]:
+        if not tiene_clave(p):  # un respaldo sin clave se salta: no es una falla, pero conviene saberlo
+            print(f"[AVISO] respaldo {p}:{m} sin clave ({' o '.join(CLAVES[p])}): se saltará")
+    if any(p == "openai" for p, _ in eslabones) and os.getenv("OPENAI_BASE_URL", "").strip():
         print(f"[INFO] OPENAI_BASE_URL: {os.getenv('OPENAI_BASE_URL')}")
 
     catalogo = documento.listar()
@@ -72,9 +72,18 @@ def main():
         print("\nProbando una llamada real (consume pocos tokens)…")
         try:
             r = complete("Eres un verificador. Responde solo JSON.", 'Devuelve exactamente {"ok": true}')
-            _si_no(r.get("ok") is True, f"la IA respondió: {r}", fallos)
+            _si_no(r.get("ok") is True, f"la IA respondió ({':'.join(ultimo_modelo())}): {r}", fallos)
         except ErrorLLM as e:
             _si_no(False, f"llamada a la IA: {e}", fallos)
+        for p, m in eslabones[1:]:  # cada respaldo por separado, para saber si de verdad sirve
+            if not tiene_clave(p):
+                continue
+            try:
+                texto = llm._llamar_proveedor("Responde solo JSON.", 'Devuelve exactamente {"ok": true}',
+                                              eslabon=(p, m), reintentos=False)
+                print(f"[{'OK' if llm._parsear(texto).get('ok') is True else 'AVISO'}] respaldo {p}:{m} responde")
+            except Exception as e:  # un respaldo caído no impide la demo
+                print(f"[AVISO] respaldo {p}:{m} no responde: {type(e).__name__} {str(e)[:120]}")
 
     print(f"\n{'Todo OK' if not fallos else f'{len(fallos)} fallo(s)'}")
     return 0 if not fallos else 1

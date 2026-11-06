@@ -9,7 +9,7 @@ from html import escape
 import streamlit as st
 
 from core import documento
-from core.llm import ErrorLLM, configuracion
+from core.llm import ErrorLLM, cadena
 from modulos import accesibilidad, cuenta, explicame, panel, transparencia, verifica
 from modulos.comun import PESTANAS, STATIC, enlace_fuente, estilos, logo
 
@@ -40,8 +40,10 @@ def inicio():
     # El documento es el protagonista: nombre y fuente oficial siempre arriba.
     pills = ['<span class="fc-pill fc-pill--aviso">Ejemplo ficticio · no es un documento oficial</span>'] if doc.get("ficticio") else []
     try:
-        proveedor, modelo = configuracion()
-        pills.append(f'<span class="fc-pill" title="Detalle en DECLARACION_IA.md">IA: {escape(modelo)}</span>')
+        modelos = [m for _, m in cadena()]
+        respaldo = f" (+{len(modelos) - 1} de respaldo)" if len(modelos) > 1 else ""
+        detalle = escape(" → ".join(modelos) + " · Detalle en DECLARACION_IA.md")
+        pills.append(f'<span class="fc-pill" title="{detalle}">IA: {escape(modelos[0])}{respaldo}</span>')
     except ErrorLLM as e:
         st.error(str(e))
     st.html(f'<section class="fc-doc"><p class="fc-antetitulo">Estás leyendo</p><h1>{escape(doc["titulo"])}</h1>'
@@ -65,7 +67,7 @@ PAGINA_CALIDAD = st.Page(panel.render, title="Calidad de las respuestas · Fuent
 
 st.html(f'<header class="fc-marca">{logo()}<div><p class="fc-logotipo"><b>Fuente</b><span>Clara</span></p>'
         '<p class="fc-lema">Lo que dice el documento, dicho claro.</p></div></header>')
-accesibilidad.render_interruptor()
+accesibilidad.render_panel()
 cuenta.render()
 pagina = st.navigation([PAGINA_INICIO, PAGINA_CALIDAD], position="hidden")
 pagina.run()
