@@ -9,6 +9,7 @@ gatherUsageStats = false     # sin telemetría: coherente con "no guardamos dato
 
 [client]
 toolbarMode = "minimal"      # oculta el menú de desarrollo y el botón Deploy
+showErrorDetails = "none"    # si algo falla, no muestra código ni rutas del computador
 
 [theme]
 base = "light"

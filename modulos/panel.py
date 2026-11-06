@@ -5,6 +5,7 @@ las ve el equipo ingresando la CLAVE_EQUIPO definida en el archivo .env.
 """
 import hmac
 import os
+import time
 from html import escape
 
 import altair as alt
@@ -19,6 +20,7 @@ from modulos.comun import encabezado
 BARRA = "#0891B2"
 TEXTO, TEXTO_2 = "#0F172A", "#475569"
 POCOS_VOTOS = 5
+MAX_INTENTOS = 5  # intentos de clave por sesión
 ORDEN_PESTANAS = ["Explícame", "Verifica esto", "Pregúntale al Estado"]
 
 
@@ -97,18 +99,33 @@ def _publico(df):
                      hide_index=True, width="stretch")
 
 
+def _verificar_clave():
+    """Se revisa una sola vez por clave escrita (no en cada recarga), con 1 segundo de espera si falla."""
+    ingresada = st.session_state.get("fc-clave", "")
+    if not ingresada:
+        return
+    if hmac.compare_digest(ingresada.encode(), os.getenv("CLAVE_EQUIPO", "").encode()):
+        st.session_state["fc-equipo-ok"] = True
+    else:
+        st.session_state["fc-intentos-clave"] = st.session_state.get("fc-intentos-clave", 0) + 1
+        time.sleep(1)
+    st.session_state["fc-clave"] = ""
+
+
 def _privado(registros, titulos):
     st.subheader("Respuestas a revisar")
     st.caption("Las que alguien votó 👎 y autorizó guardar para mejorar las respuestas del modelo. Solo para el equipo.")
-    clave = os.getenv("CLAVE_EQUIPO", "")
-    if not clave:
+    if not os.getenv("CLAVE_EQUIPO", ""):
         st.caption("Para ver esta sección, define CLAVE_EQUIPO en el archivo .env.")
         return
-    ingresada = st.text_input("Clave del equipo", type="password")
-    if not ingresada:
-        return
-    if not hmac.compare_digest(ingresada.encode(), clave.encode()):
-        st.error("Clave incorrecta.")
+    if not st.session_state.get("fc-equipo-ok"):
+        intentos = st.session_state.get("fc-intentos-clave", 0)
+        if intentos >= MAX_INTENTOS:
+            st.error("Demasiados intentos fallidos. Vuelve a intentarlo más tarde.", icon=":material/lock:")
+            return
+        st.text_input("Clave del equipo", type="password", key="fc-clave", on_change=_verificar_clave)
+        if intentos:
+            st.error(f"Clave incorrecta. Te quedan {MAX_INTENTOS - intentos} intentos.")
         return
     guardadas = sorted((v for v in registros if v.get("autoriza")), key=lambda v: v["fecha"], reverse=True)
     if not guardadas:

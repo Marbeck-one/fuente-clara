@@ -1,11 +1,12 @@
 """Piezas de interfaz compartidas. Estilos en static/estilo.css; criterios en DESIGN.md."""
+import sys
 import uuid
 from html import escape
 from pathlib import Path
 
 import streamlit as st
 
-from core import filtro, votos
+from core import filtro, limites, votos
 from core.llm import ErrorLLM
 
 STATIC = Path(__file__).resolve().parents[1] / "static"
@@ -33,12 +34,19 @@ def ejecutar(funcion, *args):
     El primer argumento de `funcion` es siempre el texto de la persona. Al resultado se le agrega
     lo necesario para votarlo: un id, ese texto (queda solo en la sesión) y con qué se generó.
     """
+    tope = limites.permitir(st.session_state.setdefault("consultas", []))
+    if tope:
+        st.warning("Hiciste muchas consultas seguidas. Espera unos minutos y vuelve a intentarlo." if tope == limites.SESION
+                   else "Hay muchas personas usando Fuente Clara en este momento. Intenta de nuevo en un minuto.",
+                   title="Un momento", icon=":material/hourglass_top:")
+        return None
     try:
         with st.spinner("Leyendo el documento…"):
             r = filtro.revisar_respuesta(funcion(*args))  # guardrail, capa 3
     except ErrorLLM as e:
-        st.error(f"Revisa tu archivo .env o intenta de nuevo. ({e})",
-                 title="No pudimos obtener respuesta", icon=":material/cloud_off:")
+        # El detalle técnico va solo a la consola de quien corre la app (nunca el texto de la persona).
+        print(f"[Fuente Clara] Falló la llamada a la IA: {e}", file=sys.stderr)
+        st.error("Intenta de nuevo en un momento.", title="No pudimos obtener respuesta", icon=":material/cloud_off:")
         return None
     r.update(id=uuid.uuid4().hex[:12], entrada=args[0], documento=st.session_state.get("doc_actual"),
              traza=votos.traza())
